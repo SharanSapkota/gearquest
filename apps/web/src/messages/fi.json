@@ -1,9 +1,103 @@
 {
-  "app": { "name": "GearShare" },
-  "nav": { "home": "Etusivu", "map": "Kartta", "rentals": "Vuokraukseni" },
-  "home": { "title": "Vuokraa seikkailuvarusteita", "empty": "Ei varusteita." },
+  "app": {
+    "name": "GearShare"
+  },
+  "nav": {
+    "home": "Etusivu",
+    "map": "Kartta",
+    "rentals": "Vuokraukseni",
+    "signIn": "Kirjaudu sisään",
+    "main": "Päävalikko"
+  },
+  "home": {
+    "title": "Vuokraa seikkailuvarusteita",
+    "empty": "Varusteita ei löytynyt.",
+    "loading": "Ladataan varusteita…",
+    "results": "{count, plural, one {# varuste} other {# varustetta}}",
+    "availableRange": "saatavilla {from} – {to}"
+  },
   "legal": {
     "disclaimer": "GearShare on vain alusta, joka yhdistää varusteiden omistajat ja vuokraajat. Emme ole osapuoli vuokrasopimuksissa emmekä vastaa vahingoista, katoamisesta, loukkaantumisista tai riidoista. Kaikki tällaiset asiat ovat yksin vuokraajan ja omistajan välisiä."
   },
-  "errors": { "loadFailed": "Tietojen lataus epäonnistui." }
+  "errors": {
+    "loadFailed": "Tietojen lataus epäonnistui.",
+    "retry": "Yritä uudelleen"
+  },
+  "language": {
+    "label": "Kieli",
+    "fi": "Suomi",
+    "en": "English"
+  },
+  "map": {
+    "title": "Kartta",
+    "placeholder": "Kartta tulossa pian."
+  },
+  "gear": {
+    "noImage": "Ei kuvaa",
+    "perHour": "{price} / h",
+    "perDay": "{price} / pv",
+    "rating": "★ {rating}",
+    "noRating": "Ei arvosteluja",
+    "detailTitle": "Varusteen tiedot",
+    "detailPlaceholder": "Varustesivu tulossa pian.",
+    "back": "Takaisin varusteisiin"
+  },
+  "categories": {
+    "ski": "Sukset",
+    "snowboard": "Lumilaudat",
+    "tent": "Teltat",
+    "kayak": "Kajakit",
+    "bike": "Pyörät",
+    "climbing": "Kiipeily",
+    "camping": "Retkeily",
+    "other": "Muu"
+  },
+  "conditions": {
+    "new": "Uusi",
+    "good": "Hyvä",
+    "fair": "Tyydyttävä"
+  },
+  "modes": {
+    "hourly": "Tuntivuokra",
+    "daily": "Päivävuokra"
+  },
+  "sorts": {
+    "newest": "Uusimmat",
+    "priceAsc": "Hinta: halvin ensin",
+    "priceDesc": "Hinta: kallein ensin"
+  },
+  "filters": {
+    "title": "Suodattimet",
+    "close": "Sulje",
+    "search": "Haku",
+    "searchPlaceholder": "Hae varusteita",
+    "category": "Luokka",
+    "condition": "Kunto",
+    "mode": "Vuokraustapa",
+    "any": "Kaikki",
+    "price": "Hinta (EUR)",
+    "min": "Min",
+    "max": "Max",
+    "minPrice": "Vähimmäishinta",
+    "maxPrice": "Enimmäishinta",
+    "dates": "Saatavilla",
+    "from": "Alkupäivä",
+    "to": "Loppupäivä",
+    "distance": "Etäisyys",
+    "radius": "Säde",
+    "withinKm": "Alle {km} km",
+    "useLocation": "Käytä sijaintiani",
+    "clearLocation": "Poista sijainti",
+    "locationFailed": "Sijaintia ei saatu.",
+    "minRating": "Omistajan vähimmäisarvosana",
+    "ratingAtLeast": "{rating}★ ja yli",
+    "sort": "Järjestys",
+    "apply": "Käytä",
+    "reset": "Tyhjennä suodattimet"
+  },
+  "pagination": {
+    "label": "Sivutus",
+    "previous": "Edellinen",
+    "next": "Seuraava"
+  }
 }

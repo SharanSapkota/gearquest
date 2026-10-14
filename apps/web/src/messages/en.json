@@ -1,9 +1,103 @@
 {
-  "app": { "name": "GearShare" },
-  "nav": { "home": "Home", "map": "Map", "rentals": "My rentals" },
-  "home": { "title": "Rent adventure gear", "empty": "No gear found." },
+  "app": {
+    "name": "GearShare"
+  },
+  "nav": {
+    "home": "Home",
+    "map": "Map",
+    "rentals": "My rentals",
+    "signIn": "Sign in",
+    "main": "Main navigation"
+  },
+  "home": {
+    "title": "Rent adventure gear",
+    "empty": "No gear found.",
+    "loading": "Loading gear…",
+    "results": "{count, plural, one {# item} other {# items}}",
+    "availableRange": "available {from} – {to}"
+  },
   "legal": {
     "disclaimer": "GearShare is only a platform that connects gear owners and renters. We are not a party to any rental agreement and accept no responsibility for damage, loss, injury, or disputes. All such matters are solely between the renter and the owner."
   },
-  "errors": { "loadFailed": "Failed to load data." }
+  "errors": {
+    "loadFailed": "Failed to load data.",
+    "retry": "Try again"
+  },
+  "language": {
+    "label": "Language",
+    "fi": "Suomi",
+    "en": "English"
+  },
+  "map": {
+    "title": "Map",
+    "placeholder": "The map is coming soon."
+  },
+  "gear": {
+    "noImage": "No image",
+    "perHour": "{price} / h",
+    "perDay": "{price} / day",
+    "rating": "★ {rating}",
+    "noRating": "No ratings yet",
+    "detailTitle": "Gear details",
+    "detailPlaceholder": "The gear page is coming soon.",
+    "back": "Back to all gear"
+  },
+  "categories": {
+    "ski": "Skis",
+    "snowboard": "Snowboards",
+    "tent": "Tents",
+    "kayak": "Kayaks",
+    "bike": "Bikes",
+    "climbing": "Climbing",
+    "camping": "Camping",
+    "other": "Other"
+  },
+  "conditions": {
+    "new": "New",
+    "good": "Good",
+    "fair": "Fair"
+  },
+  "modes": {
+    "hourly": "Hourly",
+    "daily": "Daily"
+  },
+  "sorts": {
+    "newest": "Newest",
+    "priceAsc": "Price: low to high",
+    "priceDesc": "Price: high to low"
+  },
+  "filters": {
+    "title": "Filters",
+    "close": "Close",
+    "search": "Search",
+    "searchPlaceholder": "Search gear",
+    "category": "Category",
+    "condition": "Condition",
+    "mode": "Rental mode",
+    "any": "Any",
+    "price": "Price (EUR)",
+    "min": "Min",
+    "max": "Max",
+    "minPrice": "Minimum price",
+    "maxPrice": "Maximum price",
+    "dates": "Available",
+    "from": "From date",
+    "to": "To date",
+    "distance": "Distance",
+    "radius": "Radius",
+    "withinKm": "Within {km} km",
+    "useLocation": "Use my location",
+    "clearLocation": "Clear location",
+    "locationFailed": "Could not get your location.",
+    "minRating": "Minimum owner rating",
+    "ratingAtLeast": "{rating}★ and up",
+    "sort": "Sort by",
+    "apply": "Apply",
+    "reset": "Clear filters"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous",
+    "next": "Next"
+  }
 }
