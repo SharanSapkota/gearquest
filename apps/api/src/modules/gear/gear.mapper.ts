@@ -1,6 +1,6 @@
-import type { GearRecord } from './gear.repository';
+import type { GearDetailRecord, GearRecord } from './gear.repository';
 
-// Public view: never exposes exact location or address.
+// Public view: whitelist only. Never exposes exact location or address.
 export function toPublicGear(gear: NonNullable<GearRecord>) {
   return {
     id: String(gear._id),
@@ -16,5 +16,16 @@ export function toPublicGear(gear: NonNullable<GearRecord>) {
     ownerRatingAvg: gear.ownerRatingAvg,
     status: gear.status,
     createdAt: gear.createdAt,
+  };
+}
+
+// Detail view adds basic owner info. Never phone or email.
+export function toPublicGearDetail(gear: NonNullable<GearDetailRecord>) {
+  const owner = gear.ownerId;
+  return {
+    ...toPublicGear({ ...gear, ownerId: owner?._id ?? gear.ownerId } as NonNullable<GearRecord>),
+    owner: owner
+      ? { id: String(owner._id), name: owner.name, avatarUrl: owner.avatarUrl, rating: owner.ratingAvg }
+      : null,
   };
 }
