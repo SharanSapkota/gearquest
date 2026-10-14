@@ -33,6 +33,7 @@ const gearSchema = new Schema(
 gearSchema.index({ publicLocation: '2dsphere' });
 gearSchema.index({ status: 1, category: 1, 'pricing.dailyCents': 1 });
 gearSchema.index({ status: 1, category: 1, 'pricing.hourlyCents': 1 });
-gearSchema.index({ title: 'text', description: 'text' });
+// 'none': Mongo has no Finnish stemmer; English stemming would mangle Finnish words.
+gearSchema.index({ title: 'text', description: 'text' }, { default_language: 'none' });
 
 export const GearModel = model('Gear', gearSchema);

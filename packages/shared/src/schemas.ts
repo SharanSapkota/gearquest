@@ -2,8 +2,11 @@ import { z } from 'zod';
 import {
   CATEGORIES,
   CONDITIONS,
+  DEFAULT_PAGE_SIZE,
+  GEAR_SORTS,
   GEAR_STATUSES,
   LOCALES,
+  MAX_PAGE_SIZE,
   RENTAL_MODES,
   RENTAL_STATUSES,
   REVIEW_ROLES,
@@ -49,6 +52,9 @@ export const createGearSchema = z.object({
 });
 export type CreateGearInput = z.infer<typeof createGearSchema>;
 
+export const updateGearSchema = createGearSchema.partial();
+export type UpdateGearInput = z.infer<typeof updateGearSchema>;
+
 // Price is never accepted from the client: the server computes it.
 export const createRentalSchema = z.object({
   gearId: z.string().min(1),
@@ -65,18 +71,46 @@ export const createReviewSchema = z.object({
 });
 export type CreateReviewInput = z.infer<typeof createReviewSchema>;
 
-export const gearFiltersSchema = z.object({
-  category: categorySchema.optional(),
-  condition: conditionSchema.optional(),
-  mode: rentalModeSchema.optional(),
-  minPriceCents: z.coerce.number().int().nonnegative().optional(),
-  maxPriceCents: z.coerce.number().int().nonnegative().optional(),
-  from: z.coerce.date().optional(),
-  to: z.coerce.date().optional(),
-  lat: z.coerce.number().min(-90).max(90).optional(),
-  lng: z.coerce.number().min(-180).max(180).optional(),
-  radiusKm: z.coerce.number().positive().max(500).optional(),
-  q: z.string().trim().max(100).optional(),
-  minOwnerRating: z.coerce.number().min(1).max(5).optional(),
-});
+// Map bounding box as "west,south,east,north" (minLng,minLat,maxLng,maxLat).
+export const bboxSchema = z
+  .string()
+  .transform((s) => s.split(',').map(Number))
+  .pipe(z.tuple([z.number(), z.number(), z.number(), z.number()]))
+  .refine(([w, s, e, n]) => w >= -180 && e <= 180 && s >= -90 && n <= 90 && w < e && s < n, {
+    message: 'bbox.invalid',
+  });
+
+export const gearFiltersSchema = z
+  .object({
+    category: categorySchema.optional(),
+    condition: conditionSchema.optional(),
+    mode: rentalModeSchema.optional(),
+    minPriceCents: z.coerce.number().int().nonnegative().optional(),
+    maxPriceCents: z.coerce.number().int().nonnegative().optional(),
+    // TODO(rentals): availability filter is accepted but not applied until the rentals module exists.
+    from: z.coerce.date().optional(),
+    to: z.coerce.date().optional(),
+    lat: z.coerce.number().min(-90).max(90).optional(),
+    lng: z.coerce.number().min(-180).max(180).optional(),
+    radiusKm: z.coerce.number().positive().max(500).optional(),
+    bbox: bboxSchema.optional(),
+    q: z.string().trim().max(100).optional(),
+    minOwnerRating: z.coerce.number().min(1).max(5).optional(),
+    sort: z.enum(GEAR_SORTS).default('newest'),
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
+  })
+  .refine(
+    (f) => [f.lat, f.lng, f.radiusKm].every((v) => v === undefined) ||
+      [f.lat, f.lng, f.radiusKm].every((v) => v !== undefined),
+    { message: 'filters.geoIncomplete', path: ['radiusKm'] },
+  )
+  .refine(
+    (f) =>
+      f.minPriceCents === undefined ||
+      f.maxPriceCents === undefined ||
+      f.minPriceCents <= f.maxPriceCents,
+    { message: 'filters.priceRange', path: ['maxPriceCents'] },
+  );
 export type GearFilters = z.infer<typeof gearFiltersSchema>;
+export type GearFiltersInput = z.input<typeof gearFiltersSchema>;
