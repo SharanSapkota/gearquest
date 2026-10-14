@@ -1,0 +1,9 @@
+{
+  "app": { "name": "GearShare" },
+  "nav": { "home": "Etusivu", "map": "Kartta", "rentals": "Vuokraukseni" },
+  "home": { "title": "Vuokraa seikkailuvarusteita", "empty": "Ei varusteita." },
+  "legal": {
+    "disclaimer": "GearShare on vain alusta, joka yhdistää varusteiden omistajat ja vuokraajat. Emme ole osapuoli vuokrasopimuksissa emmekä vastaa vahingoista, katoamisesta, loukkaantumisista tai riidoista. Kaikki tällaiset asiat ovat yksin vuokraajan ja omistajan välisiä."
+  },
+  "errors": { "loadFailed": "Tietojen lataus epäonnistui." }
+}

@@ -1,0 +1,9 @@
+{
+  "app": { "name": "GearShare" },
+  "nav": { "home": "Home", "map": "Map", "rentals": "My rentals" },
+  "home": { "title": "Rent adventure gear", "empty": "No gear found." },
+  "legal": {
+    "disclaimer": "GearShare is only a platform that connects gear owners and renters. We are not a party to any rental agreement and accept no responsibility for damage, loss, injury, or disputes. All such matters are solely between the renter and the owner."
+  },
+  "errors": { "loadFailed": "Failed to load data." }
+}
