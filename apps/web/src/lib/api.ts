@@ -78,6 +78,8 @@ export type PublicGear = {
   condition: (typeof CONDITIONS)[number];
   images: string[];
   city: string;
+  // Approximate (fuzzed) public location as [lng, lat]. Never the exact pin.
+  location?: [number, number];
   pricing: { hourlyCents?: number; dailyCents?: number; minHours?: number };
   ownerRatingAvg?: number;
 };
@@ -156,6 +158,8 @@ export type GearQuery = {
   lat?: number;
   lng?: number;
   radiusKm?: number;
+  // Visible map area as "west,south,east,north".
+  bbox?: string;
   minOwnerRating?: number;
   sort?: (typeof GEAR_SORTS)[number];
   page?: number;
@@ -171,13 +175,14 @@ const toQueryString = (query: GearQuery) => {
 };
 
 export const api = {
-  async listGear(query: GearQuery = {}): Promise<GearListResponse> {
+  async listGear(query: GearQuery = {}, signal?: AbortSignal): Promise<GearListResponse> {
     const qs = toQueryString(query);
     try {
-      return await request<GearListResponse>(`/gear${qs ? `?${qs}` : ''}`);
+      return await request<GearListResponse>(`/gear${qs ? `?${qs}` : ''}`, { signal });
     } catch (err) {
-      // Only an unreachable API (network failure) falls back to mock data; HTTP errors surface.
-      if (err instanceof ApiError) throw err;
+      // Only an unreachable API (network failure) falls back to mock data; HTTP errors and
+      // aborted (superseded) requests surface.
+      if (err instanceof ApiError || signal?.aborted) throw err;
       // TODO(mock): remove this fallback once the API is always available to the web app.
       return filterMockGear(query);
     }

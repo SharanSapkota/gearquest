@@ -35,7 +35,23 @@
   },
   "map": {
     "title": "Kartta",
-    "placeholder": "Kartta tulossa pian."
+    "region": "Varustekartta",
+    "legend": "Selite",
+    "loading": "Ladataan varusteita…",
+    "empty": "Ei varusteita tällä alueella.",
+    "error": "Alueen varusteiden lataus epäonnistui.",
+    "retry": "Yritä uudelleen",
+    "capped": "Näytetään {shown} / {total} tulosta. Lähennä nähdäksesi lisää.",
+    "zoomIn": "Lähennä",
+    "zoomOut": "Loitonna",
+    "locate": "Käytä sijaintiani",
+    "locateShort": "Sijaintini",
+    "locating": "Haetaan sijaintia…",
+    "locateDenied": "Sijaintilupa evättiin. Salli sijainti selaimen asetuksista, niin kartta keskittyy sinuun.",
+    "locateFailed": "Sijaintia ei saatu.",
+    "cluster": "{count, plural, one {# varuste} other {# varustetta}}, lähennä",
+    "viewGear": "Näytä tiedot",
+    "closePopup": "Sulje"
   },
   "gear": {
     "noImage": "Ei kuvaa",

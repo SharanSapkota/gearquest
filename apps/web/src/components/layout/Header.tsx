@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { Suspense } from 'react';
 import { Link } from '@/i18n/navigation';
 import { AuthControls } from '@/components/auth/AuthControls';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -11,7 +12,9 @@ export function Header({ pendingCount }: { pendingCount: number }) {
       <Link href="/" className="logo">
         {t('app.name')}
       </Link>
-      <NavTabs />
+      <Suspense fallback={null}>
+        <NavTabs />
+      </Suspense>
       <div className="header__actions">
         <LanguageSwitcher />
         <AuthControls pendingCount={pendingCount} />
