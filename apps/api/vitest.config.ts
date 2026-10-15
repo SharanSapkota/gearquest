@@ -7,6 +7,9 @@ export default defineConfig({
       MONGODB_URI: 'mongodb://localhost:27017/test',
       JWT_SECRET: 'test-secret-test-secret-test-secret',
       GOOGLE_CLIENT_ID: 'test-client-id',
+      CLOUDINARY_CLOUD_NAME: 'test-cloud',
+      CLOUDINARY_API_KEY: 'test-key',
+      CLOUDINARY_API_SECRET: 'test-secret',
     },
   },
 });

@@ -1,12 +1,12 @@
 import type { CreateGearInput, GearFilters, UpdateGearInput } from '@gearshare/shared';
-import { MAP_LOCATION_OFFSET_METERS } from '@gearshare/shared';
-import { forbidden, notFound } from '../../lib/errors';
-import { toPublicGear, toPublicGearDetail } from './gear.mapper';
+import { GEAR_IMAGE_FOLDER, MAP_LOCATION_OFFSET_METERS, MAX_GEAR_IMAGES } from '@gearshare/shared';
+import { AppError, forbidden, notFound } from '../../lib/errors';
+import { toOwnerGear, toPublicGear, toPublicGearDetail } from './gear.mapper';
 import type { GearRepository, Point } from './gear.repository';
 
 type Repo = Pick<
   GearRepository,
-  'findMany' | 'findById' | 'findDetail' | 'create' | 'update' | 'softDelete'
+  'findMany' | 'findById' | 'findDetail' | 'findAllByOwner' | 'create' | 'update' | 'softDelete'
 >;
 
 const METERS_PER_DEGREE_LAT = 111_320;
@@ -28,7 +28,33 @@ export function fuzzLocation(point: { lng: number; lat: number }, rng: () => num
   return toPoint({ lng: point.lng + dLng, lat: point.lat + dLat });
 }
 
-export function createGearService(repo: Repo, rng: () => number = Math.random) {
+// Only images uploaded to our own Cloudinary account, in our gear folder, are accepted.
+export function isOwnImageUrl(value: string, cloudName: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== 'https:' || url.hostname !== 'res.cloudinary.com') return false;
+  if (url.port || url.username || url.password || url.search || url.hash) return false;
+  const prefix = `/${cloudName}/image/upload/`;
+  if (!url.pathname.startsWith(prefix)) return false;
+  return new RegExp(`^(v\\d+/)?${GEAR_IMAGE_FOLDER}/[\\w.-]+$`).test(url.pathname.slice(prefix.length));
+}
+
+export function createGearService(
+  repo: Repo,
+  rng: () => number = Math.random,
+  cloudName: string = '',
+) {
+  function assertImages(images: string[]) {
+    if (images.length > MAX_GEAR_IMAGES) throw new AppError(400, 'gear.tooManyImages');
+    if (!images.every((url) => isOwnImageUrl(url, cloudName))) {
+      throw new AppError(400, 'gear.invalidImageUrl');
+    }
+  }
+
   async function getOwned(userId: string, id: string) {
     const gear = await repo.findById(id);
     if (!gear) throw notFound('gear.notFound');
@@ -41,12 +67,17 @@ export function createGearService(repo: Repo, rng: () => number = Math.random) {
       const { items, total } = await repo.findMany(filters);
       return { items: items.map(toPublicGear), total, page: filters.page, limit: filters.limit };
     },
+    async listMine(userId: string) {
+      const items = await repo.findAllByOwner(userId);
+      return { items: items.map(toOwnerGear) };
+    },
     async get(id: string) {
       const gear = await repo.findDetail(id);
       if (!gear) throw notFound('gear.notFound');
       return toPublicGearDetail(gear);
     },
     async create(userId: string, input: CreateGearInput) {
+      assertImages(input.images);
       const gear = await repo.create(userId, {
         ...input,
         location: toPoint(input.location),
@@ -56,6 +87,7 @@ export function createGearService(repo: Repo, rng: () => number = Math.random) {
     },
     async update(userId: string, id: string, patch: UpdateGearInput) {
       await getOwned(userId, id);
+      if (patch.images) assertImages(patch.images);
       const { location, ...rest } = patch;
       const gear = await repo.update(id, {
         ...rest,

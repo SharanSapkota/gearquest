@@ -33,6 +33,7 @@ export function UserMenu({ user }: { user: Me }) {
       <div className="popover__panel">
         <p className="popover__note">{user.name}</p>
         <Link href={`/users/${user.id}`}>{t('myProfile')}</Link>
+        <Link href="/gear/mine">{t('myGear')}</Link>
         <Link href="/rentals">{t('rentals')}</Link>
         <button type="button" onClick={() => void logout()} disabled={busy}>
           {t('logout')}

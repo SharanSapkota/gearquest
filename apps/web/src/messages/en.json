@@ -10,7 +10,8 @@
     "main": "Main navigation",
     "myProfile": "My profile",
     "logout": "Log out",
-    "logoutFailed": "Logging out failed. Try again."
+    "logoutFailed": "Logging out failed. Try again.",
+    "myGear": "My gear"
   },
   "home": {
     "title": "Rent adventure gear",
@@ -127,5 +128,89 @@
     "save": "Save",
     "saving": "Saving…",
     "saveFailed": "Saving failed. Try again."
+  },
+  "gearForm": {
+    "createTitle": "Add gear",
+    "editTitle": "Edit gear",
+    "title": "Title",
+    "description": "Description",
+    "category": "Category",
+    "condition": "Condition",
+    "choose": "Choose…",
+    "create": "Add gear",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saveFailed": "Saving failed. Try again.",
+    "photos": {
+      "label": "Photos",
+      "hint": "Up to {max} photos. The first photo is the cover.",
+      "add": "Add photos",
+      "full": "Maximum of {max} photos",
+      "cover": "Cover",
+      "previewAlt": "Photo {n}",
+      "uploading": "Uploading",
+      "moveEarlier": "Move earlier",
+      "moveLater": "Move later",
+      "remove": "Remove photo",
+      "retry": "Retry",
+      "pending": "Wait for the photos to finish uploading, and remove or retry any that failed.",
+      "error": {
+        "type": "Only JPEG, PNG or WebP images are supported.",
+        "size": "The image is too large (max 5 MB).",
+        "decode": "This image could not be read.",
+        "upload": "Upload failed."
+      }
+    },
+    "location": {
+      "label": "Location",
+      "hint": "Click the map to drop a pin, then drag it to adjust.",
+      "mapLabel": "Map for choosing the gear location",
+      "useMine": "Use my location",
+      "geoFailed": "Could not get your location.",
+      "city": "City",
+      "privacy": "Your exact location is hidden. Others only see an approximate area until a rental is accepted."
+    },
+    "pricing": {
+      "label": "Pricing",
+      "hourly": "Hourly rental",
+      "daily": "Daily rental",
+      "hourlyPrice": "Price per hour (EUR)",
+      "dailyPrice": "Price per day (EUR)",
+      "minHours": "Minimum rental hours",
+      "minHoursHint": "Optional."
+    },
+    "errors": {
+      "title": "Title must be 3–120 characters.",
+      "description": "Description can be at most 5000 characters.",
+      "category": "Choose a category.",
+      "condition": "Choose a condition.",
+      "images": "You can add at most 6 photos, and they must be uploaded through this form.",
+      "city": "Enter a city.",
+      "location": "Pick a location on the map.",
+      "pricing": "Enable hourly or daily pricing.",
+      "hourlyPrice": "Enter a price above 0, for example 5.50.",
+      "dailyPrice": "Enter a price above 0, for example 20.00.",
+      "minHours": "Enter a whole number of hours, 1 or more."
+    }
+  },
+  "myGear": {
+    "title": "My gear",
+    "add": "Add gear",
+    "empty": "You have not listed any gear yet.",
+    "edit": "Edit",
+    "pause": "Pause",
+    "activate": "Activate",
+    "delete": "Delete",
+    "status": {
+      "active": "Active",
+      "paused": "Paused"
+    },
+    "confirmTitle": "Confirm deletion",
+    "confirmText": "Delete “{title}”? This cannot be undone.",
+    "confirmDelete": "Yes, delete",
+    "cancel": "Cancel",
+    "actionFailed": "That did not work. Try again.",
+    "notFound": "Gear not found.",
+    "back": "Back to my gear"
   }
 }

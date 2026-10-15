@@ -6,7 +6,9 @@ import {
   GEAR_SORTS,
   GEAR_STATUSES,
   LOCALES,
+  MAX_GEAR_IMAGES,
   MAX_PAGE_SIZE,
+  OWNER_GEAR_STATUSES,
   RENTAL_MODES,
   RENTAL_STATUSES,
   REVIEW_ROLES,
@@ -45,14 +47,17 @@ export const createGearSchema = z.object({
   description: z.string().trim().max(5000),
   category: categorySchema,
   condition: conditionSchema,
-  images: z.array(z.string().url()).max(10),
+  images: z.array(z.string().url()).max(MAX_GEAR_IMAGES),
   location: pointSchema,
   city: z.string().trim().min(1).max(100),
   pricing: pricingSchema,
 });
 export type CreateGearInput = z.infer<typeof createGearSchema>;
 
-export const updateGearSchema = createGearSchema.partial();
+// Owners can only toggle active/paused; deletion goes through DELETE.
+export const updateGearSchema = createGearSchema
+  .extend({ status: z.enum(OWNER_GEAR_STATUSES) })
+  .partial();
 export type UpdateGearInput = z.infer<typeof updateGearSchema>;
 
 // Price is never accepted from the client: the server computes it.
@@ -130,3 +135,15 @@ export const updateProfileSchema = z
   })
   .partial();
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+// Response of POST /uploads/sign: everything the browser needs for a direct signed Cloudinary upload.
+export type UploadSignature = {
+  cloudName: string;
+  apiKey: string;
+  timestamp: number;
+  signature: string;
+  folder: string;
+  allowedFormats: string;
+  uploadPreset?: string;
+  maxBytes: number;
+};
