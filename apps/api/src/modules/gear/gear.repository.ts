@@ -16,6 +16,7 @@ export type GearData = {
   location?: Point;
   publicLocation?: Point;
   pricing?: { hourlyCents?: number; dailyCents?: number; minHours?: number };
+  status?: 'active' | 'paused';
 };
 
 const EARTH_RADIUS_KM = 6378.1;
@@ -109,7 +110,15 @@ async function findByOwner(ownerId: string) {
   return GearModel.find({ ownerId, status: 'active' }).sort({ createdAt: -1, _id: -1 }).lean();
 }
 
-async function create(ownerId: string, data: Required<GearData>) {
+// The owner's own listings: everything except deleted, so paused gear is included.
+async function findAllByOwner(ownerId: string) {
+  if (!Types.ObjectId.isValid(ownerId)) return [];
+  return GearModel.find({ ownerId, status: { $ne: 'deleted' } })
+    .sort({ createdAt: -1, _id: -1 })
+    .lean();
+}
+
+async function create(ownerId: string, data: Required<Omit<GearData, 'status'>>) {
   const doc = await GearModel.create({ ...data, ownerId });
   return doc.toObject();
 }
@@ -133,6 +142,7 @@ export const gearRepository = {
   findById,
   findDetail,
   findByOwner,
+  findAllByOwner,
   create,
   update,
   softDelete,

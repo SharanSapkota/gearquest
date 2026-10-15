@@ -10,7 +10,8 @@
     "main": "Päävalikko",
     "myProfile": "Oma profiili",
     "logout": "Kirjaudu ulos",
-    "logoutFailed": "Uloskirjautuminen epäonnistui. Yritä uudelleen."
+    "logoutFailed": "Uloskirjautuminen epäonnistui. Yritä uudelleen.",
+    "myGear": "Varusteeni"
   },
   "home": {
     "title": "Vuokraa seikkailuvarusteita",
@@ -127,5 +128,89 @@
     "save": "Tallenna",
     "saving": "Tallennetaan…",
     "saveFailed": "Tallennus epäonnistui. Yritä uudelleen."
+  },
+  "gearForm": {
+    "createTitle": "Lisää varuste",
+    "editTitle": "Muokkaa varustetta",
+    "title": "Otsikko",
+    "description": "Kuvaus",
+    "category": "Luokka",
+    "condition": "Kunto",
+    "choose": "Valitse…",
+    "create": "Lisää varuste",
+    "save": "Tallenna muutokset",
+    "saving": "Tallennetaan…",
+    "saveFailed": "Tallennus epäonnistui. Yritä uudelleen.",
+    "photos": {
+      "label": "Kuvat",
+      "hint": "Enintään {max} kuvaa. Ensimmäinen kuva on kansikuva.",
+      "add": "Lisää kuvia",
+      "full": "Enintään {max} kuvaa",
+      "cover": "Kansi",
+      "previewAlt": "Kuva {n}",
+      "uploading": "Ladataan",
+      "moveEarlier": "Siirrä aiemmaksi",
+      "moveLater": "Siirrä myöhemmäksi",
+      "remove": "Poista kuva",
+      "retry": "Yritä uudelleen",
+      "pending": "Odota, että kuvat latautuvat, ja poista tai yritä uudelleen epäonnistuneet.",
+      "error": {
+        "type": "Vain JPEG-, PNG- ja WebP-kuvat kelpaavat.",
+        "size": "Kuva on liian suuri (enintään 5 Mt).",
+        "decode": "Kuvaa ei voitu lukea.",
+        "upload": "Lataus epäonnistui."
+      }
+    },
+    "location": {
+      "label": "Sijainti",
+      "hint": "Napsauta karttaa asettaaksesi merkin ja säädä sitä vetämällä.",
+      "mapLabel": "Kartta varusteen sijainnin valintaan",
+      "useMine": "Käytä sijaintiani",
+      "geoFailed": "Sijaintia ei saatu.",
+      "city": "Kaupunki",
+      "privacy": "Tarkka sijaintisi on piilotettu. Muut näkevät vain likimääräisen alueen, kunnes vuokraus on hyväksytty."
+    },
+    "pricing": {
+      "label": "Hinnoittelu",
+      "hourly": "Tuntivuokra",
+      "daily": "Päivävuokra",
+      "hourlyPrice": "Hinta tunnilta (EUR)",
+      "dailyPrice": "Hinta päivältä (EUR)",
+      "minHours": "Vähimmäisvuokra-aika (tuntia)",
+      "minHoursHint": "Valinnainen."
+    },
+    "errors": {
+      "title": "Otsikon pituus on 3–120 merkkiä.",
+      "description": "Kuvaus voi olla enintään 5000 merkkiä.",
+      "category": "Valitse luokka.",
+      "condition": "Valitse kunto.",
+      "images": "Kuvia voi olla enintään 6, ja ne on ladattava tämän lomakkeen kautta.",
+      "city": "Anna kaupunki.",
+      "location": "Valitse sijainti kartalta.",
+      "pricing": "Ota käyttöön tunti- tai päivähinnoittelu.",
+      "hourlyPrice": "Anna hinta, joka on yli 0, esimerkiksi 5,50.",
+      "dailyPrice": "Anna hinta, joka on yli 0, esimerkiksi 20,00.",
+      "minHours": "Anna kokonaisluku tunteja, vähintään 1."
+    }
+  },
+  "myGear": {
+    "title": "Varusteeni",
+    "add": "Lisää varuste",
+    "empty": "Et ole vielä ilmoittanut varusteita.",
+    "edit": "Muokkaa",
+    "pause": "Keskeytä",
+    "activate": "Aktivoi",
+    "delete": "Poista",
+    "status": {
+      "active": "Aktiivinen",
+      "paused": "Keskeytetty"
+    },
+    "confirmTitle": "Vahvista poisto",
+    "confirmText": "Poistetaanko ”{title}”? Tätä ei voi perua.",
+    "confirmDelete": "Kyllä, poista",
+    "cancel": "Peruuta",
+    "actionFailed": "Toiminto epäonnistui. Yritä uudelleen.",
+    "notFound": "Varustetta ei löytynyt.",
+    "back": "Takaisin varusteisiini"
   }
 }

@@ -29,3 +29,12 @@ export function toPublicGearDetail(gear: NonNullable<GearDetailRecord>) {
       : null,
   };
 }
+
+// Owner's own view: adds the exact pin so the edit form can prefill it. Only ever used for the caller's own gear.
+export function toOwnerGear(gear: NonNullable<GearRecord>) {
+  const [lng, lat] = gear.location?.coordinates ?? [];
+  return {
+    ...toPublicGear(gear),
+    exactLocation: lng !== undefined && lat !== undefined ? { lng, lat } : undefined,
+  };
+}

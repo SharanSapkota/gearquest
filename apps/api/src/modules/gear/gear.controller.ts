@@ -15,6 +15,9 @@ export function createGearController(service: GearService) {
   const list: RequestHandler = async (_req, res) => {
     res.json(await service.list(res.locals.query as GearFilters));
   };
+  const listMine: RequestHandler = async (req, res) => {
+    res.json(await service.listMine(userId(req)));
+  };
   const get: RequestHandler = async (req, res) => {
     res.json(await service.get(String(req.params.id)));
   };
@@ -28,5 +31,5 @@ export function createGearController(service: GearService) {
     await service.remove(userId(req), String(req.params.id));
     res.status(204).end();
   };
-  return { list, get, create, update, remove };
+  return { list, listMine, get, create, update, remove };
 }

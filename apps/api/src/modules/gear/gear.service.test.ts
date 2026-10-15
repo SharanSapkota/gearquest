@@ -5,7 +5,8 @@ import {
   updateGearSchema,
   type CreateGearInput,
 } from '@gearshare/shared';
-import { fuzzLocation, createGearService } from './gear.service';
+import { buildGearQuery } from './gear.repository';
+import { fuzzLocation, createGearService, isOwnImageUrl } from './gear.service';
 
 const record = {
   _id: 'g1',
@@ -33,6 +34,7 @@ function makeRepo(overrides: Record<string, unknown> = {}) {
     findMany: vi.fn().mockResolvedValue({ items: [asRecord(record)], total: 1 }),
     findById: vi.fn().mockResolvedValue(asRecord(record)),
     findDetail: vi.fn(),
+    findAllByOwner: vi.fn().mockResolvedValue([asRecord(record)]),
     create: vi.fn().mockImplementation(async (_o: string, data: object) =>
       asRecord({ ...record, ...data }),
     ),
@@ -192,5 +194,108 @@ describe('gear service: location fuzzing', () => {
     const patch = repo.update.mock.calls[1]?.[1];
     expect(patch.location.coordinates).toEqual([25, 61]);
     expect(patch.publicLocation.coordinates).not.toEqual([25, 61]);
+  });
+});
+
+const CLOUD = 'demo';
+const img = (name: string, cloud = CLOUD) =>
+  `https://res.cloudinary.com/${cloud}/image/upload/v1700000000/gear/${name}.jpg`;
+
+describe('gear service: image validation', () => {
+  const service = (repo = makeRepo()) => ({ repo, svc: createGearService(repo, () => 0.5, CLOUD) });
+
+  it('accepts our own Cloudinary images, up to 6', async () => {
+    const { svc } = service();
+    const images = Array.from({ length: 6 }, (_, i) => img(`a${i}`));
+    await expect(svc.create('u1', { ...validInput, images })).resolves.toMatchObject({ images });
+  });
+
+  it('rejects more than 6 images on create and update', async () => {
+    const { repo, svc } = service();
+    const images = Array.from({ length: 7 }, (_, i) => img(`a${i}`));
+    await expect(svc.create('u1', { ...validInput, images })).rejects.toMatchObject({
+      status: 400,
+      code: 'gear.tooManyImages',
+    });
+    await expect(svc.update('u1', 'g1', { images })).rejects.toMatchObject({ code: 'gear.tooManyImages' });
+    expect(repo.create).not.toHaveBeenCalled();
+    expect(repo.update).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['another account', img('a', 'someone-else')],
+    ['another host', 'https://evil.example/demo/image/upload/v1/gear/a.jpg'],
+    ['a lookalike host', 'https://res.cloudinary.com.evil.example/demo/image/upload/v1/gear/a.jpg'],
+    ['plain http', 'http://res.cloudinary.com/demo/image/upload/v1/gear/a.jpg'],
+    ['a non-image resource', 'https://res.cloudinary.com/demo/video/upload/v1/gear/a.mp4'],
+    ['another folder', 'https://res.cloudinary.com/demo/image/upload/v1/other/a.jpg'],
+    ['a query string', `${img('a')}?x=1`],
+    ['path traversal', 'https://res.cloudinary.com/demo/image/upload/v1/gear/../a.jpg'],
+    ['not a URL', 'nope'],
+  ])('rejects %s', async (_label, url) => {
+    const { repo, svc } = service();
+    await expect(svc.create('u1', { ...validInput, images: [url] })).rejects.toMatchObject({
+      status: 400,
+      code: 'gear.invalidImageUrl',
+    });
+    await expect(svc.update('u1', 'g1', { images: [img('ok'), url] })).rejects.toMatchObject({
+      code: 'gear.invalidImageUrl',
+    });
+    expect(repo.create).not.toHaveBeenCalled();
+    expect(repo.update).not.toHaveBeenCalled();
+  });
+
+  it('does not touch images on updates that omit them', async () => {
+    const { svc } = service();
+    await expect(svc.update('u1', 'g1', { title: 'Renamed' })).resolves.toBeDefined();
+  });
+
+  it('isOwnImageUrl accepts urls without a version segment', () => {
+    expect(isOwnImageUrl('https://res.cloudinary.com/demo/image/upload/gear/a.webp', CLOUD)).toBe(true);
+  });
+});
+
+describe('gear service: status and owner listing', () => {
+  it('lets the owner pause and activate, and forbids others', async () => {
+    const repo = makeRepo();
+    const svc = createGearService(repo, () => 0.5, CLOUD);
+    await expect(svc.update('u1', 'g1', { status: 'paused' })).resolves.toMatchObject({ status: 'paused' });
+    expect(repo.update.mock.calls[0]?.[1]).toMatchObject({ status: 'paused' });
+    await expect(svc.update('u2', 'g1', { status: 'active' })).rejects.toMatchObject({ status: 403 });
+  });
+
+  it('only allows active or paused through the update schema', () => {
+    expect(updateGearSchema.safeParse({ status: 'paused' }).success).toBe(true);
+    expect(updateGearSchema.safeParse({ status: 'deleted' }).success).toBe(false);
+    expect(createGearSchema.safeParse({ ...validInput, status: 'paused' }).data).not.toHaveProperty('status');
+  });
+
+  it('hides paused gear from the public list but shows it in listMine', async () => {
+    const paused = { ...record, _id: 'g2', status: 'paused' };
+    const all = [asRecord(record), asRecord(paused)];
+    // The public query is restricted to status: 'active' (see buildGearQuery); the repo mock honours it.
+    const repo = makeRepo({
+      findMany: vi.fn().mockImplementation(async (filters) => {
+        const items = all.filter((g) => buildGearQuery(filters).status === g.status);
+        return { items, total: items.length };
+      }),
+      findAllByOwner: vi.fn().mockResolvedValue(all),
+    });
+    const svc = createGearService(repo, () => 0.5, CLOUD);
+
+    const pub = await svc.list(gearFiltersSchema.parse({}));
+    expect(pub.items.map((g) => g.id)).toEqual(['g1']);
+
+    const mine = await svc.listMine('u1');
+    expect(repo.findAllByOwner).toHaveBeenCalledWith('u1');
+    expect(mine.items.map((g) => g.status)).toEqual(['active', 'paused']);
+  });
+
+  it('returns the exact pin only in the owner view, and the public view stays offset', async () => {
+    const svc = createGearService(makeRepo(), () => 0.5, CLOUD);
+    const { items } = await svc.listMine('u1');
+    expect(items[0]?.exactLocation).toEqual({ lng: 24.9, lat: 60.1 });
+    const pub = await svc.list(gearFiltersSchema.parse({}));
+    expect(pub.items[0]).not.toHaveProperty('exactLocation');
   });
 });

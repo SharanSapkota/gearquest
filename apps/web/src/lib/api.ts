@@ -4,7 +4,10 @@ import type {
   GEAR_SORTS,
   LOCALES,
   RENTAL_MODES,
+  CreateGearInput,
+  UpdateGearInput,
   UpdateProfileInput,
+  UploadSignature,
 } from '@gearshare/shared';
 import { filterMockGear } from './mockGear';
 
@@ -78,6 +81,12 @@ export type PublicGear = {
   ownerRatingAvg?: number;
 };
 
+// The caller's own listing. exactLocation is only ever returned for the owner's own gear.
+export type OwnerGear = PublicGear & {
+  status: 'active' | 'paused';
+  exactLocation?: { lng: number; lat: number };
+};
+
 export type GearListResponse = {
   items: PublicGear[];
   total: number;
@@ -137,6 +146,54 @@ export const api = {
   },
   logout() {
     return request<void>('/auth/logout', { method: 'POST' });
+  },
+  getMyGear() {
+    return request<{ items: OwnerGear[] }>('/gear/mine');
+  },
+  createGear(input: CreateGearInput) {
+    return request<PublicGear>('/gear', { method: 'POST', body: JSON.stringify(input) });
+  },
+  updateGear(id: string, patch: UpdateGearInput) {
+    return request<PublicGear>(`/gear/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify(patch),
+    });
+  },
+  deleteGear(id: string) {
+    return request<void>(`/gear/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  },
+  signUpload() {
+    return request<UploadSignature>('/uploads/sign', { method: 'POST' });
+  },
+  // Direct browser-to-Cloudinary upload. XHR (not fetch) because only XHR reports upload progress.
+  uploadImage(file: Blob, sig: UploadSignature, onProgress: (fraction: number) => void) {
+    return new Promise<string>((resolve, reject) => {
+      const form = new FormData();
+      form.set('file', file);
+      form.set('api_key', sig.apiKey);
+      form.set('timestamp', String(sig.timestamp));
+      form.set('signature', sig.signature);
+      form.set('folder', sig.folder);
+      form.set('allowed_formats', sig.allowedFormats);
+      if (sig.uploadPreset) form.set('upload_preset', sig.uploadPreset);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`);
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) onProgress(e.loaded / e.total);
+      };
+      xhr.onerror = () => reject(new Error('upload.network'));
+      xhr.onload = () => {
+        try {
+          const body = JSON.parse(xhr.responseText) as { secure_url?: string };
+          if (xhr.status >= 200 && xhr.status < 300 && body.secure_url) resolve(body.secure_url);
+          else reject(new Error('upload.rejected'));
+        } catch {
+          reject(new Error('upload.rejected'));
+        }
+      };
+      xhr.send(form);
+    });
   },
   getUser(id: string) {
     return request<ProfileWithGear>(`/users/${encodeURIComponent(id)}`);
