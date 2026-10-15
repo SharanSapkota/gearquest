@@ -1,7 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
+import { IconButton } from '@/components/ui/Button';
+import { ChevronLeftIcon, ChevronRightIcon } from '@/components/ui/icons';
 
 // Swipeable on touch devices via CSS scroll-snap; arrows and dots serve mouse/keyboard users.
 export function GearGallery({ images, title }: { images: string[]; title: string }) {
@@ -30,32 +33,40 @@ export function GearGallery({ images, title }: { images: string[]; title: string
       >
         {images.map((src, i) => (
           <li key={src} className="gallery__slide">
-            {/* Gear images are arbitrary Cloudinary URLs, so next/image remote config does not apply. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt={`${title} (${i + 1}/${images.length})`} loading={i === 0 ? 'eager' : 'lazy'} />
+            <div className="media">
+              {/* Gear photos are arbitrary user URLs, so they skip the optimiser. */}
+              <Image
+                src={src}
+                alt={`${title} (${i + 1}/${images.length})`}
+                fill
+                sizes="(min-width: 900px) 700px, 100vw"
+                priority={i === 0}
+                unoptimized
+              />
+            </div>
           </li>
         ))}
       </ul>
       {images.length > 1 && (
         <>
-          <button
-            type="button"
+          <IconButton
+            label={t('previousPhoto')}
+            variant="float"
             className="gallery__nav gallery__nav--prev"
             onClick={() => goTo(Math.max(0, index - 1))}
             disabled={index === 0}
-            aria-label={t('previousPhoto')}
           >
-            ‹
-          </button>
-          <button
-            type="button"
+            <ChevronLeftIcon />
+          </IconButton>
+          <IconButton
+            label={t('nextPhoto')}
+            variant="float"
             className="gallery__nav gallery__nav--next"
             onClick={() => goTo(Math.min(images.length - 1, index + 1))}
             disabled={index === images.length - 1}
-            aria-label={t('nextPhoto')}
           >
-            ›
-          </button>
+            <ChevronRightIcon />
+          </IconButton>
           <div className="gallery__dots">
             {images.map((src, i) => (
               <button

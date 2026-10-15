@@ -1,5 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { Badge } from '@/components/ui/Badge';
+import { buttonClass } from '@/components/ui/Button';
 import { GearGallery } from '@/components/gear/GearGallery';
 import { GearLocationMap } from '@/components/gear/GearLocationMap';
 import { OwnerCard } from '@/components/gear/OwnerCard';
@@ -31,11 +33,14 @@ export default async function GearDetailPage({
       <div className="gear-detail__main">
         <GearGallery images={gear.images} title={gear.title} />
         <h1>{gear.title}</h1>
-        <p className="summary">
-          {t(`categories.${gear.category}`)} · {t('gearDetail.condition')}: {t(`conditions.${gear.condition}`)} ·{' '}
-          {gear.city}
-        </p>
-        <p className="card__price">
+        <div className="gear-detail__facts">
+          <Badge tone="primary">{t(`categories.${gear.category}`)}</Badge>
+          <Badge tone="success">
+            {t('gearDetail.condition')}: {t(`conditions.${gear.condition}`)}
+          </Badge>
+          <Badge>{gear.city}</Badge>
+        </div>
+        <p className="card__price gear-detail__price">
           {hourlyCents !== undefined && (
             <span>{t('gear.perHour', { price: formatMoney(hourlyCents, locale) })}</span>
           )}
@@ -58,14 +63,16 @@ export default async function GearDetailPage({
       </div>
       <aside className="gear-detail__side">
         {isOwner ? (
-          <Link href={`/gear/${gear.id}/edit`} className="button">
+          <Link href={`/gear/${gear.id}/edit`} className={buttonClass()}>
             {t('myGear.edit')}
           </Link>
         ) : (
           <RentalRequestForm gear={gear} signedIn={!!me} />
         )}
       </aside>
-      <Link href="/">{t('gear.back')}</Link>
+      <Link href="/" className={buttonClass({ variant: 'ghost' })}>
+        {t('gear.back')}
+      </Link>
     </main>
   );
 }

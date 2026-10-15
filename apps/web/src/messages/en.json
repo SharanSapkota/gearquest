@@ -12,14 +12,18 @@
     "logout": "Log out",
     "logoutFailed": "Logging out failed. Try again.",
     "myGear": "My gear",
-    "pendingRequests": "{count, plural, one {# pending request} other {# pending requests}}"
+    "pendingRequests": "{count, plural, one {# pending request} other {# pending requests}}",
+    "addGear": "Add gear",
+    "profile": "Profile",
+    "rentalsShort": "Rentals"
   },
   "home": {
     "title": "Rent adventure gear",
     "empty": "No gear found.",
     "loading": "Loading gear…",
     "results": "{count, plural, one {# item} other {# items}}",
-    "availableRange": "available {from} – {to}"
+    "availableRange": "available {from} – {to}",
+    "subtitle": "Borrow skis, tents, kayaks and more from people near you."
   },
   "legal": {
     "disclaimer": "GearShare is only a platform that connects gear owners and renters. We are not a party to any rental agreement and accept no responsibility for damage, loss, injury, or disputes. All such matters are solely between the renter and the owner."
@@ -51,7 +55,16 @@
     "locateFailed": "Could not get your location.",
     "cluster": "{count, plural, one {# gear item} other {# gear items}}, zoom in",
     "viewGear": "View details",
-    "closePopup": "Close"
+    "closePopup": "Close",
+    "list": "List",
+    "hideList": "Hide list",
+    "closeCard": "Close",
+    "resultCount": "{count, plural, =0 {No results} one {# result} other {# results}}",
+    "unavailable": {
+      "title": "The map is not available right now",
+      "missingKey": "The map is not set up yet. You can still browse gear from the Home page.",
+      "failed": "The map could not be loaded. Check your connection and try again later."
+    }
   },
   "gear": {
     "noImage": "No image",
@@ -114,7 +127,9 @@
     "ratingAtLeast": "{rating}★ and up",
     "sort": "Sort by",
     "apply": "Apply",
-    "reset": "Clear filters"
+    "reset": "Clear filters",
+    "allCategories": "All",
+    "active": "{count, plural, one {# active filter} other {# active filters}}"
   },
   "pagination": {
     "label": "Pagination",
@@ -358,5 +373,9 @@
       "declineYes": "Yes, decline",
       "back": "Back"
     }
+  },
+  "ui": {
+    "close": "Close",
+    "dismiss": "Dismiss"
   }
 }

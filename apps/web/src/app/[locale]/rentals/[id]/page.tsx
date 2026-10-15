@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { buttonClass } from '@/components/ui/Button';
 import { RentalCard } from '@/components/rentals/RentalCard';
 import { Link, redirect } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
@@ -25,7 +26,9 @@ export default async function RentalDetailPage({
     <main className="page">
       <h1>{t('detailTitle')}</h1>
       <RentalCard rental={rental} nowMs={getNow()} detail />
-      <Link href="/rentals">{t('back')}</Link>
+      <Link href="/rentals" className={buttonClass({ variant: 'ghost' })}>
+        {t('back')}
+      </Link>
     </main>
   );
 }

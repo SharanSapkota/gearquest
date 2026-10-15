@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MAX_RENTAL_DAYS } from '@gearshare/shared';
 import { SignInButton } from '@/components/auth/SignInButton';
+import { Button } from '@/components/ui/Button';
 import { Link, useRouter } from '@/i18n/navigation';
 import { api, type PublicGear } from '@/lib/api';
 import {
@@ -214,9 +215,9 @@ export function RentalRequestForm({
       {availabilityFailed && (
         <p role="alert" className="form-error">
           {t('availabilityFailed')}{' '}
-          <button type="button" onClick={() => setRetryKey((k) => k + 1)}>
+          <Button variant="outline" size="sm" onClick={() => setRetryKey((k) => k + 1)}>
             {tAll('errors.retry')}
-          </button>
+          </Button>
         </p>
       )}
 
@@ -301,9 +302,9 @@ export function RentalRequestForm({
 
       <p className="note disclaimer">{tAll('legal.disclaimer')}</p>
       {signedIn ? (
-        <button type="submit" disabled={!quote.ok || submitting}>
+        <Button type="submit" block disabled={!quote.ok || submitting}>
           {submitting ? t('submitting') : t('submit')}
-        </button>
+        </Button>
       ) : (
         <SignInButton label={t('signInToRequest')} />
       )}

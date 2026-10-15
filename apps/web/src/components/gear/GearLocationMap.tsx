@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 
-// Leaflet touches `window`, so it is client-only.
+// The map is client-only and lazy: it is not part of the initial bundle.
 export const GearLocationMap = dynamic(() => import('./ApproxLocationMap'), {
   ssr: false,
   loading: () => <div className="location-map location-map--mini" aria-busy="true" />,

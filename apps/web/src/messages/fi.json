@@ -12,14 +12,18 @@
     "logout": "Kirjaudu ulos",
     "logoutFailed": "Uloskirjautuminen epäonnistui. Yritä uudelleen.",
     "myGear": "Varusteeni",
-    "pendingRequests": "{count, plural, one {# odottava pyyntö} other {# odottavaa pyyntöä}}"
+    "pendingRequests": "{count, plural, one {# odottava pyyntö} other {# odottavaa pyyntöä}}",
+    "addGear": "Lisää väline",
+    "profile": "Profiili",
+    "rentalsShort": "Vuokraukset"
   },
   "home": {
     "title": "Vuokraa seikkailuvarusteita",
     "empty": "Varusteita ei löytynyt.",
     "loading": "Ladataan varusteita…",
     "results": "{count, plural, one {# varuste} other {# varustetta}}",
-    "availableRange": "saatavilla {from} – {to}"
+    "availableRange": "saatavilla {from} – {to}",
+    "subtitle": "Lainaa suksia, telttoja, kajakkeja ja muuta lähialueen ihmisiltä."
   },
   "legal": {
     "disclaimer": "GearShare on vain alusta, joka yhdistää varusteiden omistajat ja vuokraajat. Emme ole osapuoli vuokrasopimuksissa emmekä vastaa vahingoista, katoamisesta, loukkaantumisista tai riidoista. Kaikki tällaiset asiat ovat yksin vuokraajan ja omistajan välisiä."
@@ -51,7 +55,16 @@
     "locateFailed": "Sijaintia ei saatu.",
     "cluster": "{count, plural, one {# varuste} other {# varustetta}}, lähennä",
     "viewGear": "Näytä tiedot",
-    "closePopup": "Sulje"
+    "closePopup": "Sulje",
+    "list": "Lista",
+    "hideList": "Piilota lista",
+    "closeCard": "Sulje",
+    "resultCount": "{count, plural, =0 {Ei tuloksia} one {# tulos} other {# tulosta}}",
+    "unavailable": {
+      "title": "Karttaa ei voi näyttää juuri nyt",
+      "missingKey": "Karttaa ei ole vielä otettu käyttöön. Voit silti selata välineitä etusivulta.",
+      "failed": "Karttaa ei voitu ladata. Tarkista yhteytesi ja yritä myöhemmin uudelleen."
+    }
   },
   "gear": {
     "noImage": "Ei kuvaa",
@@ -114,7 +127,9 @@
     "ratingAtLeast": "{rating}★ ja yli",
     "sort": "Järjestys",
     "apply": "Käytä",
-    "reset": "Tyhjennä suodattimet"
+    "reset": "Tyhjennä suodattimet",
+    "allCategories": "Kaikki",
+    "active": "{count, plural, one {# aktiivinen suodatin} other {# aktiivista suodatinta}}"
   },
   "pagination": {
     "label": "Sivutus",
@@ -358,5 +373,9 @@
       "declineYes": "Kyllä, hylkää",
       "back": "Takaisin"
     }
+  },
+  "ui": {
+    "close": "Sulje",
+    "dismiss": "Ohita"
   }
 }

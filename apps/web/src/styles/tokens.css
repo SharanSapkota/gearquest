@@ -1,0 +1,66 @@
+/* Design tokens: the only place raw colours, radii and shadows are defined. */
+:root {
+  /* Primary: warm orange. 600 is the lightest step that carries white text at WCAG AA (4.7:1);
+     500 is the brand colour for fills, icons and focus rings. */
+  --primary-50: #fff4ec;
+  --primary-100: #ffe5d1;
+  --primary-200: #ffc8a0;
+  --primary-300: #ffa568;
+  --primary-400: #fa8638;
+  --primary-500: #f26a1b;
+  --primary-600: #c94a0a;
+  --primary-700: #b03f08;
+  --primary-800: #8f3207;
+  --primary-900: #6e2a0e;
+
+  /* Secondary: forest/sage green for accents, availability and success. 600 carries white text (5:1). */
+  --secondary-50: #eef7f1;
+  --secondary-100: #d7ebdd;
+  --secondary-200: #b0d6bc;
+  --secondary-300: #82bc96;
+  --secondary-400: #55a072;
+  --secondary-500: #3b8b5d;
+  --secondary-600: #2f7d4f;
+  --secondary-700: #256440;
+  --secondary-800: #1e5033;
+  --secondary-900: #153823;
+
+  --bg: #fffaf5;
+  --surface: #ffffff;
+  --surface-2: #f6efe8;
+  --fg: #2a1d14;
+  --muted: #6b5b4e;
+  --border: #e7dace;
+  --danger: #b3261e;
+  --danger-bg: #fdecea;
+
+  --link: var(--primary-700);
+  --focus: var(--primary-500);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgb(73 40 15 / 0.06), 0 1px 3px rgb(73 40 15 / 0.08);
+  --shadow-md: 0 4px 12px rgb(73 40 15 / 0.1), 0 2px 4px rgb(73 40 15 / 0.06);
+  --shadow-lg: 0 12px 32px rgb(73 40 15 / 0.18), 0 4px 8px rgb(73 40 15 / 0.08);
+
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), system-ui, sans-serif;
+
+  --tap: 44px;
+  --header-h: 56px;
+  --tabbar-h: 60px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-h: 64px;
+    --tabbar-h: 0px;
+  }
+}

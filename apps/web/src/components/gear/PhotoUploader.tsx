@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { MAX_GEAR_IMAGES } from '@gearshare/shared';
+import { Button, IconButton } from '@/components/ui/Button';
 import { api } from '@/lib/api';
 import { ResizeError, resizeImage } from '@/lib/imageResize';
 
@@ -100,7 +101,7 @@ export function PhotoUploader({
               {/* Blob/remote previews: next/image does not apply. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={photo.preview} alt={t('previewAlt', { n: index + 1 })} />
-              {index === 0 && <span className="photos__cover">{t('cover')}</span>}
+              {index === 0 && <span className="photos__cover badge badge--primary">{t('cover')}</span>}
               {!photo.url && !photo.error && (
                 <progress
                   value={photo.progress}
@@ -115,30 +116,28 @@ export function PhotoUploader({
                 </p>
               )}
               <div className="photos__actions">
-                <button
-                  type="button"
+                <IconButton
+                  label={t('moveEarlier')}
                   onClick={() => move(index, -1)}
                   disabled={index === 0}
-                  aria-label={t('moveEarlier')}
                 >
                   ←
-                </button>
-                <button
-                  type="button"
+                </IconButton>
+                <IconButton
+                  label={t('moveLater')}
                   onClick={() => move(index, 1)}
                   disabled={index === photos.length - 1}
-                  aria-label={t('moveLater')}
                 >
                   →
-                </button>
+                </IconButton>
                 {photo.error === 'upload' && photo.blob && (
-                  <button type="button" onClick={() => void upload(photo.id, photo.blob as Blob)}>
+                  <Button variant="outline" size="sm" onClick={() => void upload(photo.id, photo.blob as Blob)}>
                     {t('retry')}
-                  </button>
+                  </Button>
                 )}
-                <button type="button" onClick={() => remove(photo.id)} aria-label={t('remove')}>
+                <IconButton label={t('remove')} variant="ghost" onClick={() => remove(photo.id)}>
                   ✕
-                </button>
+                </IconButton>
               </div>
             </li>
           ))}
@@ -155,13 +154,13 @@ export function PhotoUploader({
           e.target.value = '';
         }}
       />
-      <button
-        type="button"
+      <Button
+        variant="outline"
         onClick={() => inputRef.current?.click()}
         disabled={photos.length >= MAX_GEAR_IMAGES}
       >
         {photos.length >= MAX_GEAR_IMAGES ? t('full', { max: MAX_GEAR_IMAGES }) : t('add')}
-      </button>
+      </Button>
       {errorText && <span role="alert">{errorText}</span>}
     </fieldset>
   );

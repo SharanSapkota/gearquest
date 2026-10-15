@@ -1,5 +1,8 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { Avatar } from '@/components/ui/Avatar';
+import { Badge } from '@/components/ui/Badge';
+import { buttonClass } from '@/components/ui/Button';
+import { GearImage } from '@/components/ui/GearImage';
 import { Link } from '@/i18n/navigation';
 import type { Rental } from '@/lib/api';
 import { formatDateTime, formatMoney, hoursUntil } from '@/lib/format';
@@ -28,12 +31,13 @@ export function RentalCard({
 
   return (
     <article className="rental-card">
-      {rental.gear.coverImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={rental.gear.coverImage} alt="" className="my-gear__image" />
-      ) : (
-        <div className="my-gear__image my-gear__image--empty">{tAll('gear.noImage')}</div>
-      )}
+      <GearImage
+        src={rental.gear.coverImage ?? undefined}
+        alt=""
+        sizes="(min-width: 640px) 180px, 100vw"
+        className="my-gear__image"
+        emptyLabel={tAll('gear.noImage')}
+      />
       <div className="rental-card__body">
         <h2 className="card__title">
           <Link href={`/gear/${rental.gearId}`}>{rental.gear.title}</Link>
@@ -47,7 +51,7 @@ export function RentalCard({
             {t(rental.mode === 'hourly' ? 'quantityHours' : 'quantityDays', { count: rental.quantity })}
           </span>
         </p>
-        <span className={`badge badge--${rental.status}`}>{t(`status.${rental.status}`)}</span>
+        <Badge tone={rental.status}>{t(`status.${rental.status}`)}</Badge>
         {expiresInHours !== null && (
           <p className="note">
             {expiresInHours > 0 ? t('expiresIn', { hours: expiresInHours }) : t('expiresSoon')}
@@ -71,14 +75,18 @@ export function RentalCard({
             <p>
               {t('phone')}: <strong>{contact.phone}</strong>
             </p>
-            <a href={contact.url} target="_blank" rel="noopener noreferrer" className="button">
+            <a href={contact.url} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'secondary' })}>
               {t('whatsapp')}
             </a>
             <p className="note">{t('contactNote')}</p>
           </div>
         )}
         <RentalActions rental={rental} ended={ended} />
-        {!detail && <Link href={`/rentals/${rental.id}`}>{t('viewDetails')}</Link>}
+        {!detail && (
+          <Link href={`/rentals/${rental.id}`} className={buttonClass({ variant: 'outline', size: 'sm' })}>
+            {t('viewDetails')}
+          </Link>
+        )}
       </div>
     </article>
   );

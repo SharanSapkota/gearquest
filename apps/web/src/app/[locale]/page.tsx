@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { FilterBar } from '@/components/filters/FilterBar';
+import { FilterControls } from '@/components/filters/FilterControls';
 import { GearGrid } from '@/components/gear/GearGrid';
 import { Pagination } from '@/components/gear/Pagination';
 import { api } from '@/lib/api';
@@ -30,18 +30,17 @@ export default async function HomePage({
 
   return (
     <main className="page">
-      <h1>{t('home.title')}</h1>
-      <div className="layout">
-        <FilterBar basePath="/" values={sp} />
-        <section>
-          <p className="summary">
-            {t('home.results', { count: total })}
-            {from && to && ` · ${t('home.availableRange', { from: fmt(from), to: fmt(to) })}`}
-          </p>
-          <GearGrid items={items} />
-          <Pagination page={page} total={total} limit={limit} basePath="/" searchParams={sp} />
-        </section>
-      </div>
+      <section className="hero">
+        <h1>{t('home.title')}</h1>
+        <p>{t('home.subtitle')}</p>
+        <FilterControls basePath="/" values={sp} />
+      </section>
+      <p className="summary" aria-live="polite">
+        {t('home.results', { count: total })}
+        {from && to && ` · ${t('home.availableRange', { from: fmt(from), to: fmt(to) })}`}
+      </p>
+      <GearGrid items={items} />
+      <Pagination page={page} total={total} limit={limit} basePath="/" searchParams={sp} />
     </main>
   );
 }

@@ -1,4 +1,3 @@
-import type { DivIconOptions } from 'leaflet';
 import type { CATEGORIES } from '@gearshare/shared';
 
 export type Category = (typeof CATEGORIES)[number];
@@ -46,23 +45,21 @@ export function categoryPinSvg(category: Category, size = 32): string {
   );
 }
 
-// Leaflet divIcon options as plain data, so this file never imports Leaflet at runtime (Leaflet
-// touches `window` and must not be evaluated during server rendering; the legend imports this
-// file too). The map turns these into icons with `divIcon(...)`.
-export const categoryIconOptions = (category: Category): DivIconOptions => ({
-  html: categoryPinSvg(category),
-  className: 'gear-marker',
-  iconSize: [32, 40],
-  iconAnchor: [16, 40],
-  popupAnchor: [0, -36],
-});
+// DOM content for an AdvancedMarkerElement (client only). `selected` is toggled with a class.
+export function categoryPinElement(category: Category): HTMLElement {
+  const el = document.createElement('div');
+  el.className = 'gear-pin';
+  el.innerHTML = categoryPinSvg(category);
+  return el;
+}
 
 // Cluster bubble; the size grows with the number of gear items it holds.
-export function clusterIconOptions(count: number): DivIconOptions {
-  const size = count < 10 ? 38 : count < 50 ? 46 : 54;
-  return {
-    html: `<span class="gear-cluster">${count}</span>`,
-    className: 'gear-cluster-wrap',
-    iconSize: [size, size],
-  };
+export function clusterElement(count: number): HTMLElement {
+  const size = count < 10 ? 40 : count < 50 ? 48 : 56;
+  const el = document.createElement('div');
+  el.className = 'gear-cluster';
+  el.style.width = `${size}px`;
+  el.style.height = `${size}px`;
+  el.textContent = String(count);
+  return el;
 }

@@ -1,5 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { buttonClass } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { Avatar } from '@/components/ui/Avatar';
 import { GearGrid } from '@/components/gear/GearGrid';
 import { Link } from '@/i18n/navigation';
@@ -33,14 +35,18 @@ export default async function ProfilePage({
               : t('gear.noRating')}
           </p>
           {profile.bio && <p>{profile.bio}</p>}
-          {me?.id === profile.id && <Link href="/profile/edit">{t('profile.edit')}</Link>}
+          {me?.id === profile.id && (
+            <Link href="/profile/edit" className={buttonClass({ variant: 'outline', size: 'sm' })}>
+              {t('profile.edit')}
+            </Link>
+          )}
         </div>
       </section>
       <h2>{t('profile.listedGear')}</h2>
       {profile.gear.length > 0 ? (
         <GearGrid items={profile.gear} />
       ) : (
-        <p className="state">{t('profile.noGear')}</p>
+        <EmptyState>{t('profile.noGear')}</EmptyState>
       )}
     </main>
   );

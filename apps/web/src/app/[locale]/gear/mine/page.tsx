@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { buttonClass } from '@/components/ui/Button';
 import { MyGearList } from '@/components/gear/MyGearList';
 import { Link, redirect } from '@/i18n/navigation';
 import { api } from '@/lib/api';
@@ -16,7 +17,7 @@ export default async function MyGearPage({ params }: { params: Promise<{ locale:
     <main className="page">
       <div className="page__head">
         <h1>{t('title')}</h1>
-        <Link href="/gear/new" className="button">
+        <Link href="/gear/new" className={buttonClass()}>
           {t('add')}
         </Link>
       </div>

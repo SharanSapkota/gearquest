@@ -3,6 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { Button } from '@/components/ui/Button';
+import { Sheet } from '@/components/ui/Sheet';
 import { Link, useRouter } from '@/i18n/navigation';
 import { api, type Rental } from '@/lib/api';
 import { apiErrorKey } from '@/lib/rentalErrors';
@@ -56,37 +58,48 @@ export function RentalActions({ rental, ended }: { rental: Rental; ended: boolea
         {canDecide && (
           <>
             {!ownerNeedsPhone && (
-              <button type="button" disabled={busy} onClick={() => setConfirm('accept')}>
+              <Button variant="secondary" disabled={busy} onClick={() => setConfirm('accept')}>
                 {t('accept')}
-              </button>
+              </Button>
             )}
-            <button type="button" disabled={busy} onClick={() => setConfirm('decline')}>
+            <Button variant="outline" disabled={busy} onClick={() => setConfirm('decline')}>
               {t('decline')}
-            </button>
+            </Button>
           </>
         )}
         {canCancel && (
-          <button type="button" disabled={busy} onClick={() => void run('cancel')}>
+          <Button variant="outline" disabled={busy} onClick={() => void run('cancel')}>
             {t('cancel')}
-          </button>
+          </Button>
         )}
         {canComplete && (
-          <button type="button" disabled={busy} onClick={() => void run('complete')}>
+          <Button variant="secondary" disabled={busy} onClick={() => void run('complete')}>
             {t('complete')}
-          </button>
+          </Button>
         )}
       </div>
-      {confirm && (
-        <div className="my-gear__confirm" role="alertdialog" aria-label={t(`confirm.${confirm}Title`)}>
-          <p>{t(`confirm.${confirm}Text`)}</p>
-          <button type="button" disabled={busy} onClick={() => void run(confirm)}>
-            {t(`confirm.${confirm}Yes`)}
-          </button>
-          <button type="button" disabled={busy} onClick={() => setConfirm(null)}>
-            {t('confirm.back')}
-          </button>
-        </div>
-      )}
+      <Sheet
+        variant="center"
+        open={confirm !== null}
+        onClose={() => setConfirm(null)}
+        title={confirm ? t(`confirm.${confirm}Title`) : ''}
+        footer={
+          <>
+            <Button variant="outline" disabled={busy} onClick={() => setConfirm(null)}>
+              {t('confirm.back')}
+            </Button>
+            <Button
+              variant={confirm === 'decline' ? 'danger' : 'secondary'}
+              disabled={busy}
+              onClick={() => confirm && void run(confirm)}
+            >
+              {confirm ? t(`confirm.${confirm}Yes`) : ''}
+            </Button>
+          </>
+        }
+      >
+        {confirm && <p>{t(`confirm.${confirm}Text`)}</p>}
+      </Sheet>
       {error != null && (
         <p role="alert" className="form-error">
           {tAll(`apiErrors.${apiErrorKey(error)}`)}
