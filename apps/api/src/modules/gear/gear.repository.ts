@@ -104,20 +104,37 @@ async function findDetail(id: string) {
 
 type OwnerRecord = { _id: Types.ObjectId; name: string; avatarUrl?: string; ratingAvg: number };
 
+async function findByOwner(ownerId: string) {
+  if (!Types.ObjectId.isValid(ownerId)) return [];
+  return GearModel.find({ ownerId, status: 'active' }).sort({ createdAt: -1, _id: -1 }).lean();
+}
+
 async function create(ownerId: string, data: Required<GearData>) {
   const doc = await GearModel.create({ ...data, ownerId });
   return doc.toObject();
 }
 
 async function update(id: string, patch: GearData) {
-  return GearModel.findOneAndUpdate({ _id: id, status: { $ne: 'deleted' } }, { $set: patch }, {
-    new: true,
-  }).lean();
+  return GearModel.findOneAndUpdate(
+    { _id: id, status: { $ne: 'deleted' } },
+    { $set: patch },
+    {
+      new: true,
+    },
+  ).lean();
 }
 
 async function softDelete(id: string) {
   await GearModel.updateOne({ _id: id }, { $set: { status: 'deleted' } });
 }
 
-export const gearRepository = { findMany, findById, findDetail, create, update, softDelete };
+export const gearRepository = {
+  findMany,
+  findById,
+  findDetail,
+  findByOwner,
+  create,
+  update,
+  softDelete,
+};
 export type GearRepository = typeof gearRepository;

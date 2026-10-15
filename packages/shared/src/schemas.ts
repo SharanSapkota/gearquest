@@ -101,7 +101,8 @@ export const gearFiltersSchema = z
     limit: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
   })
   .refine(
-    (f) => [f.lat, f.lng, f.radiusKm].every((v) => v === undefined) ||
+    (f) =>
+      [f.lat, f.lng, f.radiusKm].every((v) => v === undefined) ||
       [f.lat, f.lng, f.radiusKm].every((v) => v !== undefined),
     { message: 'filters.geoIncomplete', path: ['radiusKm'] },
   )
@@ -114,3 +115,18 @@ export const gearFiltersSchema = z
   );
 export type GearFilters = z.infer<typeof gearFiltersSchema>;
 export type GearFiltersInput = z.input<typeof gearFiltersSchema>;
+
+export const googleLoginSchema = z.object({ idToken: z.string().min(1) });
+export type GoogleLoginInput = z.infer<typeof googleLoginSchema>;
+
+// Phone format (Finnish or E.164) is validated and normalized server-side in the users service.
+// An empty string clears the phone.
+export const updateProfileSchema = z
+  .object({
+    name: z.string().trim().min(1).max(100),
+    bio: z.string().trim().max(1000),
+    language: localeSchema,
+    phone: z.string().trim().max(30),
+  })
+  .partial();
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

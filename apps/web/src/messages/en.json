@@ -7,7 +7,10 @@
     "map": "Map",
     "rentals": "My rentals",
     "signIn": "Sign in",
-    "main": "Main navigation"
+    "main": "Main navigation",
+    "myProfile": "My profile",
+    "logout": "Log out",
+    "logoutFailed": "Logging out failed. Try again."
   },
   "home": {
     "title": "Rent adventure gear",
@@ -99,5 +102,30 @@
     "label": "Pagination",
     "previous": "Previous",
     "next": "Next"
+  },
+  "auth": {
+    "signingIn": "Signing in…",
+    "signInFailed": "Sign-in failed. Try again.",
+    "notConfigured": "Google sign-in is not configured."
+  },
+  "profile": {
+    "loading": "Loading…",
+    "notFound": "Profile not found.",
+    "home": "Back to home",
+    "edit": "Edit profile",
+    "editTitle": "Edit profile",
+    "listedGear": "Listed gear",
+    "noGear": "No gear listed yet.",
+    "ratingCount": "{count, plural, one {# rating} other {# ratings}}",
+    "name": "Name",
+    "nameRequired": "Name is required.",
+    "bio": "About me",
+    "phone": "Phone",
+    "phoneNote": "Only shared with the other party after a rental is accepted.",
+    "phoneInvalid": "Enter a valid Finnish or international phone number.",
+    "language": "Language",
+    "save": "Save",
+    "saving": "Saving…",
+    "saveFailed": "Saving failed. Try again."
   }
 }
