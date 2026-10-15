@@ -1,24 +1,69 @@
-import type { CATEGORIES, CONDITIONS, GEAR_SORTS, RENTAL_MODES } from '@gearshare/shared';
+import type {
+  CATEGORIES,
+  CONDITIONS,
+  GEAR_SORTS,
+  LOCALES,
+  RENTAL_MODES,
+  UpdateProfileInput,
+} from '@gearshare/shared';
 import { filterMockGear } from './mockGear';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
 
 export class ApiError extends Error {
-  constructor(public status: number) {
+  constructor(
+    public status: number,
+    public code?: string,
+  ) {
     super(`api.${status}`);
   }
 }
 
 // The only place in the web app that calls fetch.
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers);
+  if (init?.body) headers.set('Content-Type', 'application/json');
+  // In the browser the session cookie is sent by credentials: 'include'. On the server we
+  // forward the incoming request's cookies ourselves.
+  if (typeof window === 'undefined') {
+    try {
+      const { cookies } = await import('next/headers');
+      const cookie = (await cookies()).toString();
+      if (cookie) headers.set('Cookie', cookie);
+    } catch {
+      // Outside a request scope (e.g. tests, build): nothing to forward.
+    }
+  }
   const res = await fetch(`${API_URL}${path}`, {
     credentials: 'include',
     cache: 'no-store',
     ...init,
+    headers,
   });
-  if (!res.ok) throw new ApiError(res.status);
-  return res.json() as Promise<T>;
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new ApiError(res.status, body?.error);
+  }
+  return res.status === 204 ? (undefined as T) : (res.json() as Promise<T>);
 }
+
+export type PublicProfile = {
+  id: string;
+  name: string;
+  avatarUrl?: string;
+  bio?: string;
+  ratingAvg: number;
+  ratingCount: number;
+};
+
+export type ProfileWithGear = PublicProfile & { gear: PublicGear[] };
+
+// The signed-in user's own account. Only returned by /auth/me and PATCH /users/me.
+export type Me = PublicProfile & {
+  email: string;
+  phone?: string;
+  language: (typeof LOCALES)[number];
+};
 
 export type PublicGear = {
   id: string;
@@ -77,5 +122,26 @@ export const api = {
       // TODO(mock): remove this fallback once the API is always available to the web app.
       return filterMockGear(query);
     }
+  },
+  // Unauthenticated (401) means a guest. Other failures (e.g. API down) also render as a guest
+  // so public pages keep working.
+  async getMe(): Promise<Me | null> {
+    try {
+      return await request<Me>('/auth/me');
+    } catch {
+      return null;
+    }
+  },
+  loginWithGoogle(idToken: string) {
+    return request<Me>('/auth/google', { method: 'POST', body: JSON.stringify({ idToken }) });
+  },
+  logout() {
+    return request<void>('/auth/logout', { method: 'POST' });
+  },
+  getUser(id: string) {
+    return request<ProfileWithGear>(`/users/${encodeURIComponent(id)}`);
+  },
+  updateMe(patch: UpdateProfileInput) {
+    return request<Me>('/users/me', { method: 'PATCH', body: JSON.stringify(patch) });
   },
 };

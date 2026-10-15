@@ -7,7 +7,10 @@
     "map": "Kartta",
     "rentals": "Vuokraukseni",
     "signIn": "Kirjaudu sisään",
-    "main": "Päävalikko"
+    "main": "Päävalikko",
+    "myProfile": "Oma profiili",
+    "logout": "Kirjaudu ulos",
+    "logoutFailed": "Uloskirjautuminen epäonnistui. Yritä uudelleen."
   },
   "home": {
     "title": "Vuokraa seikkailuvarusteita",
@@ -99,5 +102,30 @@
     "label": "Sivutus",
     "previous": "Edellinen",
     "next": "Seuraava"
+  },
+  "auth": {
+    "signingIn": "Kirjaudutaan sisään…",
+    "signInFailed": "Kirjautuminen epäonnistui. Yritä uudelleen.",
+    "notConfigured": "Google-kirjautumista ei ole määritetty."
+  },
+  "profile": {
+    "loading": "Ladataan…",
+    "notFound": "Profiilia ei löytynyt.",
+    "home": "Takaisin etusivulle",
+    "edit": "Muokkaa profiilia",
+    "editTitle": "Muokkaa profiilia",
+    "listedGear": "Ilmoitetut varusteet",
+    "noGear": "Ei vielä ilmoitettuja varusteita.",
+    "ratingCount": "{count, plural, one {# arvostelu} other {# arvostelua}}",
+    "name": "Nimi",
+    "nameRequired": "Nimi on pakollinen.",
+    "bio": "Tietoa minusta",
+    "phone": "Puhelinnumero",
+    "phoneNote": "Jaetaan toiselle osapuolelle vasta, kun vuokraus on hyväksytty.",
+    "phoneInvalid": "Anna kelvollinen suomalainen tai kansainvälinen puhelinnumero.",
+    "language": "Kieli",
+    "save": "Tallenna",
+    "saving": "Tallennetaan…",
+    "saveFailed": "Tallennus epäonnistui. Yritä uudelleen."
   }
 }

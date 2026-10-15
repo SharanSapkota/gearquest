@@ -2,8 +2,10 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { AuthProvider } from '@/components/auth/AuthProvider';
 import { Header } from '@/components/layout/Header';
 import { routing } from '@/i18n/routing';
+import { getCurrentUser } from '@/lib/auth';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -21,13 +23,16 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const t = await getTranslations('legal');
+  const user = await getCurrentUser();
 
   return (
     <html lang={locale}>
       <body>
         <NextIntlClientProvider>
-          <Header />
-          {children}
+          <AuthProvider user={user}>
+            <Header />
+            {children}
+          </AuthProvider>
         </NextIntlClientProvider>
         <footer className="footer">
           <p>{t('disclaimer')}</p>
