@@ -35,7 +35,23 @@
   },
   "map": {
     "title": "Map",
-    "placeholder": "The map is coming soon."
+    "region": "Gear map",
+    "legend": "Legend",
+    "loading": "Loading gear…",
+    "empty": "No gear in this area.",
+    "error": "Could not load gear for this area.",
+    "retry": "Try again",
+    "capped": "Showing {shown} of {total} results. Zoom in to see more.",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "locate": "Use my location",
+    "locateShort": "My location",
+    "locating": "Locating…",
+    "locateDenied": "Location access was denied. Allow it in your browser settings to center the map on you.",
+    "locateFailed": "Could not get your location.",
+    "cluster": "{count, plural, one {# gear item} other {# gear items}}, zoom in",
+    "viewGear": "View details",
+    "closePopup": "Close"
   },
   "gear": {
     "noImage": "No image",

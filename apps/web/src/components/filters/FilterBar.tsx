@@ -16,9 +16,12 @@ type Props = {
   basePath: string;
   // Current URL search params, passed from the server page.
   values: SearchParams;
+  // Params that are not filters but must survive Apply/Clear (e.g. the map position). They are
+  // read from the live URL, which can be newer than `values` after client-side URL updates.
+  preserve?: string[];
 };
 
-export function FilterBar({ basePath, values }: Props) {
+export function FilterBar({ basePath, values, preserve = [] }: Props) {
   const t = useTranslations();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -35,14 +38,23 @@ export function FilterBar({ basePath, values }: Props) {
     );
   };
 
+  const withPreserved = (params: URLSearchParams) => {
+    const live = new URLSearchParams(window.location.search);
+    for (const key of preserve) {
+      const value = live.get(key);
+      if (value !== null) params.set(key, value);
+    }
+    const qs = params.toString();
+    return `${basePath}${qs ? `?${qs}` : ''}`;
+  };
+
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const params = new URLSearchParams();
     for (const [k, v] of new FormData(e.currentTarget)) {
       if (typeof v === 'string' && v.trim() !== '') params.set(k, v.trim());
     }
-    const qs = params.toString();
-    router.push(`${basePath}${qs ? `?${qs}` : ''}`);
+    router.push(withPreserved(params));
     setOpen(false);
   };
 
@@ -202,7 +214,7 @@ export function FilterBar({ basePath, values }: Props) {
           <button
             type="button"
             onClick={() => {
-              router.push(basePath);
+              router.push(withPreserved(new URLSearchParams()));
               setOpen(false);
             }}
           >
