@@ -4,7 +4,7 @@ import { AuthControls } from '@/components/auth/AuthControls';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { NavTabs } from './NavTabs';
 
-export function Header() {
+export function Header({ pendingCount }: { pendingCount: number }) {
   const t = useTranslations();
   return (
     <header className="header">
@@ -14,7 +14,7 @@ export function Header() {
       <NavTabs />
       <div className="header__actions">
         <LanguageSwitcher />
-        <AuthControls />
+        <AuthControls pendingCount={pendingCount} />
       </div>
     </header>
   );

@@ -8,7 +8,7 @@ import { api } from '@/lib/api';
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '';
 
-export function SignInButton() {
+export function SignInButton({ label }: { label?: string }) {
   const t = useTranslations();
   const router = useRouter();
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
@@ -26,7 +26,7 @@ export function SignInButton() {
 
   return (
     <details className="popover">
-      <summary className="popover__trigger">{t('nav.signIn')}</summary>
+      <summary className="popover__trigger">{label ?? t('nav.signIn')}</summary>
       <div className="popover__panel popover__panel--wide">
         <p className="popover__note">{t('legal.disclaimer')}</p>
         {CLIENT_ID ? (

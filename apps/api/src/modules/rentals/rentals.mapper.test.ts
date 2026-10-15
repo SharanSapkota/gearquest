@@ -9,7 +9,7 @@ const RENTER = 'r1';
 const STRANGER = 'x1';
 
 const parties: PartiesById = new Map([
-  [OWNER, { _id: OWNER, name: 'Olli Owner', phone: '+358401111111' }],
+  [OWNER, { _id: OWNER, name: 'Olli Owner', phone: '+358401111111', ratingAvg: 4.5, ratingCount: 2 }],
   [RENTER, { _id: RENTER, name: 'Rita Renter', phone: '+358402222222' }],
 ]);
 
@@ -35,6 +35,23 @@ const hasPhoneFields = (res: object) => {
   const cp = (res as { counterparty?: object }).counterparty ?? {};
   return 'phone' in cp || 'whatsappUrl' in cp;
 };
+
+describe('counterparty rating', () => {
+  it('includes the other party rating', () => {
+    const res = toRentalResponse(make('requested'), RENTER, parties, NOW) as {
+      counterparty: Record<string, unknown>;
+    };
+    expect(res.counterparty.ratingAvg).toBe(4.5);
+    expect(res.counterparty.ratingCount).toBe(2);
+  });
+  it('defaults to 0 when the user has no rating fields', () => {
+    const res = toRentalResponse(make('requested'), OWNER, parties, NOW) as {
+      counterparty: Record<string, unknown>;
+    };
+    expect(res.counterparty.ratingAvg).toBe(0);
+    expect(res.counterparty.ratingCount).toBe(0);
+  });
+});
 
 describe('phone exposure', () => {
   for (const status of RENTAL_STATUSES) {
@@ -102,7 +119,7 @@ describe('phone exposure', () => {
     const res = toRentalResponse(make('accepted'), OWNER, new Map(), NOW) as {
       counterparty: Record<string, unknown>;
     };
-    expect(res.counterparty).toEqual({ id: RENTER });
+    expect(res.counterparty).toEqual({ id: RENTER, ratingAvg: 0, ratingCount: 0 });
   });
 
   it('never leaks email or googleId from the user record', () => {
