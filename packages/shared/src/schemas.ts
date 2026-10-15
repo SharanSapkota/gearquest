@@ -6,6 +6,7 @@ import {
   GEAR_SORTS,
   GEAR_STATUSES,
   LOCALES,
+  MAX_AVAILABILITY_WINDOW_DAYS,
   MAX_GEAR_IMAGES,
   MAX_PAGE_SIZE,
   OWNER_GEAR_STATUSES,
@@ -147,3 +148,19 @@ export type UploadSignature = {
   uploadPreset?: string;
   maxBytes: number;
 };
+
+export const listMyRentalsSchema = z.object({
+  role: z.enum(['owner', 'renter']),
+  status: rentalStatusSchema.optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
+});
+export type ListMyRentalsQuery = z.infer<typeof listMyRentalsSchema>;
+
+export const availabilityQuerySchema = z
+  .object({ from: z.coerce.date(), to: z.coerce.date() })
+  .refine((q) => q.to > q.from, { message: 'availability.invalidWindow' })
+  .refine((q) => q.to.getTime() - q.from.getTime() <= MAX_AVAILABILITY_WINDOW_DAYS * 86_400_000, {
+    message: 'availability.windowTooLarge',
+  });
+export type AvailabilityQuery = z.infer<typeof availabilityQuerySchema>;

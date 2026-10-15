@@ -36,3 +36,8 @@ export const REQUEST_EXPIRY_HOURS = 48;
 export const MAP_LOCATION_OFFSET_METERS = 300;
 export const DEFAULT_PAGE_SIZE = 20;
 export const MAX_PAGE_SIZE = 50;
+
+export const MAX_RENTAL_DAYS = 30;
+export const MAX_OPEN_REQUESTS_PER_RENTER = 10;
+export const MAX_AVAILABILITY_WINDOW_DAYS = 90;
+export const RENTAL_TIME_ZONE = 'Europe/Helsinki';
