@@ -4,6 +4,7 @@ import type {
   GEAR_SORTS,
   LOCALES,
   RENTAL_MODES,
+  RENTAL_STATUSES,
   CreateGearInput,
   UpdateGearInput,
   UpdateProfileInput,
@@ -85,6 +86,55 @@ export type PublicGear = {
 export type OwnerGear = PublicGear & {
   status: 'active' | 'paused';
   exactLocation?: { lng: number; lat: number };
+};
+
+// GET /gear/:id: public view plus the owner's public card. `location` is the fuzzed [lng, lat].
+export type GearDetail = PublicGear & {
+  status: 'active' | 'paused';
+  location?: [number, number];
+  owner: { id: string; name: string; avatarUrl?: string; rating?: number } | null;
+};
+
+export type RentalStatus = (typeof RENTAL_STATUSES)[number];
+
+// Phone fields are only present when the API reveals them (accepted/completed, caller is a party).
+export type Rental = {
+  id: string;
+  gearId: string;
+  gear: { title: string; coverImage?: string };
+  ownerId: string;
+  renterId: string;
+  mode: (typeof RENTAL_MODES)[number];
+  startAt: string;
+  endAt: string;
+  unitPriceCents: number;
+  quantity: number;
+  totalCents: number;
+  message?: string;
+  status: RentalStatus;
+  expiresAt: string;
+  createdAt: string;
+  role: 'owner' | 'renter';
+  counterparty: {
+    id: string;
+    name?: string;
+    avatarUrl?: string;
+    ratingAvg: number;
+    ratingCount: number;
+    phone?: string;
+    whatsappUrl?: string;
+  };
+};
+
+export type RentalListResponse = { items: Rental[]; total: number; page: number; limit: number };
+export type MyRentalsQuery = { role: 'owner' | 'renter'; status?: RentalStatus; page?: number; limit?: number };
+export type Availability = { gearId: string; blocked: { startAt: string; endAt: string }[] };
+export type CreateRentalBody = {
+  gearId: string;
+  mode: (typeof RENTAL_MODES)[number];
+  startAt: string;
+  endAt: string;
+  message?: string;
 };
 
 export type GearListResponse = {
@@ -194,6 +244,37 @@ export const api = {
       };
       xhr.send(form);
     });
+  },
+  getGear(id: string) {
+    return request<GearDetail>(`/gear/${encodeURIComponent(id)}`);
+  },
+  getAvailability(gearId: string, from: string, to: string) {
+    const qs = new URLSearchParams({ from, to }).toString();
+    return request<Availability>(`/gear/${encodeURIComponent(gearId)}/availability?${qs}`);
+  },
+  createRental(body: CreateRentalBody) {
+    return request<Rental>('/rentals', { method: 'POST', body: JSON.stringify(body) });
+  },
+  listMyRentals(query: MyRentalsQuery) {
+    const params = new URLSearchParams({ role: query.role });
+    if (query.status) params.set('status', query.status);
+    if (query.page) params.set('page', String(query.page));
+    if (query.limit) params.set('limit', String(query.limit));
+    return request<RentalListResponse>(`/rentals/mine?${params.toString()}`);
+  },
+  // Incoming requests still waiting for the signed-in owner. Failures count as none.
+  async countPendingRequests(): Promise<number> {
+    try {
+      return (await this.listMyRentals({ role: 'owner', status: 'requested', limit: 1 })).total;
+    } catch {
+      return 0;
+    }
+  },
+  getRental(id: string) {
+    return request<Rental>(`/rentals/${encodeURIComponent(id)}`);
+  },
+  rentalAction(id: string, action: 'accept' | 'decline' | 'cancel' | 'complete') {
+    return request<Rental>(`/rentals/${encodeURIComponent(id)}/${action}`, { method: 'PATCH' });
   },
   getUser(id: string) {
     return request<ProfileWithGear>(`/users/${encodeURIComponent(id)}`);

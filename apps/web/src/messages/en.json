@@ -11,7 +11,8 @@
     "myProfile": "My profile",
     "logout": "Log out",
     "logoutFailed": "Logging out failed. Try again.",
-    "myGear": "My gear"
+    "myGear": "My gear",
+    "pendingRequests": "{count, plural, one {# pending request} other {# pending requests}}"
   },
   "home": {
     "title": "Rent adventure gear",
@@ -212,5 +213,134 @@
     "actionFailed": "That did not work. Try again.",
     "notFound": "Gear not found.",
     "back": "Back to my gear"
+  },
+  "gearDetail": {
+    "condition": "Condition",
+    "owner": "Owner",
+    "location": "Approximate location",
+    "locationNote": "Only the approximate area is shown. The exact location is shared after a rental is accepted.",
+    "mapLabel": "Map showing the approximate location of the gear",
+    "noPhotos": "No photos",
+    "gallery": "Photos",
+    "previousPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
+    "photoN": "Photo {n}",
+    "notFound": "Gear not found.",
+    "back": "Back to all gear"
+  },
+  "rentalForm": {
+    "title": "Request to rent",
+    "mode": "Rental type",
+    "pickStart": "Choose the first day.",
+    "pickEnd": "Choose the last day (return day).",
+    "pickDate": "Choose a date.",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "choose": "Choose…",
+    "minHours": "Minimum rental: {count, plural, one {# hour} other {# hours}}",
+    "message": "Message to the owner (optional)",
+    "previewHourly": "{unit} × {count, plural, one {# hour} other {# hours}}",
+    "previewDaily": "{unit} × {count, plural, one {# day} other {# days}}",
+    "total": "Total {total}",
+    "serverNote": "Final price is confirmed by the server.",
+    "submit": "Send request",
+    "submitting": "Sending…",
+    "signInToRequest": "Sign in to request",
+    "addPhone": "Add a phone number in your profile",
+    "availabilityFailed": "Could not load availability.",
+    "calendar": {
+      "previous": "Previous month",
+      "next": "Next month",
+      "unavailable": "unavailable"
+    },
+    "errors": {
+      "modeNotAvailable": "This rental type is not available for this gear.",
+      "startInPast": "The start must be in the future.",
+      "invalidRange": "The end must be after the start.",
+      "invalidHourlyRange": "Hourly rentals must be whole hours.",
+      "belowMinHours": "The minimum rental is {count, plural, one {# hour} other {# hours}}.",
+      "tooLong": "A rental can last at most {max} days.",
+      "overlap": "The gear is already booked for part of this time."
+    }
+  },
+  "apiErrors": {
+    "generic": "Something went wrong. Try again.",
+    "rentals": {
+      "overlap": "The gear is already booked for part of this time.",
+      "ownGear": "You cannot rent your own gear.",
+      "tooManyOpenRequests": "You have too many open requests. Wait for answers or cancel some.",
+      "renterPhoneRequired": "Add a phone number to your profile before requesting a rental.",
+      "ownerPhoneRequired": "Add a phone number to your profile before accepting a rental.",
+      "gearNotActive": "This gear is not available for rent right now.",
+      "startInPast": "The start must be in the future.",
+      "invalidRange": "The end must be after the start.",
+      "invalidHourlyRange": "Hourly rentals must be whole hours.",
+      "invalidDailyRange": "Daily rentals must be whole days.",
+      "belowMinHours": "The rental is shorter than the minimum.",
+      "tooLong": "The rental is too long.",
+      "modeNotAvailable": "This rental type is not available for this gear.",
+      "expired": "This request has expired.",
+      "invalidTransition": "This rental has changed. Reload the page.",
+      "forbidden": "You are not allowed to do that.",
+      "notEnded": "The rental has not ended yet.",
+      "alreadyEnded": "The rental has already ended. Mark it as completed instead.",
+      "notFound": "Rental not found."
+    },
+    "gear": {
+      "notFound": "Gear not found."
+    },
+    "errors": {
+      "rateLimited": "Too many requests. Wait a moment and try again.",
+      "unauthorized": "Sign in to continue.",
+      "validation": "Check the details and try again."
+    }
+  },
+  "rentals": {
+    "title": "My rentals",
+    "detailTitle": "Rental",
+    "loading": "Loading rentals…",
+    "tabs": "Rental role",
+    "asRenter": "As renter",
+    "asOwner": "As owner",
+    "filterStatus": "Status",
+    "allStatuses": "All statuses",
+    "emptyRenter": "You have not requested any rentals.",
+    "emptyOwner": "No one has requested your gear yet.",
+    "notFound": "Rental not found.",
+    "back": "Back to my rentals",
+    "viewDetails": "View details",
+    "unknownUser": "Unknown user",
+    "owner": "Owner",
+    "renter": "Renter",
+    "phone": "Phone",
+    "whatsapp": "Chat on WhatsApp",
+    "contactNote": "Arrange pickup, deposit, and any damage terms directly with the other party. GearShare is not a party to the rental.",
+    "quantityHours": "{count, plural, one {# hour} other {# hours}}",
+    "quantityDays": "{count, plural, one {# day} other {# days}}",
+    "expiresIn": "Expires in {hours, plural, one {# hour} other {# hours}}",
+    "expiresSoon": "Expires in less than an hour",
+    "status": {
+      "requested": "Requested",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "expired": "Expired"
+    },
+    "accept": "Accept",
+    "decline": "Decline",
+    "cancel": "Cancel request",
+    "complete": "Mark as completed",
+    "ownerPhoneNeeded": "Add your phone number to accept requests.",
+    "addPhone": "Edit profile",
+    "confirm": {
+      "acceptTitle": "Confirm acceptance",
+      "acceptText": "Accept this request? Your phone numbers will be shared with the renter.",
+      "acceptYes": "Yes, accept",
+      "declineTitle": "Confirm decline",
+      "declineText": "Decline this request?",
+      "declineYes": "Yes, decline",
+      "back": "Back"
+    }
   }
 }

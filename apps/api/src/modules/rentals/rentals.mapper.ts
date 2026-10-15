@@ -6,6 +6,8 @@ export type PartyUser = {
   name?: string | null;
   avatarUrl?: string | null;
   phone?: string | null;
+  ratingAvg?: number | null;
+  ratingCount?: number | null;
 };
 export type PartiesById = Map<string, PartyUser>;
 
@@ -59,6 +61,8 @@ export function toRentalResponse(
       id: counterpartyId,
       ...(other?.name && { name: other.name }),
       ...(other?.avatarUrl && { avatarUrl: other.avatarUrl }),
+      ratingAvg: other?.ratingAvg ?? 0,
+      ratingCount: other?.ratingCount ?? 0,
       ...(phone && { phone, whatsappUrl: `https://wa.me/${phone.replace(/\D/g, '')}` }),
     },
   };

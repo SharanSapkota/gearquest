@@ -512,7 +512,7 @@ describe('listMine', () => {
     };
     expect(d.rentals.findMine).toHaveBeenCalledWith(OWNER, query, NOW);
     expect(res).toMatchObject({ page: 2, limit: 2, total: 7 });
-    expect(res.items[0]?.counterparty).toEqual({ id: RENTER, name: 'Rita' });
+    expect(res.items[0]?.counterparty).toEqual({ id: RENTER, name: 'Rita', ratingAvg: 0, ratingCount: 0 });
     expect(res.items[1]?.counterparty.phone).toBe('+358402222222');
   });
 
