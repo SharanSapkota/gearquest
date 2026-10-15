@@ -18,6 +18,11 @@ async function findById(id: string) {
   return UserModel.findOne({ _id: id, deletedAt: { $exists: false } }).lean();
 }
 
+async function findByIds(ids: string[]) {
+  const valid = ids.filter((id) => Types.ObjectId.isValid(id));
+  return UserModel.find({ _id: { $in: valid }, deletedAt: { $exists: false } }).lean();
+}
+
 // Creates the user on first login. Later logins change nothing (name/bio stay as the user set
 // them), so repeat logins never duplicate or overwrite. May return a soft-deleted user; the
 // caller decides what that means.
@@ -41,5 +46,5 @@ async function updateProfile(id: string, patch: ProfilePatch) {
   }).lean();
 }
 
-export const usersRepository = { findById, upsertFromGoogle, updateProfile };
+export const usersRepository = { findById, findByIds, upsertFromGoogle, updateProfile };
 export type UsersRepository = typeof usersRepository;
