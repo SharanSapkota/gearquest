@@ -1,6 +1,8 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
+import { IconButton } from '@/components/ui/Button';
+import { ChevronLeftIcon, ChevronRightIcon } from '@/components/ui/icons';
 import { addDaysYmd } from '@/lib/format';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -50,13 +52,13 @@ export function Calendar({
   return (
     <div className="calendar">
       <div className="calendar__head">
-        <button type="button" onClick={() => shift(-1)} disabled={month <= minMonth} aria-label={t('previous')}>
-          ‹
-        </button>
+        <IconButton label={t('previous')} variant="ghost" onClick={() => shift(-1)} disabled={month <= minMonth}>
+          <ChevronLeftIcon />
+        </IconButton>
         <strong aria-live="polite">{fmt({ month: 'long', year: 'numeric' }, first)}</strong>
-        <button type="button" onClick={() => shift(1)} disabled={month >= maxMonth} aria-label={t('next')}>
-          ›
-        </button>
+        <IconButton label={t('next')} variant="ghost" onClick={() => shift(1)} disabled={month >= maxMonth}>
+          <ChevronRightIcon />
+        </IconButton>
       </div>
       <div className="calendar__grid">
         {weekdays.map((d) => (

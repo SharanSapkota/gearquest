@@ -1,111 +1,108 @@
 'use client';
 
-import 'leaflet/dist/leaflet.css';
-import type { Map as LeafletMap } from 'leaflet';
+import { Circle, InfoWindow, useMap } from '@vis.gl/react-google-maps';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
-import { Circle, MapContainer, TileLayer, ZoomControl, useMapEvents } from 'react-leaflet';
+import { useEffect } from 'react';
 import type { PublicGear } from '@/lib/api';
 import { MAX_ZOOM, MIN_ZOOM, formatBbox, type LatLng, type MapView } from '@/lib/mapView';
-import { ClusterLayer } from './ClusterLayer';
+import { ClusterLayer, type MapFocus } from './ClusterLayer';
+import { GearPopup } from './GearPopup';
+import { GoogleMapShell } from './GoogleMapShell';
 
 export type Viewport = { bbox: string; center: LatLng; zoom: number };
 
-const LOCATE_ZOOM = 12;
-
+// Reports the visible area once the map settles (Google's `idle` fires after pan/zoom ends).
 function ViewportTracker({ onChange }: { onChange: (v: Viewport) => void }) {
-  const report = (map: LeafletMap) => {
-    const b = map.getBounds();
-    const c = map.getCenter();
-    onChange({
-      bbox: formatBbox(b.getWest(), b.getSouth(), b.getEast(), b.getNorth()),
-      center: [c.lat, c.lng],
-      zoom: Math.round(map.getZoom()),
-    });
-  };
-  const map = useMapEvents({ moveend: (e) => report(e.target as LeafletMap) });
-  useEffect(() => report(map), [map]); // eslint-disable-line react-hooks/exhaustive-deps
+  const map = useMap();
+  useEffect(() => {
+    if (!map) return;
+    const report = () => {
+      const b = map.getBounds()?.toJSON();
+      const c = map.getCenter();
+      if (!b || !c) return;
+      onChange({
+        bbox: formatBbox(b.west, b.south, b.east, b.north),
+        center: [c.lat(), c.lng()],
+        zoom: Math.round(map.getZoom() ?? MIN_ZOOM),
+      });
+    };
+    const listener = map.addListener('idle', report);
+    return () => listener.remove();
+  }, [map, onChange]);
   return null;
 }
 
-type LocateState = 'idle' | 'locating' | 'denied' | 'failed';
+// Hands the map instance to the page, which owns the floating controls.
+function MapBridge({ onReady }: { onReady: (map: google.maps.Map) => void }) {
+  const map = useMap();
+  useEffect(() => {
+    if (map) onReady(map);
+  }, [map, onReady]);
+  return null;
+}
 
 export default function GearMap({
   view,
   items,
   radius,
+  selectedGear,
+  focus,
+  popup,
+  onSelect,
   onViewportChange,
+  onMapReady,
 }: {
   view: MapView;
   items: PublicGear[];
   // Distance filter: drawn as a circle when a centre point and radius are set.
   radius?: { center: LatLng; km: number };
+  selectedGear: PublicGear | null;
+  focus: MapFocus | null;
+  // Desktop shows an info window on the map; phones show a bottom card instead.
+  popup: boolean;
+  onSelect: (id: string | null) => void;
   onViewportChange: (v: Viewport) => void;
+  onMapReady: (map: google.maps.Map) => void;
 }) {
   const t = useTranslations('map');
-  const [map, setMap] = useState<LeafletMap | null>(null);
-  const [locate, setLocate] = useState<LocateState>('idle');
-
-  const useMyLocation = () => {
-    if (!navigator.geolocation) {
-      setLocate('failed');
-      return;
-    }
-    setLocate('locating');
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocate('idle');
-        map?.flyTo([pos.coords.latitude, pos.coords.longitude], Math.max(map.getZoom(), LOCATE_ZOOM));
-      },
-      (err) => setLocate(err.code === err.PERMISSION_DENIED ? 'denied' : 'failed'),
-      { timeout: 10_000, maximumAge: 60_000 },
-    );
-  };
-
+  const loc = selectedGear?.location;
   return (
-    <>
-      <MapContainer
-        ref={setMap}
-        center={view.center}
-        zoom={view.zoom}
-        minZoom={MIN_ZOOM}
-        maxZoom={MAX_ZOOM}
-        zoomControl={false}
-        className="map-leaflet"
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={19}
+    <GoogleMapShell
+      className="map-canvas"
+      label={t('region')}
+      defaultCenter={{ lat: view.center[0], lng: view.center[1] }}
+      defaultZoom={view.zoom}
+      minZoom={MIN_ZOOM}
+      maxZoom={MAX_ZOOM}
+    >
+      <MapBridge onReady={onMapReady} />
+      <ViewportTracker onChange={onViewportChange} />
+      {radius && (
+        <Circle
+          center={{ lat: radius.center[0], lng: radius.center[1] }}
+          radius={radius.km * 1000}
+          clickable={false}
+          strokeColor="#2f7d4f"
+          strokeWeight={2}
+          fillColor="#2f7d4f"
+          fillOpacity={0.1}
         />
-        <ZoomControl position="topright" zoomInTitle={t('zoomIn')} zoomOutTitle={t('zoomOut')} />
-        {radius && (
-          <Circle
-            center={radius.center}
-            radius={radius.km * 1000}
-            interactive={false}
-            pathOptions={{ color: '#1f6f4a', weight: 2, fillOpacity: 0.08 }}
-          />
-        )}
-        <ClusterLayer items={items} />
-        <ViewportTracker onChange={onViewportChange} />
-      </MapContainer>
-      <div className="map-controls">
-        <button
-          type="button"
-          onClick={useMyLocation}
-          disabled={locate === 'locating'}
-          aria-label={t('locate')}
-          title={t('locate')}
+      )}
+      <ClusterLayer
+        items={items}
+        selectedId={selectedGear?.id ?? null}
+        focus={focus}
+        onSelect={onSelect}
+      />
+      {popup && selectedGear && loc && (
+        <InfoWindow
+          position={{ lng: loc[0], lat: loc[1] }}
+          pixelOffset={[0, -44]}
+          onCloseClick={() => onSelect(null)}
         >
-          {locate === 'locating' ? t('locating') : t('locateShort')}
-        </button>
-        {(locate === 'denied' || locate === 'failed') && (
-          <p role="status" className="map-note">
-            {locate === 'denied' ? t('locateDenied') : t('locateFailed')}
-          </p>
-        )}
-      </div>
-    </>
+          <GearPopup gear={selectedGear} />
+        </InfoWindow>
+      )}
+    </GoogleMapShell>
   );
 }

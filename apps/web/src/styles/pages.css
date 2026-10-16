@@ -1,0 +1,408 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: 520px;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.gear-form {
+  max-width: 680px;
+}
+.location-map {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.location-map--mini {
+  height: 220px;
+}
+.location-map--loading {
+  animation: shimmer 1.4s linear infinite;
+}
+
+.profile {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--secondary-50), var(--primary-50));
+}
+.profile h1 {
+  margin: 0 0 0.25rem;
+}
+
+/* Photo uploader */
+.photos__list {
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+.photos__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.4rem;
+  background: var(--surface);
+}
+.photos__item img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+.photos__cover {
+  position: absolute;
+  top: 0.8rem;
+  left: 0.8rem;
+}
+.photos__progress {
+  width: 100%;
+}
+.photos__error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+.photos__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* My gear + rentals lists */
+.my-gear,
+.rental-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.my-gear__item,
+.rental-card {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: 1fr;
+  padding: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.my-gear__image {
+  border-radius: var(--radius-md);
+}
+.my-gear__body,
+.rental-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.my-gear__body p,
+.rental-card__body p {
+  margin: 0;
+}
+.my-gear__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.rental-card__party {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.rental-card__message {
+  font-style: italic;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+.rental-card__contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--secondary-50);
+  border: 1px solid var(--secondary-100);
+}
+.rental-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.rental-actions__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.rentals-filter {
+  max-width: 240px;
+  margin: 0 0 0.5rem;
+}
+@media (min-width: 640px) {
+  .my-gear__item {
+    grid-template-columns: 180px 1fr auto;
+    align-items: center;
+  }
+  .rental-card {
+    grid-template-columns: 180px 1fr;
+  }
+}
+
+/* Gear detail */
+.gear-detail {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+.gear-detail__main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.gear-detail__main h1,
+.gear-detail__main h2 {
+  margin: 0;
+}
+.gear-detail__description {
+  white-space: pre-line;
+  margin: 0;
+}
+.gear-detail__price {
+  font-size: 1.25rem;
+}
+.gear-detail__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.gallery {
+  position: relative;
+}
+.gallery__track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  border-radius: var(--radius-lg);
+  scrollbar-width: none;
+}
+.gallery__track::-webkit-scrollbar {
+  display: none;
+}
+.gallery__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+}
+.gallery__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.gallery__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.gallery__nav--prev {
+  left: 0.6rem;
+}
+.gallery__nav--next {
+  right: 0.6rem;
+}
+.gallery__dots {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.1rem;
+}
+.gallery__dot {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.gallery__dot::after {
+  content: '';
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.75);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.2);
+}
+.gallery__dot--on::after {
+  background: var(--primary-500);
+  box-shadow: 0 0 0 2px #fff;
+}
+.owner-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.owner-card p {
+  margin: 0;
+}
+.gear-detail__side {
+  min-width: 0;
+}
+@media (min-width: 900px) {
+  .gear-detail {
+    grid-template-columns: 1fr 400px;
+    align-items: start;
+  }
+  .gear-detail__side {
+    position: sticky;
+    top: calc(var(--header-h) + 1rem);
+  }
+  .gear-detail > a {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Rental request form + calendar */
+.rental-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+.rental-form h2 {
+  margin: 0;
+}
+.toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+.toggle__item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: var(--tap);
+  padding: 0.35rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-weight: 600;
+}
+.toggle__item--on {
+  border-color: var(--primary-500);
+  background: var(--primary-50);
+  color: var(--primary-800);
+}
+.toggle__item input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.toggle__item:focus-within {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.price-preview {
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-md);
+  background: var(--secondary-50);
+}
+.price-preview p {
+  margin: 0 0 0.25rem;
+}
+.disclaimer {
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+.calendar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.calendar__head button,
+.calendar__day {
+  border: 0;
+  background: none;
+}
+.calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  text-align: center;
+}
+.calendar__weekday {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.calendar__day {
+  min-height: var(--tap);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+.calendar__day:hover:not(:disabled) {
+  background: var(--primary-50);
+}
+.calendar__day:disabled {
+  color: var(--muted);
+  text-decoration: line-through;
+  opacity: 0.45;
+}
+.calendar__day--range {
+  background: var(--primary-100);
+  border-radius: 0;
+}
+.calendar__day--selected,
+.calendar__day--selected:hover:not(:disabled) {
+  background: var(--primary-600);
+  color: #fff;
+}
+.owner-card .card__rating {
+  display: flex;
+}

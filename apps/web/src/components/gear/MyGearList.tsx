@@ -2,6 +2,12 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/Badge';
+import { Button, buttonClass } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { GearImage } from '@/components/ui/GearImage';
+import { Sheet } from '@/components/ui/Sheet';
+import { useToast } from '@/components/ui/Toast';
 import { Link, useRouter } from '@/i18n/navigation';
 import { api, type OwnerGear } from '@/lib/api';
 import { formatMoney } from '@/lib/format';
@@ -11,19 +17,18 @@ export function MyGearList({ initial }: { initial: OwnerGear[] }) {
   const tAll = useTranslations();
   const locale = useLocale();
   const router = useRouter();
+  const toast = useToast();
   const [items, setItems] = useState(initial);
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [errorId, setErrorId] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
   const run = async (id: string, action: () => Promise<void>) => {
     setBusyId(id);
-    setErrorId(null);
     try {
       await action();
       router.refresh();
     } catch {
-      setErrorId(id);
+      toast(t('actionFailed'), 'error');
     } finally {
       setBusyId(null);
     }
@@ -45,71 +50,85 @@ export function MyGearList({ initial }: { initial: OwnerGear[] }) {
 
   if (items.length === 0) {
     return (
-      <div className="state">
-        <p>{t('empty')}</p>
-        <Link href="/gear/new">{t('add')}</Link>
-      </div>
+      <EmptyState
+        action={
+          <Link href="/gear/new" className={buttonClass()}>
+            {t('add')}
+          </Link>
+        }
+      >
+        {t('empty')}
+      </EmptyState>
     );
   }
 
+  const confirming = items.find((g) => g.id === confirmId);
+
   return (
-    <ul className="my-gear">
-      {items.map((gear) => {
-        const { hourlyCents, dailyCents } = gear.pricing;
-        const busy = busyId === gear.id;
-        return (
-          <li key={gear.id} className="my-gear__item">
-            {gear.images[0] ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={gear.images[0]} alt="" className="my-gear__image" />
-            ) : (
-              <div className="my-gear__image my-gear__image--empty">{tAll('gear.noImage')}</div>
-            )}
-            <div className="my-gear__body">
-              <h2 className="card__title">
-                <Link href={`/gear/${gear.id}`}>{gear.title}</Link>
-              </h2>
-              <p className="card__meta">
-                {tAll(`categories.${gear.category}`)} · {gear.city}
-              </p>
-              <p className="card__price">
-                {hourlyCents !== undefined && (
-                  <span>{tAll('gear.perHour', { price: formatMoney(hourlyCents, locale) })}</span>
-                )}
-                {dailyCents !== undefined && (
-                  <span>{tAll('gear.perDay', { price: formatMoney(dailyCents, locale) })}</span>
-                )}
-              </p>
-              <span className={`badge badge--${gear.status}`}>{t(`status.${gear.status}`)}</span>
-            </div>
-            <div className="my-gear__actions">
-              <Link href={`/gear/${gear.id}/edit`}>{t('edit')}</Link>
-              <button type="button" onClick={() => void toggle(gear)} disabled={busy}>
-                {gear.status === 'active' ? t('pause') : t('activate')}
-              </button>
-              <button type="button" onClick={() => setConfirmId(gear.id)} disabled={busy}>
-                {t('delete')}
-              </button>
-            </div>
-            {confirmId === gear.id && (
-              <div className="my-gear__confirm" role="alertdialog" aria-label={t('confirmTitle')}>
-                <p>{t('confirmText', { title: gear.title })}</p>
-                <button type="button" onClick={() => void remove(gear.id)} disabled={busy}>
-                  {t('confirmDelete')}
-                </button>
-                <button type="button" onClick={() => setConfirmId(null)} disabled={busy}>
-                  {t('cancel')}
-                </button>
+    <>
+      <ul className="my-gear">
+        {items.map((gear) => {
+          const { hourlyCents, dailyCents } = gear.pricing;
+          const busy = busyId === gear.id;
+          return (
+            <li key={gear.id} className="my-gear__item">
+              <GearImage
+                src={gear.images[0]}
+                alt=""
+                sizes="(min-width: 640px) 180px, 100vw"
+                className="my-gear__image"
+                emptyLabel={tAll('gear.noImage')}
+              />
+              <div className="my-gear__body">
+                <h2 className="card__title">
+                  <Link href={`/gear/${gear.id}`}>{gear.title}</Link>
+                </h2>
+                <p className="card__meta">
+                  {tAll(`categories.${gear.category}`)} · {gear.city}
+                </p>
+                <p className="card__price">
+                  {hourlyCents !== undefined && (
+                    <span>{tAll('gear.perHour', { price: formatMoney(hourlyCents, locale) })}</span>
+                  )}
+                  {dailyCents !== undefined && (
+                    <span>{tAll('gear.perDay', { price: formatMoney(dailyCents, locale) })}</span>
+                  )}
+                </p>
+                <Badge tone={gear.status}>{t(`status.${gear.status}`)}</Badge>
               </div>
-            )}
-            {errorId === gear.id && (
-              <p role="alert" className="my-gear__error">
-                {t('actionFailed')}
-              </p>
-            )}
-          </li>
-        );
-      })}
-    </ul>
+              <div className="my-gear__actions">
+                <Link href={`/gear/${gear.id}/edit`} className={buttonClass({ variant: 'outline', size: 'sm' })}>
+                  {t('edit')}
+                </Link>
+                <Button variant="outline" size="sm" onClick={() => void toggle(gear)} disabled={busy}>
+                  {gear.status === 'active' ? t('pause') : t('activate')}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setConfirmId(gear.id)} disabled={busy}>
+                  {t('delete')}
+                </Button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <Sheet
+        variant="center"
+        open={!!confirming}
+        onClose={() => setConfirmId(null)}
+        title={t('confirmTitle')}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setConfirmId(null)} disabled={!!busyId}>
+              {t('cancel')}
+            </Button>
+            <Button variant="danger" onClick={() => confirming && void remove(confirming.id)} disabled={!!busyId}>
+              {t('confirmDelete')}
+            </Button>
+          </>
+        }
+      >
+        {confirming && <p>{t('confirmText', { title: confirming.title })}</p>}
+      </Sheet>
+    </>
   );
 }

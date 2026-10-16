@@ -1,12 +1,21 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FilterControls } from '@/components/filters/FilterControls';
+import { Button, IconButton } from '@/components/ui/Button';
+import { ChevronUpIcon, CloseIcon, ListIcon } from '@/components/ui/icons';
 import { api, type GearQuery, type PublicGear } from '@/lib/api';
+import type { SearchParams } from '@/lib/gearFilters';
 import { formatMapView, isCapped, toMapQuery, type MapView } from '@/lib/mapView';
+import { useMediaQuery } from '@/lib/useMediaQuery';
+import type { MapFocus } from './ClusterLayer';
 import type { Viewport } from './GearMap';
+import { GearMapCard } from './GearMapCard';
 import { Legend } from './Legend';
+import { MapControls } from './MapControls';
 import { GearMapLoader } from './MapLoader';
+import { ResultList } from './ResultList';
 
 const DEBOUNCE_MS = 300;
 
@@ -15,12 +24,29 @@ type Result =
   | { status: 'ready'; items: PublicGear[]; total: number };
 
 // Owns the data flow of the map page: viewport -> debounced fetch (stale ones aborted) -> markers.
-export function MapExperience({ filters, view }: { filters: GearQuery; view: MapView }) {
+// Layout: full-bleed map with floating search/chips, controls, a side list (desktop) or a peek
+// sheet (phones), and a bottom card for the tapped marker (phones).
+export function MapExperience({
+  filters,
+  view,
+  searchValues,
+}: {
+  filters: GearQuery;
+  view: MapView;
+  searchValues: SearchParams;
+}) {
   const t = useTranslations('map');
+  const desktop = useMediaQuery('(min-width: 768px)');
   const [viewport, setViewport] = useState<Viewport | null>(null);
   const [result, setResult] = useState<Result>({ status: 'loading', items: [], total: 0 });
   const [attempt, setAttempt] = useState(0);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [focus, setFocus] = useState<MapFocus | null>(null);
+  const [listOpen, setListOpen] = useState(false); // desktop side list
+  const [peekOpen, setPeekOpen] = useState(false); // phone bottom sheet
   const reported = useRef(false);
+  const focusCount = useRef(0);
 
   const onViewportChange = useCallback((v: Viewport) => {
     setViewport(v);
@@ -65,40 +91,118 @@ export function MapExperience({ filters, view }: { filters: GearQuery; view: Map
       ? { center: [lat, lng] as [number, number], km: radiusKm }
       : undefined;
 
+  const selectedGear = useMemo(
+    () => result.items.find((g) => g.id === selectedId) ?? null,
+    [result.items, selectedId],
+  );
+  const count = result.items.length;
+
+  const select = useCallback((id: string | null) => setSelectedId(id), []);
+  const focusGear = (id: string) => {
+    setSelectedId(id);
+    setFocus({ id, n: ++focusCount.current });
+    setPeekOpen(false);
+  };
+
+  // Before the first viewport report (e.g. the map could not load) there is nothing to count.
+  const started = viewport !== null;
+  const countLabel = started ? t('resultCount', { count: result.total }) : t('list');
+  const list = <ResultList items={result.items} selectedId={selectedId} onFocus={focusGear} />;
+  const showCard = !desktop && selectedGear !== null;
+
+  const classes = ['mapx', showCard && 'mapx--card', desktop && listOpen && 'mapx--list-open']
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <section className="map-canvas" aria-label={t('region')}>
-      <GearMapLoader
-        view={view}
-        items={result.items}
-        radius={radius}
-        onViewportChange={onViewportChange}
-      />
-      <div className="map-status">
-        {result.status === 'loading' && (
-          <p role="status" className="map-chip">
-            {t('loading')}
-          </p>
-        )}
-        {result.status === 'error' && (
-          <p role="alert" className="map-chip map-chip--error">
-            {t('error')}{' '}
-            <button type="button" onClick={() => setAttempt((n) => n + 1)}>
-              {t('retry')}
-            </button>
-          </p>
-        )}
-        {result.status === 'ready' && result.items.length === 0 && (
-          <p role="status" className="map-chip">
-            {t('empty')}
-          </p>
-        )}
-        {result.status === 'ready' && isCapped(result.total, result.items.length) && (
-          <p role="status" className="map-chip">
-            {t('capped', { shown: result.items.length, total: result.total })}
-          </p>
-        )}
+    <section className={classes} aria-label={t('region')}>
+      <div className="mapx__map">
+        <GearMapLoader
+          view={view}
+          items={result.items}
+          radius={radius}
+          selectedGear={selectedGear}
+          focus={focus}
+          popup={desktop}
+          onSelect={select}
+          onViewportChange={onViewportChange}
+          onMapReady={setMap}
+        />
       </div>
+
+      <div className="mapx__top">
+        <FilterControls basePath="/map" values={searchValues} preserve={['center', 'zoom']} />
+        <div className="mapx__status">
+          {started && result.status === 'loading' && (
+            <p role="status" className="map-chip">
+              {t('loading')}
+            </p>
+          )}
+          {started && result.status === 'error' && (
+            <p role="alert" className="map-chip map-chip--error">
+              {t('error')}
+              <Button variant="ghost" size="sm" onClick={() => setAttempt((n) => n + 1)}>
+                {t('retry')}
+              </Button>
+            </p>
+          )}
+          {started && result.status === 'ready' && count === 0 && (
+            <p role="status" className="map-chip">
+              {t('empty')}
+            </p>
+          )}
+          {result.status === 'ready' && isCapped(result.total, count) && (
+            <p role="status" className="map-chip">
+              {t('capped', { shown: count, total: result.total })}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <MapControls map={map} />
       <Legend />
+
+      {/* Desktop: collapsible side list */}
+      <div className={listOpen ? 'sidelist sidelist--open' : 'sidelist'}>
+        <div className="sidelist__head">
+          <h2>{countLabel}</h2>
+          <IconButton label={t('hideList')} variant="ghost" onClick={() => setListOpen(false)}>
+            <CloseIcon />
+          </IconButton>
+        </div>
+        <div className="sidelist__body">{list}</div>
+      </div>
+      <Button
+        variant="outline"
+        className="list-toggle"
+        aria-expanded={listOpen}
+        onClick={() => setListOpen(true)}
+      >
+        <ListIcon size={18} />
+        {t('list')}
+      </Button>
+
+      {/* Phones: bottom sheet with a peek state */}
+      <div className={peekOpen ? 'peek peek--open' : 'peek'}>
+        <button
+          type="button"
+          className="peek__handle"
+          aria-expanded={peekOpen}
+          onClick={() => setPeekOpen((o) => !o)}
+        >
+          <span>
+            <ListIcon size={18} />
+            {countLabel}
+            <ChevronUpIcon
+              size={18}
+              style={{ transform: peekOpen ? 'rotate(180deg)' : undefined }}
+            />
+          </span>
+        </button>
+        {peekOpen && <div className="peek__body">{list}</div>}
+      </div>
+
+      {showCard && <GearMapCard gear={selectedGear} onClose={() => setSelectedId(null)} />}
     </section>
   );
 }

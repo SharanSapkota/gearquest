@@ -1,124 +1,119 @@
 'use client';
 
-import { divIcon, type DivIcon, type Map as LeafletMap } from 'leaflet';
-import { useMemo, useState } from 'react';
-import { Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
-import Supercluster from 'supercluster';
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
+import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { useTranslations } from 'next-intl';
+import { useEffect, useRef } from 'react';
 import type { PublicGear } from '@/lib/api';
-import { MAX_ZOOM } from '@/lib/mapView';
-import { categoryIconOptions, clusterIconOptions, type Category } from './categoryIcons';
-import { GearPopup } from './GearPopup';
+import { categoryPinElement, clusterElement } from './categoryIcons';
 
-type Bounds = [west: number, south: number, east: number, north: number];
+type Marker = google.maps.marker.AdvancedMarkerElement;
+export type MapFocus = { id: string; n: number };
 
-const categoryIcons = new Map<Category, DivIcon>();
-const categoryIcon = (category: Category) => {
-  let icon = categoryIcons.get(category);
-  if (!icon) {
-    icon = divIcon(categoryIconOptions(category));
-    categoryIcons.set(category, icon);
-  }
-  return icon;
-};
+const FOCUS_ZOOM = 14;
 
-// Stable icon instances: a new icon object on every render would make react-leaflet reset it.
-const clusterIcons = new Map<number, DivIcon>();
-const clusterIcon = (count: number) => {
-  let icon = clusterIcons.get(count);
-  if (!icon) {
-    icon = divIcon(clusterIconOptions(count));
-    clusterIcons.set(count, icon);
-  }
-  return icon;
-};
+function highlight(marker: Marker, selected: boolean) {
+  (marker.content as HTMLElement | null)?.classList.toggle('is-selected', selected);
+  marker.zIndex = selected ? 2000 : null;
+}
 
-const snapshot = (map: LeafletMap) => {
-  const b = map.getBounds();
-  return {
-    bounds: [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()] as Bounds,
-    zoom: Math.round(map.getZoom()),
-  };
-};
-
-// Groups nearby gear into clusters for the current view. Clicking a cluster zooms to the level
-// where it splits. Positions are the API's approximate public location, nothing else.
-export function ClusterLayer({ items }: { items: PublicGear[] }) {
-  const t = useTranslations();
+// Category pins grouped into clusters (clicking a cluster zooms to where it splits). Positions
+// are the API's approximate public location, nothing else. Markers are keyed by gear id and
+// reused between fetches so panning does not rebuild the whole layer.
+export function ClusterLayer({
+  items,
+  selectedId,
+  focus,
+  onSelect,
+}: {
+  items: PublicGear[];
+  selectedId: string | null;
+  focus: MapFocus | null;
+  onSelect: (id: string) => void;
+}) {
+  const t = useTranslations('map');
   const map = useMap();
-  const [view, setView] = useState(() => snapshot(map));
-  useMapEvents({ moveend: () => setView(snapshot(map)) });
+  const markerLib = useMapsLibrary('marker');
+  const clusterer = useRef<MarkerClusterer | null>(null);
+  const markers = useRef(new globalThis.Map<string, Marker>());
+  const onSelectRef = useRef(onSelect);
+  const handledFocus = useRef(0);
 
-  const index = useMemo(() => {
-    const sc = new Supercluster<{ gear: PublicGear }>({ radius: 60, maxZoom: MAX_ZOOM - 1 });
-    sc.load(
-      items.flatMap((gear) =>
-        gear.location
-          ? [
-              {
-                type: 'Feature' as const,
-                properties: { gear },
-                geometry: { type: 'Point' as const, coordinates: gear.location },
-              },
-            ]
-          : [],
-      ),
-    );
-    return sc;
-  }, [items]);
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  });
 
-  const [west, south, east, north] = view.bounds;
-  const clamp = (n: number, limit: number) => Math.min(limit, Math.max(-limit, n));
-  const features = index.getClusters(
-    [clamp(west, 180), clamp(south, 90), clamp(east, 180), clamp(north, 90)],
-    view.zoom,
+  // Tear down with the map.
+  useEffect(
+    () => () => {
+      clusterer.current?.clearMarkers();
+      clusterer.current?.onRemove();
+      clusterer.current = null;
+      markers.current.clear();
+    },
+    [],
   );
 
-  return (
-    <>
-      {features.map((feature) => {
-        const [lng, lat] = feature.geometry.coordinates as [number, number];
-        const props = feature.properties;
-        if ('cluster' in props && props.cluster) {
-          const count = props.point_count;
-          return (
-            <Marker
-              key={`c-${props.cluster_id}-${count}`}
-              position={[lat, lng]}
-              icon={clusterIcon(count)}
-              title={t('map.cluster', { count })}
-              alt={t('map.cluster', { count })}
-              eventHandlers={{
-                click: () =>
-                  map.flyTo([lat, lng], Math.min(index.getClusterExpansionZoom(props.cluster_id), MAX_ZOOM)),
-              }}
-            />
-          );
-        }
-        const gear = (props as { gear: PublicGear }).gear;
-        return (
-          <Marker
-            key={`g-${gear.id}`}
-            position={[lat, lng]}
-            icon={categoryIcon(gear.category)}
-            title={gear.title}
-            alt={gear.title}
-            eventHandlers={{
-              popupopen: (e) => {
-                // Leaflet's built-in close button label is English-only; localise it.
-                e.popup
-                  .getElement()
-                  ?.querySelector('.leaflet-popup-close-button')
-                  ?.setAttribute('aria-label', t('map.closePopup'));
-              },
-            }}
-          >
-            <Popup minWidth={220} maxWidth={260}>
-              <GearPopup gear={gear} />
-            </Popup>
-          </Marker>
-        );
-      })}
-    </>
-  );
+  useEffect(() => {
+    if (!map || !markerLib) return;
+    const { AdvancedMarkerElement } = markerLib;
+    clusterer.current ??= new MarkerClusterer({
+      map,
+      renderer: {
+        render: ({ count, position }) =>
+          new AdvancedMarkerElement({
+            position,
+            content: clusterElement(count),
+            title: t('cluster', { count }),
+            zIndex: 1000 + count,
+            gmpClickable: true,
+          }),
+      },
+    });
+
+    const wanted = new Set<string>();
+    const added: Marker[] = [];
+    for (const gear of items) {
+      if (!gear.location) continue;
+      wanted.add(gear.id);
+      if (markers.current.has(gear.id)) continue;
+      const marker = new AdvancedMarkerElement({
+        position: { lng: gear.location[0], lat: gear.location[1] },
+        content: categoryPinElement(gear.category),
+        title: gear.title,
+        gmpClickable: true,
+      });
+      marker.addEventListener('gmp-click', () => onSelectRef.current(gear.id));
+      markers.current.set(gear.id, marker);
+      added.push(marker);
+    }
+    const stale: Marker[] = [];
+    for (const [id, marker] of markers.current) {
+      if (wanted.has(id)) continue;
+      stale.push(marker);
+      markers.current.delete(id);
+    }
+    clusterer.current.removeMarkers(stale, true);
+    clusterer.current.addMarkers(added, true);
+    clusterer.current.render();
+  }, [items, map, markerLib, t]);
+
+  // Highlight the selected pin.
+  useEffect(() => {
+    for (const [id, marker] of markers.current) {
+      highlight(marker, id === selectedId);
+    }
+  }, [selectedId, items, map]);
+
+  // A list tap pans to the marker and zooms in far enough for it to leave its cluster.
+  useEffect(() => {
+    if (!map || !focus || focus.n === handledFocus.current) return;
+    const position = markers.current.get(focus.id)?.position;
+    if (!position) return;
+    handledFocus.current = focus.n;
+    map.panTo(position);
+    if ((map.getZoom() ?? 0) < FOCUS_ZOOM) map.setZoom(FOCUS_ZOOM);
+  }, [focus, map, items]);
+
+  return null;
 }

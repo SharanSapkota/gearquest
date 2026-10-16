@@ -3,9 +3,11 @@
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Field, Input } from '@/components/ui/Field';
 import type { LngLat } from './LocationMap';
 
-// Leaflet touches `window`, so it is client-only.
+// The map is client-only and lazy: it is not part of the initial bundle.
 const LocationMap = dynamic(() => import('./LocationMap'), {
   ssr: false,
   loading: () => <div className="location-map location-map--loading" aria-busy="true" />,
@@ -51,18 +53,21 @@ export function LocationPicker({
       <small>{t('hint')}</small>
       <LocationMap position={position} focusKey={focusKey} onChange={onPositionChange} label={t('mapLabel')} />
       <div>
-        <button type="button" onClick={useMyLocation}>
+        <Button variant="outline" onClick={useMyLocation}>
           {t('useMine')}
-        </button>
+        </Button>
       </div>
       {geoFailed && <span role="alert">{t('geoFailed')}</span>}
       {locationError && <span role="alert">{locationError}</span>}
       <p className="note">{t('privacy')}</p>
-      <label className="field">
-        {t('city')}
-        <input value={city} onChange={(e) => onCityChange(e.target.value)} maxLength={100} />
-        {cityError && <span role="alert">{cityError}</span>}
-      </label>
+      <Field label={t('city')} error={cityError}>
+        <Input
+          value={city}
+          onChange={(e) => onCityChange(e.target.value)}
+          maxLength={100}
+          autoComplete="address-level2"
+        />
+      </Field>
     </fieldset>
   );
 }

@@ -2,8 +2,8 @@
 
 import dynamic from 'next/dynamic';
 
-// Leaflet touches `window`, so the map is client-only.
+// The map is client-only and lazy: it stays out of the initial bundle of every other page.
 export const GearMapLoader = dynamic(() => import('./GearMap'), {
   ssr: false,
-  loading: () => <div className="map-leaflet" aria-busy="true" />,
+  loading: () => <div className="map-canvas" aria-busy="true" />,
 });

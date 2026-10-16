@@ -1,40 +1,52 @@
 'use client';
 
-import L from 'leaflet';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-import 'leaflet/dist/leaflet.css';
+import { AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
 import { useEffect } from 'react';
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
+import { GoogleMapShell } from '@/components/map/GoogleMapShell';
 
 export type LngLat = { lng: number; lat: number };
 
-const FINLAND_CENTER: [number, number] = [64.5, 26.5];
+const FINLAND_CENTER = { lat: 64.5, lng: 26.5 };
 const FINLAND_ZOOM = 5;
+const PLACED_ZOOM = 13;
 
-const icon = L.icon({
-  iconUrl: markerIcon.src,
-  iconRetinaUrl: markerIcon2x.src,
-  shadowUrl: markerShadow.src,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  shadowSize: [41, 41],
-});
-
-function ClickToPlace({ onChange }: { onChange: (p: LngLat) => void }) {
-  useMapEvents({ click: (e) => onChange({ lng: e.latlng.lng, lat: e.latlng.lat }) });
-  return null;
-}
-
-// Re-centres only when focusKey changes (e.g. "Use my location"), not on every drag.
-function FlyTo({ position, focusKey }: { position: LngLat | null; focusKey: number }) {
+function PickerLayer({
+  position,
+  focusKey,
+  onChange,
+}: {
+  position: LngLat | null;
+  focusKey: number;
+  onChange: (p: LngLat) => void;
+}) {
   const map = useMap();
+
   useEffect(() => {
-    if (focusKey > 0 && position) map.setView([position.lat, position.lng], Math.max(map.getZoom(), 13));
+    if (!map) return;
+    const listener = map.addListener('click', (e: google.maps.MapMouseEvent) => {
+      if (e.latLng) onChange({ lng: e.latLng.lng(), lat: e.latLng.lat() });
+    });
+    return () => listener.remove();
+  }, [map, onChange]);
+
+  // Re-centres only when focusKey changes (e.g. "Use my location"), not on every drag.
+  useEffect(() => {
+    if (!map || focusKey === 0 || !position) return;
+    map.setCenter({ lat: position.lat, lng: position.lng });
+    map.setZoom(Math.max(map.getZoom() ?? 0, PLACED_ZOOM));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusKey]);
-  return null;
+  }, [focusKey, map]);
+
+  if (!position) return null;
+  return (
+    <AdvancedMarker
+      position={{ lat: position.lat, lng: position.lng }}
+      draggable
+      onDragEnd={(e) => {
+        if (e.latLng) onChange({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+      }}
+    />
+  );
 }
 
 export default function LocationMap({
@@ -49,31 +61,14 @@ export default function LocationMap({
   label: string;
 }) {
   return (
-    <MapContainer
-      center={position ? [position.lat, position.lng] : FINLAND_CENTER}
-      zoom={position ? 13 : FINLAND_ZOOM}
+    <GoogleMapShell
       className="location-map"
-      aria-label={label}
+      label={label}
+      defaultCenter={position ? { lat: position.lat, lng: position.lng } : FINLAND_CENTER}
+      defaultZoom={position ? PLACED_ZOOM : FINLAND_ZOOM}
+      gestureHandling="cooperative"
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <ClickToPlace onChange={onChange} />
-      <FlyTo position={position} focusKey={focusKey} />
-      {position && (
-        <Marker
-          position={[position.lat, position.lng]}
-          icon={icon}
-          draggable
-          eventHandlers={{
-            dragend: (e) => {
-              const { lat, lng } = (e.target as L.Marker).getLatLng();
-              onChange({ lat, lng });
-            },
-          }}
-        />
-      )}
-    </MapContainer>
+      <PickerLayer position={position} focusKey={focusKey} onChange={onChange} />
+    </GoogleMapShell>
   );
 }

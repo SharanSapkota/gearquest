@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { Pagination } from '@/components/gear/Pagination';
 import { RentalCard } from '@/components/rentals/RentalCard';
 import { RentalsFilter } from '@/components/rentals/RentalsFilter';
@@ -38,7 +39,7 @@ export default async function RentalsPage({
   return (
     <main className="page">
       <h1>{t('title')}</h1>
-      <nav className="tabs" aria-label={t('tabs')}>
+      <nav className="tabs tabs--page" aria-label={t('tabs')}>
         {(['renter', 'owner'] as const).map((r) => (
           <Link
             key={r}
@@ -52,7 +53,7 @@ export default async function RentalsPage({
       </nav>
       <RentalsFilter role={role} status={status} />
       {items.length === 0 ? (
-        <p className="state">{t(role === 'renter' ? 'emptyRenter' : 'emptyOwner')}</p>
+        <EmptyState>{t(role === 'renter' ? 'emptyRenter' : 'emptyOwner')}</EmptyState>
       ) : (
         <div className="rental-list">
           {items.map((rental) => (
