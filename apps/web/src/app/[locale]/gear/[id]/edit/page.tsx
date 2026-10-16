@@ -20,7 +20,7 @@ export default async function EditGearPage({
   if (!gear) notFound();
   const t = await getTranslations('gearForm');
   return (
-    <main className="page">
+    <main className="page page--form">
       <h1>{t('editTitle')}</h1>
       <GearForm gear={gear} />
     </main>

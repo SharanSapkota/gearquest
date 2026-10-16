@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { buttonClass } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Avatar } from '@/components/ui/Avatar';
+import { ShieldCheckIcon, StarIcon } from '@/components/ui/icons';
 import { GearGrid } from '@/components/gear/GearGrid';
 import { Link } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
@@ -25,14 +26,24 @@ export default async function ProfilePage({
 
   return (
     <main className="page">
-      <section className="profile">
+      <section className="profile contour">
         <Avatar name={profile.name} url={profile.avatarUrl} size={96} />
-        <div>
+        <div className="profile__body">
           <h1>{profile.name}</h1>
-          <p className="summary">
-            {profile.ratingCount > 0
-              ? `${t('gear.rating', { rating: profile.ratingAvg.toFixed(1) })} · ${t('profile.ratingCount', { count: profile.ratingCount })}`
-              : t('gear.noRating')}
+          <p className="profile__meta">
+            {profile.ratingCount > 0 ? (
+              <span className="rating">
+                <StarIcon size={15} />
+                {profile.ratingAvg.toFixed(1)}
+                <small>({t('profile.ratingCount', { count: profile.ratingCount })})</small>
+              </span>
+            ) : (
+              <span className="note">{t('gear.noRating')}</span>
+            )}
+            <span className="badge badge--verified">
+              <ShieldCheckIcon size={14} />
+              {t('gearDetail.verified')}
+            </span>
           </p>
           {profile.bio && <p>{profile.bio}</p>}
           {me?.id === profile.id && (

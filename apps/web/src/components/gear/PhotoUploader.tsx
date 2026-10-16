@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { MAX_GEAR_IMAGES } from '@gearshare/shared';
 import { Button, IconButton } from '@/components/ui/Button';
+import { ChevronLeftIcon, ChevronRightIcon, CloseIcon } from '@/components/ui/icons';
 import { api } from '@/lib/api';
 import { ResizeError, resizeImage } from '@/lib/imageResize';
 
@@ -121,14 +122,14 @@ export function PhotoUploader({
                   onClick={() => move(index, -1)}
                   disabled={index === 0}
                 >
-                  ←
+                  <ChevronLeftIcon size={18} />
                 </IconButton>
                 <IconButton
                   label={t('moveLater')}
                   onClick={() => move(index, 1)}
                   disabled={index === photos.length - 1}
                 >
-                  →
+                  <ChevronRightIcon size={18} />
                 </IconButton>
                 {photo.error === 'upload' && photo.blob && (
                   <Button variant="outline" size="sm" onClick={() => void upload(photo.id, photo.blob as Blob)}>
@@ -136,7 +137,7 @@ export function PhotoUploader({
                   </Button>
                 )}
                 <IconButton label={t('remove')} variant="ghost" onClick={() => remove(photo.id)}>
-                  ✕
+                  <CloseIcon size={18} />
                 </IconButton>
               </div>
             </li>

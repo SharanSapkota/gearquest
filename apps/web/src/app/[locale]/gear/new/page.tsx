@@ -10,7 +10,7 @@ export default async function NewGearPage({ params }: { params: Promise<{ locale
   if (!user) return redirect({ href: '/', locale });
   const t = await getTranslations('gearForm');
   return (
-    <main className="page">
+    <main className="page page--form">
       <h1>{t('createTitle')}</h1>
       <GearForm />
     </main>

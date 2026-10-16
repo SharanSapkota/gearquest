@@ -4,6 +4,7 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from 'react';
+import { ChevronDownIcon } from './icons';
 
 // Label + control + hint/error, the one layout every form uses.
 export function Field({
@@ -29,7 +30,26 @@ export function Field({
 
 // Inputs are styled globally (44px, 16px text); these exist so call sites read as one system.
 export const Input = (props: InputHTMLAttributes<HTMLInputElement>) => <input {...props} />;
-export const Select = (props: SelectHTMLAttributes<HTMLSelectElement>) => <select {...props} />;
+// The wrapper draws the chevron (native arrows are hidden by base.css).
+export const Select = ({ children, ...rest }: SelectHTMLAttributes<HTMLSelectElement>) => (
+  <span className="select">
+    <select {...rest}>{children}</select>
+    <ChevronDownIcon size={18} />
+  </span>
+);
 export const Textarea = (props: TextareaHTMLAttributes<HTMLTextAreaElement>) => (
   <textarea {...props} />
 );
+
+// Checkbox rendered as a switch.
+export function Switch({
+  label,
+  ...rest
+}: Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'role'> & { label: string }) {
+  return (
+    <label className="check">
+      <input type="checkbox" role="switch" {...rest} />
+      {label}
+    </label>
+  );
+}

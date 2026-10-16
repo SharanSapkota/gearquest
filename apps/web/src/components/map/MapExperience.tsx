@@ -131,7 +131,7 @@ export function MapExperience({
       </div>
 
       <div className="mapx__top">
-        <FilterControls basePath="/map" values={searchValues} preserve={['center', 'zoom']} />
+        <FilterControls basePath="/map" values={searchValues} preserve={['center', 'zoom']} variant="map" />
         <div className="mapx__status">
           {started && result.status === 'loading' && (
             <p role="status" className="map-chip">

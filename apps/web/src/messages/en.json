@@ -18,19 +18,37 @@
     "rentalsShort": "Rentals"
   },
   "home": {
-    "title": "Rent adventure gear",
-    "empty": "No gear found.",
+    "title": "Rent the gear. Skip the buying.",
+    "empty": "Try a different search or clear some filters to find gear.",
     "loading": "Loading gear…",
     "results": "{count, plural, one {# item} other {# items}}",
     "availableRange": "available {from} – {to}",
-    "subtitle": "Borrow skis, tents, kayaks and more from people near you."
+    "subtitle": "Borrow skis, tents and kayaks from people right near you.",
+    "emptyTitle": "No matches",
+    "how": {
+      "title": "How it works",
+      "find": {
+        "title": "Find",
+        "text": "Browse gear near you and check the free days."
+      },
+      "request": {
+        "title": "Request",
+        "text": "Send a rental request. The price is calculated on the server."
+      },
+      "meet": {
+        "title": "Meet",
+        "text": "The owner accepts, and you arrange pickup directly."
+      }
+    },
+    "trust": "Sign-in with Google: every member is verified."
   },
   "legal": {
     "disclaimer": "GearShare is only a platform that connects gear owners and renters. We are not a party to any rental agreement and accept no responsibility for damage, loss, injury, or disputes. All such matters are solely between the renter and the owner."
   },
   "errors": {
     "loadFailed": "Failed to load data.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "title": "Oops, something went wrong"
   },
   "language": {
     "label": "Language",
@@ -74,7 +92,8 @@
     "noRating": "No ratings yet",
     "detailTitle": "Gear details",
     "detailPlaceholder": "The gear page is coming soon.",
-    "back": "Back to all gear"
+    "back": "Back to all gear",
+    "ratingLabel": "Rated {rating} out of 5"
   },
   "categories": {
     "ski": "Skis",
@@ -129,7 +148,8 @@
     "apply": "Apply",
     "reset": "Clear filters",
     "allCategories": "All",
-    "active": "{count, plural, one {# active filter} other {# active filters}}"
+    "active": "{count, plural, one {# active filter} other {# active filters}}",
+    "andUp": "and up"
   },
   "pagination": {
     "label": "Pagination",
@@ -257,7 +277,15 @@
     "nextPhoto": "Next photo",
     "photoN": "Photo {n}",
     "notFound": "Gear not found.",
-    "back": "Back to all gear"
+    "back": "Back to all gear",
+    "requestShort": "Request",
+    "showAll": "Show all photos",
+    "photoCounter": "{current} / {total}",
+    "about": "About this gear",
+    "hostedBy": "Owner",
+    "verified": "Verified via Google",
+    "ratingCount": "{count, plural, one {# review} other {# reviews}}",
+    "from": "from"
   },
   "rentalForm": {
     "title": "Request to rent",
@@ -372,10 +400,36 @@
       "declineText": "Decline this request?",
       "declineYes": "Yes, decline",
       "back": "Back"
-    }
+    },
+    "browse": "Browse gear",
+    "emptyTitle": "No rentals yet",
+    "emptyOwnerTitle": "No requests yet",
+    "listGear": "Add gear",
+    "totalLabel": "Total"
   },
   "ui": {
     "close": "Close",
     "dismiss": "Dismiss"
+  },
+  "footer": {
+    "tagline": "Adventure gear in circulation, neighbour to neighbour.",
+    "explore": "Explore",
+    "account": "Your account"
+  },
+  "search": {
+    "title": "Search gear",
+    "what": "What",
+    "where": "Where",
+    "when": "When",
+    "whatPlaceholder": "Skis, tent, kayak…",
+    "wherePlaceholder": "Anywhere",
+    "whenPlaceholder": "Any dates",
+    "go": "Search",
+    "edit": "Edit search",
+    "nearMe": "Near me",
+    "nearMeOn": "Near me (clear)",
+    "pickStart": "Choose the first day.",
+    "pickEnd": "Choose the last day.",
+    "clearDates": "Clear dates"
   }
 }

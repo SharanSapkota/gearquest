@@ -5,8 +5,10 @@ import { MapIcon } from '@/components/ui/icons';
 export function MapUnavailable({ reason }: { reason: 'missingKey' | 'failed' }) {
   const t = useTranslations('map.unavailable');
   return (
-    <div className="map-fallback" role="status">
-      <MapIcon size={36} />
+    <div className="map-fallback contour" role="status">
+      <span className="state__art">
+        <MapIcon size={32} />
+      </span>
       <h3>{t('title')}</h3>
       <p>{t(reason)}</p>
     </div>

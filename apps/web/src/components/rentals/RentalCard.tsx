@@ -3,6 +3,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { buttonClass } from '@/components/ui/Button';
 import { GearImage } from '@/components/ui/GearImage';
+import { CalendarIcon, StarIcon } from '@/components/ui/icons';
 import { Link } from '@/i18n/navigation';
 import type { Rental } from '@/lib/api';
 import { formatDateTime, formatMoney, hoursUntil } from '@/lib/format';
@@ -30,28 +31,33 @@ export function RentalCard({
   const name = other.name ?? t('unknownUser');
 
   return (
-    <article className="rental-card">
-      <GearImage
-        src={rental.gear.coverImage ?? undefined}
-        alt=""
-        sizes="(min-width: 640px) 180px, 100vw"
-        className="my-gear__image"
-        emptyLabel={tAll('gear.noImage')}
-      />
+    <article className={detail ? 'rental-card rental-card--detail' : 'rental-card'}>
+      <div className="rental-card__media">
+        <GearImage
+          src={rental.gear.coverImage ?? undefined}
+          alt=""
+          sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 100vw"
+          className="rental-card__image"
+          emptyLabel={tAll('gear.noImage')}
+        />
+        <span className="rental-card__status">
+          <Badge tone={rental.status}>{t(`status.${rental.status}`)}</Badge>
+        </span>
+      </div>
       <div className="rental-card__body">
-        <h2 className="card__title">
+        <h2 className="rental-card__title">
           <Link href={`/gear/${rental.gearId}`}>{rental.gear.title}</Link>
         </h2>
-        <p className="card__meta">
+        <p className="card__meta rental-card__dates">
+          <CalendarIcon size={14} />
           {formatDateTime(rental.startAt, locale)} – {formatDateTime(rental.endAt, locale)}
         </p>
-        <p className="card__price">
-          <span>{formatMoney(rental.totalCents, locale)}</span>
+        <p className="rental-card__total">
+          <strong className="price num">{formatMoney(rental.totalCents, locale)}</strong>
           <span className="card__meta">
             {t(rental.mode === 'hourly' ? 'quantityHours' : 'quantityDays', { count: rental.quantity })}
           </span>
         </p>
-        <Badge tone={rental.status}>{t(`status.${rental.status}`)}</Badge>
         {expiresInHours !== null && (
           <p className="note">
             {expiresInHours > 0 ? t('expiresIn', { hours: expiresInHours }) : t('expiresSoon')}
@@ -63,11 +69,14 @@ export function RentalCard({
             {t(rental.role === 'owner' ? 'renter' : 'owner')}:{' '}
             <Link href={`/users/${other.id}`}>{name}</Link>
           </span>
-          <span className="card__meta">
-            {other.ratingCount > 0
-              ? tAll('gear.rating', { rating: other.ratingAvg.toFixed(1) })
-              : tAll('gear.noRating')}
-          </span>
+          {other.ratingCount > 0 ? (
+            <span className="rating">
+              <StarIcon size={14} />
+              {other.ratingAvg.toFixed(1)}
+            </span>
+          ) : (
+            <span className="card__meta">{tAll('gear.noRating')}</span>
+          )}
         </p>
         {rental.message && <p className="rental-card__message">“{rental.message}”</p>}
         {contact && (

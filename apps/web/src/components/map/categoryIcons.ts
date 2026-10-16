@@ -2,31 +2,35 @@ import type { CATEGORIES } from '@gearshare/shared';
 
 export type Category = (typeof CATEGORIES)[number];
 
-// Single source of truth for marker icons and the legend. Every marker is the same teardrop
-// pin; category is told apart by colour AND a white line glyph, so colour is never the only cue.
-// Glyph paths are drawn in a 24x24 box with a round white stroke.
-export const CATEGORY_STYLE: Record<Category, { color: string; glyph: string[] }> = {
-  ski: { color: '#1d4ed8', glyph: ['M5 19L17 3', 'M9 21L21 5'] },
-  snowboard: {
-    color: '#7c3aed',
-    glyph: ['M7 19L19 7a2 2 0 0 0-2.8-2.8L4.2 16.2A2 2 0 0 0 7 19z'],
-  },
-  tent: { color: '#b45309', glyph: ['M3 19L12 5l9 14z', 'M9 19l3-6 3 6'] },
-  kayak: { color: '#0e7490', glyph: ['M2 14c6-5 14-5 20 0-6 5-14 5-20 0z', 'M6 5l12 5'] },
-  bike: {
-    color: '#be123c',
-    glyph: [
-      'M2 17a4 4 0 1 0 8 0 4 4 0 1 0-8 0',
-      'M14 17a4 4 0 1 0 8 0 4 4 0 1 0-8 0',
-      'M6 17l4-8h6l2 8M10 9l3 8 3-8',
-    ],
-  },
-  climbing: { color: '#4d7c0f', glyph: ['M2 20L9 7l4 7 3-4 6 10z'] },
-  camping: {
-    color: '#c2410c',
-    glyph: ['M12 3c2 5 6 7 6 12a6 6 0 0 1-12 0c0-3 3-4 3-8 1 1 2-1 3-4z'],
-  },
-  other: { color: '#475569', glyph: ['M5 12h.01', 'M12 12h.01', 'M19 12h.01'] },
+// Single source of truth for category glyphs: the filter chips, cards and map markers all draw
+// these same Lucide line glyphs (24x24 box, round stroke, `currentColor` / white on pins).
+// Markup is static and trusted; it is only ever injected through CategoryIcon or the pin SVG.
+export const CATEGORY_GLYPH: Record<Category, string> = {
+  ski: '<path d="m8 3 4 8 5-5 5 15H2L8 3z"/><path d="M4.14 15.08c2.62-1.57 5.24-1.43 7.86.42 2.74 1.94 5.49 2 8.23.19"/>',
+  snowboard:
+    '<path d="m10 20-1.25-2.5L6 18"/><path d="M10 4 8.75 6.5 6 6"/><path d="m14 20 1.25-2.5L18 18"/><path d="m14 4 1.25 2.5L18 6"/><path d="m17 21-3-6h-4"/><path d="m17 3-3 6 1.5 3"/><path d="M2 12h6.5L10 9"/><path d="m20 10-1.5 2 1.5 2"/><path d="M22 12h-6.5L14 15"/><path d="m4 10 1.5 2L4 14"/><path d="m7 21 3-6-1.5-3"/><path d="m7 3 3 6h4"/>',
+  tent: '<path d="M3.5 21 14 3"/><path d="M20.5 21 10 3"/><path d="M15.5 21 12 15l-3.5 6"/><path d="M2 21h20"/>',
+  kayak:
+    '<path d="M2 12q2.5 2 5 0t5 0 5 0 5 0"/><path d="M2 19q2.5 2 5 0t5 0 5 0 5 0"/><path d="M2 5q2.5 2 5 0t5 0 5 0 5 0"/>',
+  bike: '<circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>',
+  climbing: '<path d="m8 3 4 8 5-5 5 15H2L8 3z"/>',
+  camping:
+    '<path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/>',
+  other:
+    '<path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 10h8"/><path d="M8 18h8"/><path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
+};
+
+// Pin fill per category (SVG marker colours are the one place raw hex is allowed). Muted Nordic
+// tones; the glyph, not the colour, tells categories apart.
+export const CATEGORY_STYLE: Record<Category, { color: string }> = {
+  ski: { color: '#2f5d7c' },
+  snowboard: { color: '#5b4b8a' },
+  tent: { color: '#9a5a1a' },
+  kayak: { color: '#1f7a80' },
+  bike: { color: '#a6384f' },
+  climbing: { color: '#4a6a2f' },
+  camping: { color: '#b4470f' },
+  other: { color: '#4b5563' },
 };
 
 const PIN_PATH =
@@ -34,14 +38,13 @@ const PIN_PATH =
 
 // SVG markup of a full pin (used by the map markers and the legend).
 export function categoryPinSvg(category: Category, size = 32): string {
-  const { color, glyph } = CATEGORY_STYLE[category];
-  const paths = glyph.map((d) => `<path d="${d}"/>`).join('');
+  const { color } = CATEGORY_STYLE[category];
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${(size * 40) / 32}" ` +
     `viewBox="0 0 32 40" aria-hidden="true" focusable="false">` +
     `<path d="${PIN_PATH}" fill="${color}" stroke="#fff" stroke-width="2"/>` +
-    `<g transform="translate(4 4)" fill="none" stroke="#fff" stroke-width="2" ` +
-    `stroke-linecap="round" stroke-linejoin="round">${paths}</g></svg>`
+    `<g transform="translate(6.5 6.5) scale(0.8)" fill="none" stroke="#fff" stroke-width="2" ` +
+    `stroke-linecap="round" stroke-linejoin="round">${CATEGORY_GLYPH[category]}</g></svg>`
   );
 }
 
