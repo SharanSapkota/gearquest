@@ -6,7 +6,8 @@ export const KNOWN_ERROR_CODES = [
   'rentals.ownGear',
   'rentals.tooManyOpenRequests',
   'rentals.renterPhoneRequired',
-  'rentals.ownerPhoneRequired',
+  'owner.phoneRequired',
+  'owner.consentRequired',
   'rentals.gearNotActive',
   'rentals.startInPast',
   'rentals.invalidRange',
@@ -33,7 +34,9 @@ export function apiErrorKey(err: unknown): string {
   return code && (KNOWN_ERROR_CODES as readonly string[]).includes(code) ? code : 'generic';
 }
 
-// Errors that the user fixes by adding a phone number to their profile.
+// Errors that the user fixes by adding a phone number (and, for owners, consent) to their profile.
 export const needsPhone = (err: unknown) =>
   err instanceof ApiError &&
-  (err.code === 'rentals.renterPhoneRequired' || err.code === 'rentals.ownerPhoneRequired');
+  (err.code === 'rentals.renterPhoneRequired' ||
+    err.code === 'owner.phoneRequired' ||
+    err.code === 'owner.consentRequired');

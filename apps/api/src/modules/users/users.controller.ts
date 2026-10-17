@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from 'express';
-import type { UpdateProfileInput } from '@gearshare/shared';
+import type { OnboardingInput, UpdateProfileInput } from '@gearshare/shared';
 import { unauthorized } from '../../lib/errors';
 import type { createUsersService } from './users.service';
 
@@ -17,8 +17,11 @@ export function createUsersController(service: UsersService) {
   const updateMe: RequestHandler = async (req, res) => {
     res.json(await service.updateMe(userId(req), req.body as UpdateProfileInput));
   };
+  const completeOnboarding: RequestHandler = async (req, res) => {
+    res.json(await service.completeOnboarding(userId(req), req.body as OnboardingInput));
+  };
   const deleteMe: RequestHandler = async () => {
     await service.deleteMe();
   };
-  return { get, updateMe, deleteMe };
+  return { get, updateMe, completeOnboarding, deleteMe };
 }

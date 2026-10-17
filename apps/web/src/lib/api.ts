@@ -3,16 +3,18 @@ import type {
   CONDITIONS,
   GEAR_SORTS,
   LOCALES,
+  OnboardingInput,
   RENTAL_MODES,
   RENTAL_STATUSES,
   CreateGearInput,
   UpdateGearInput,
   UpdateProfileInput,
   UploadSignature,
+  USER_ROLES,
 } from '@gearshare/shared';
 import { filterMockGear } from './mockGear';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
 
 export class ApiError extends Error {
   constructor(
@@ -63,10 +65,16 @@ export type PublicProfile = {
 export type ProfileWithGear = PublicProfile & { gear: PublicGear[] };
 
 // The signed-in user's own account. Only returned by /auth/me and PATCH /users/me.
+export type UserRole = (typeof USER_ROLES)[number];
+
 export type Me = PublicProfile & {
   email: string;
   phone?: string;
   language: (typeof LOCALES)[number];
+  // Unset until onboarding step 1.
+  role?: UserRole;
+  whatsappShareConsent: boolean;
+  onboardingCompleted: boolean;
 };
 
 export type PublicGear = {
@@ -196,8 +204,12 @@ export const api = {
       return null;
     }
   },
-  loginWithGoogle(idToken: string) {
-    return request<Me>('/auth/google', { method: 'POST', body: JSON.stringify({ idToken }) });
+  // Sign in and sign up are the same call; acceptTerms is required when it creates the account.
+  loginWithGoogle(idToken: string, acceptTerms?: boolean) {
+    return request<{ user: Me; isNew: boolean }>('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ idToken, ...(acceptTerms && { acceptTerms }) }),
+    });
   },
   logout() {
     return request<void>('/auth/logout', { method: 'POST' });
@@ -286,5 +298,8 @@ export const api = {
   },
   updateMe(patch: UpdateProfileInput) {
     return request<Me>('/users/me', { method: 'PATCH', body: JSON.stringify(patch) });
+  },
+  completeOnboarding(input: OnboardingInput) {
+    return request<Me>('/users/me/onboarding', { method: 'POST', body: JSON.stringify(input) });
   },
 };

@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^5.9.1",
     "@react-oauth/google": "^0.13.5",
     "@vis.gl/react-google-maps": "^1.10.1",
+    "libphonenumber-js": "^1.13.15",
     "lucide-react": "^1.58.0",
     "next": "^16.4.0",
     "next-intl": "^4.14.9",

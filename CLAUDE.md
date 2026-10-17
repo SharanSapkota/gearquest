@@ -30,7 +30,9 @@ pnpm workspaces monorepo (Node >=22). No Turborepo.
   fetch only in src/lib/api.ts, locale proxy in src/proxy.ts (see apps/web/CLAUDE.md).
 - packages/shared: Zod schemas, inferred types, enums/constants. Consumed as TS source (no build).
 - Data model: docs/DATA_MODEL.md. Extra fields: Gear.publicLocation (offset, the only one exposed),
-  Gear.acceptSeq (serializes accept overlap checks), Rental.expiresAt, User.deletedAt.
+  Gear.acceptSeq (serializes accept overlap checks), Rental.expiresAt, User.deletedAt,
+  User.role (renter|owner|both), User.whatsappShareConsent + consentAt, User.termsAcceptedAt,
+  User.onboardingCompletedAt.
 
 Commands (repo root):
 - docker compose up -d   MongoDB replica set (transactions need it)

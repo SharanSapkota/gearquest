@@ -23,9 +23,15 @@ const userRecord = (overrides: Record<string, unknown> = {}) =>
     ...overrides,
   }) as unknown as UserRecord;
 
-function setup(verified: GoogleClaims | null = claims, user = userRecord()) {
+// existing: the user already in the database before this login (null = first login).
+function setup(
+  verified: GoogleClaims | null = claims,
+  user = userRecord(),
+  existing: UserRecord | null = user,
+) {
   const repo = {
-    upsertFromGoogle: vi.fn().mockResolvedValue(user),
+    findByGoogleId: vi.fn().mockResolvedValue(existing),
+    createFromGoogle: vi.fn().mockResolvedValue(user),
     findById: vi.fn().mockResolvedValue(user),
   };
   const verify = vi.fn().mockResolvedValue(verified ?? undefined);
@@ -33,25 +39,41 @@ function setup(verified: GoogleClaims | null = claims, user = userRecord()) {
 }
 
 describe('auth service', () => {
-  it('first login upserts the user from verified claims only', async () => {
-    const { service, repo } = setup();
-    const { user } = await service.loginWithGoogle('tok');
-    expect(repo.upsertFromGoogle).toHaveBeenCalledWith({
+  it('first login (signup) creates the user from verified claims, with onboarding incomplete', async () => {
+    const { service, repo } = setup(claims, userRecord(), null);
+    const { user, isNew } = await service.loginWithGoogle('tok', true);
+    expect(repo.createFromGoogle).toHaveBeenCalledWith({
       googleId: 'google-1',
       email: 'a@example.com',
       name: 'Anna',
       avatarUrl: 'https://img/a.png',
+      termsAcceptedAt: expect.any(Date),
     });
+    expect(isNew).toBe(true);
+    expect(user.onboardingCompleted).toBe(false);
     expect(user.email).toBe('a@example.com');
     expect(user).not.toHaveProperty('googleId');
   });
 
-  it('repeat login goes through the same upsert (no create call, no duplicate)', async () => {
-    const { service, repo } = setup();
+  it('blocks signup without terms acceptance and creates nothing', async () => {
+    const { service, repo } = setup(claims, userRecord(), null);
+    await expect(service.loginWithGoogle('tok')).rejects.toMatchObject({
+      status: 403,
+      code: 'auth.termsRequired',
+    });
+    await expect(service.loginWithGoogle('tok', false)).rejects.toMatchObject({ status: 403 });
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+  });
+
+  it('repeat login finds the existing user and never creates a duplicate', async () => {
+    const done = userRecord({ onboardingCompletedAt: new Date(), role: 'renter' });
+    const { service, repo } = setup(claims, done, done);
     const a = await service.loginWithGoogle('tok');
-    const b = await service.loginWithGoogle('tok');
-    expect(repo.upsertFromGoogle).toHaveBeenCalledTimes(2);
+    const b = await service.loginWithGoogle('tok', true);
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+    expect(a.isNew).toBe(false);
     expect(a.user.id).toBe(b.user.id);
+    expect(a.user.onboardingCompleted).toBe(true);
   });
 
   it('issues a token that authenticates the same user', async () => {
@@ -67,7 +89,8 @@ describe('auth service', () => {
   ])('rejects %s', async (_label, bad) => {
     const { service, repo } = setup(bad);
     await expect(service.loginWithGoogle('tok')).rejects.toMatchObject({ status: 401 });
-    expect(repo.upsertFromGoogle).not.toHaveBeenCalled();
+    expect(repo.findByGoogleId).not.toHaveBeenCalled();
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
   });
 
   it('rejects when the verifier throws', async () => {

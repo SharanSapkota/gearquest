@@ -28,7 +28,7 @@ export function RentalActions({ rental, ended }: { rental: Rental; ended: boolea
       ? rental.status === 'requested' || (rental.status === 'accepted' && !ended)
       : rental.status === 'accepted' && !ended;
   const canComplete = rental.status === 'accepted' && ended;
-  const ownerNeedsPhone = canDecide && !me?.phone;
+  const ownerNeedsPhone = canDecide && !(me?.phone && me.whatsappShareConsent);
 
   if (!canDecide && !canCancel && !canComplete) return null;
 

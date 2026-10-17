@@ -34,17 +34,25 @@ const gearRecord = {
   createdAt: new Date(),
 } as unknown as NonNullable<GearRecord>;
 
-function setup(user: UserRecord | null = userRecord) {
+const NOW = new Date('2026-06-01T10:00:00Z');
+
+function setup(user: UserRecord | null = userRecord, listed: unknown[] = [], accepted = 0) {
   const repo = {
     findById: vi.fn().mockResolvedValue(user),
     updateProfile: vi.fn().mockImplementation(async (_id: string, patch: object) => ({
-      ...userRecord,
+      ...user,
       ...patch,
     })),
   };
-  const gear = { findByOwner: vi.fn().mockResolvedValue([gearRecord]) };
-  return { repo, gear, service: createUsersService(repo, gear) };
+  const gear = {
+    findByOwner: vi.fn().mockResolvedValue([gearRecord]),
+    findAllByOwner: vi.fn().mockResolvedValue(listed),
+  };
+  const rentals = { countAcceptedByParty: vi.fn().mockResolvedValue(accepted) };
+  return { repo, gear, rentals, service: createUsersService(repo, gear, rentals, () => NOW) };
 }
+
+const newUser = { ...userRecord, phone: undefined } as unknown as UserRecord;
 
 describe('normalizePhone', () => {
   it.each([
@@ -129,5 +137,122 @@ describe('users service', () => {
   it('delete is a placeholder', async () => {
     const { service } = setup();
     await expect(service.deleteMe()).rejects.toMatchObject({ status: 501 });
+  });
+});
+
+describe('onboarding', () => {
+  it('renter onboarding succeeds without a phone and marks onboarding complete', async () => {
+    const { service, repo } = setup(newUser);
+    const me = await service.completeOnboarding('u1', { role: 'renter', name: 'Anna K', language: 'en' });
+    expect(repo.updateProfile).toHaveBeenCalledWith('u1', {
+      role: 'renter',
+      name: 'Anna K',
+      language: 'en',
+      onboardingCompletedAt: NOW,
+    });
+    expect(me.onboardingCompleted).toBe(true);
+  });
+
+  it.each(['owner', 'both'] as const)('%s onboarding fails without a phone', async (role) => {
+    const { service, repo } = setup(newUser);
+    await expect(
+      service.completeOnboarding('u1', { role, whatsappShareConsent: true }),
+    ).rejects.toMatchObject({ status: 409, code: 'owner.phoneRequired' });
+    expect(repo.updateProfile).not.toHaveBeenCalled();
+  });
+
+  it.each(['owner', 'both'] as const)('%s onboarding fails without consent', async (role) => {
+    const { service, repo } = setup(newUser);
+    for (const consent of [undefined, false]) {
+      await expect(
+        service.completeOnboarding('u1', { role, phone: '040 123 4567', whatsappShareConsent: consent }),
+      ).rejects.toMatchObject({ status: 409, code: 'owner.consentRequired' });
+    }
+    expect(repo.updateProfile).not.toHaveBeenCalled();
+  });
+
+  it('owner onboarding stores the phone as E.164 with consent time', async () => {
+    const { service, repo } = setup(newUser);
+    await service.completeOnboarding('u1', {
+      role: 'owner',
+      phone: '040 123 4567',
+      whatsappShareConsent: true,
+    });
+    expect(repo.updateProfile).toHaveBeenCalledWith('u1', {
+      role: 'owner',
+      phone: '+358401234567',
+      whatsappShareConsent: true,
+      consentAt: NOW,
+      onboardingCompletedAt: NOW,
+    });
+  });
+
+  it('rejects an invalid owner phone', async () => {
+    const { service } = setup(newUser);
+    await expect(
+      service.completeOnboarding('u1', { role: 'owner', phone: '123', whatsappShareConsent: true }),
+    ).rejects.toMatchObject({ status: 400, code: 'users.invalidPhone' });
+  });
+});
+
+describe('profile: owner requirements', () => {
+  it('becoming an owner requires a phone and consent', async () => {
+    const renter = { ...newUser, role: 'renter' } as unknown as UserRecord;
+    const { service, repo } = setup(renter);
+    await expect(service.updateMe('u1', { role: 'owner' })).rejects.toMatchObject({
+      code: 'owner.phoneRequired',
+    });
+    await expect(
+      service.updateMe('u1', { role: 'both', phone: '0401234567' }),
+    ).rejects.toMatchObject({ code: 'owner.consentRequired' });
+    expect(repo.updateProfile).not.toHaveBeenCalled();
+    await service.updateMe('u1', { role: 'owner', phone: '0401234567', whatsappShareConsent: true });
+    expect(repo.updateProfile).toHaveBeenCalledWith('u1', {
+      role: 'owner',
+      phone: '+358401234567',
+      whatsappShareConsent: true,
+      consentAt: NOW,
+    });
+  });
+
+  it.each([
+    ['active listings', [gearRecord], 0],
+    ['accepted rentals', [], 1],
+  ])('blocks removing the phone while the user has %s', async (_label, listed, accepted) => {
+    const { service, repo } = setup(userRecord, listed, accepted);
+    await expect(service.updateMe('u1', { phone: '' })).rejects.toMatchObject({
+      status: 409,
+      code: 'users.phoneInUse',
+    });
+    expect(repo.updateProfile).not.toHaveBeenCalled();
+  });
+
+  it('blocks withdrawing WhatsApp consent while the owner has listings', async () => {
+    const owner = { ...userRecord, role: 'owner', whatsappShareConsent: true } as unknown as UserRecord;
+    const { service } = setup(owner, [gearRecord]);
+    await expect(service.updateMe('u1', { whatsappShareConsent: false })).rejects.toMatchObject({
+      code: 'users.phoneInUse',
+    });
+  });
+
+  it('an owner without listings cannot drop the phone either, but can switch to renter first', async () => {
+    const owner = { ...userRecord, role: 'owner', whatsappShareConsent: true } as unknown as UserRecord;
+    const { service, repo } = setup(owner);
+    await expect(service.updateMe('u1', { phone: '' })).rejects.toMatchObject({
+      code: 'owner.phoneRequired',
+    });
+    await service.updateMe('u1', { role: 'renter', phone: '' });
+    expect(repo.updateProfile).toHaveBeenCalledWith('u1', { role: 'renter', phone: null });
+  });
+
+  it('own profile exposes role, consent and onboarding status', async () => {
+    const owner = {
+      ...userRecord,
+      role: 'both',
+      whatsappShareConsent: true,
+      onboardingCompletedAt: NOW,
+    } as unknown as UserRecord;
+    const me = await setup(owner).service.getMe('u1');
+    expect(me).toMatchObject({ role: 'both', whatsappShareConsent: true, onboardingCompleted: true });
   });
 });

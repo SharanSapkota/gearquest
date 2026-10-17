@@ -85,6 +85,15 @@ async function countOpenByRenter(renterId: string, now: Date) {
   return RentalModel.countDocuments({ renterId, status: 'requested', expiresAt: { $gt: now } });
 }
 
+// Accepted rentals where the user is either party: both phones are revealed in those.
+async function countAcceptedByParty(userId: string) {
+  if (!Types.ObjectId.isValid(userId)) return 0;
+  return RentalModel.countDocuments({
+    status: 'accepted',
+    $or: [{ ownerId: userId }, { renterId: userId }],
+  });
+}
+
 async function existsAcceptedOverlap(gearId: string, startAt: Date, endAt: Date) {
   return (await RentalModel.exists(buildOverlapQuery(gearId, startAt, endAt))) !== null;
 }
@@ -154,6 +163,7 @@ export const rentalsRepository = {
   findById,
   findMine,
   countOpenByRenter,
+  countAcceptedByParty,
   existsAcceptedOverlap,
   findAcceptedInWindow,
   transition,

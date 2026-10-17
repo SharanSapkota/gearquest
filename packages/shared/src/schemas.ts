@@ -13,6 +13,7 @@ import {
   RENTAL_MODES,
   RENTAL_STATUSES,
   REVIEW_ROLES,
+  USER_ROLES,
 } from './constants';
 
 export const localeSchema = z.enum(LOCALES);
@@ -22,6 +23,7 @@ export const gearStatusSchema = z.enum(GEAR_STATUSES);
 export const rentalModeSchema = z.enum(RENTAL_MODES);
 export const rentalStatusSchema = z.enum(RENTAL_STATUSES);
 export const reviewRoleSchema = z.enum(REVIEW_ROLES);
+export const userRoleSchema = z.enum(USER_ROLES);
 
 const cents = z.number().int().positive();
 
@@ -122,7 +124,11 @@ export const gearFiltersSchema = z
 export type GearFilters = z.infer<typeof gearFiltersSchema>;
 export type GearFiltersInput = z.input<typeof gearFiltersSchema>;
 
-export const googleLoginSchema = z.object({ idToken: z.string().min(1) });
+// acceptTerms is required (true) only when this login creates a new account (signup).
+export const googleLoginSchema = z.object({
+  idToken: z.string().min(1),
+  acceptTerms: z.boolean().optional(),
+});
 export type GoogleLoginInput = z.infer<typeof googleLoginSchema>;
 
 // Phone format (Finnish or E.164) is validated and normalized server-side in the users service.
@@ -133,9 +139,21 @@ export const updateProfileSchema = z
     bio: z.string().trim().max(1000),
     language: localeSchema,
     phone: z.string().trim().max(30),
+    role: userRoleSchema,
+    whatsappShareConsent: z.boolean(),
   })
   .partial();
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+// Step 2 of onboarding. Phone and consent are required for owners; the service enforces that.
+export const onboardingSchema = z.object({
+  role: userRoleSchema,
+  name: z.string().trim().min(1).max(100).optional(),
+  language: localeSchema.optional(),
+  phone: z.string().trim().max(30).optional(),
+  whatsappShareConsent: z.boolean().optional(),
+});
+export type OnboardingInput = z.infer<typeof onboardingSchema>;
 
 // Response of POST /uploads/sign: everything the browser needs for a direct signed Cloudinary upload.
 export type UploadSignature = {

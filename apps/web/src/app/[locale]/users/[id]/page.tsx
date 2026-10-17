@@ -3,11 +3,11 @@ import { notFound } from 'next/navigation';
 import { buttonClass } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Avatar } from '@/components/ui/Avatar';
-import { ShieldCheckIcon, StarIcon } from '@/components/ui/icons';
+import { PlusIcon, ShieldCheckIcon, StarIcon } from '@/components/ui/icons';
 import { GearGrid } from '@/components/gear/GearGrid';
 import { Link } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser, isOwner } from '@/lib/auth';
 
 export default async function ProfilePage({
   params,
@@ -47,9 +47,25 @@ export default async function ProfilePage({
           </p>
           {profile.bio && <p>{profile.bio}</p>}
           {me?.id === profile.id && (
-            <Link href="/profile/edit" className={buttonClass({ variant: 'outline', size: 'sm' })}>
-              {t('profile.edit')}
-            </Link>
+            <div className="profile__actions">
+              <Link href="/profile/edit" className={buttonClass({ variant: 'outline', size: 'sm' })}>
+                {t('profile.edit')}
+              </Link>
+              {isOwner(me) ? (
+                <Link href="/gear/new" className={buttonClass({ size: 'sm' })}>
+                  <PlusIcon size={16} />
+                  {t('profile.addGear')}
+                </Link>
+              ) : (
+                <Link
+                  href={{ pathname: '/profile/edit', query: { role: 'owner' } }}
+                  className={buttonClass({ variant: 'secondary', size: 'sm' })}
+                  title={t('profile.becomeOwnerText')}
+                >
+                  {t('profile.becomeOwner')}
+                </Link>
+              )}
+            </div>
           )}
         </div>
       </section>

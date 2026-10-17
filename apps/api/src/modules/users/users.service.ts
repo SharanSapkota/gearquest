@@ -1,13 +1,16 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import type { UpdateProfileInput } from '@gearshare/shared';
+import type { OnboardingInput, UpdateProfileInput } from '@gearshare/shared';
 import { AppError, notFound } from '../../lib/errors';
 import { toPublicGear } from '../gear/gear.mapper';
-import type { GearRecord } from '../gear/gear.repository';
+import type { GearRepository } from '../gear/gear.repository';
+import type { RentalsRepository } from '../rentals/rentals.repository';
 import { toPrivateUser, toPublicUser } from './users.mapper';
-import type { UsersRepository } from './users.repository';
+import { assertOwnerReady, isOwnerRole } from './users.policy';
+import type { ProfilePatch, UsersRepository } from './users.repository';
 
 type Repo = Pick<UsersRepository, 'findById' | 'updateProfile'>;
-type GearLookup = { findByOwner: (ownerId: string) => Promise<NonNullable<GearRecord>[]> };
+type GearLookup = Pick<GearRepository, 'findByOwner' | 'findAllByOwner'>;
+type RentalLookup = Pick<RentalsRepository, 'countAcceptedByParty'>;
 
 // Finnish national numbers (040 123 4567) and international numbers; stored as E.164.
 export function normalizePhone(input: string): string {
@@ -16,29 +19,85 @@ export function normalizePhone(input: string): string {
   return parsed.number;
 }
 
-export function createUsersService(repo: Repo, gear: GearLookup) {
+export function createUsersService(
+  repo: Repo,
+  gear: GearLookup,
+  rentals: RentalLookup,
+  clock: () => Date = () => new Date(),
+) {
+  async function load(userId: string) {
+    const user = await repo.findById(userId);
+    if (!user) throw notFound('users.notFound');
+    return user;
+  }
+
+  async function save(userId: string, patch: ProfilePatch) {
+    const user = await repo.updateProfile(userId, patch);
+    if (!user) throw notFound('users.notFound');
+    return toPrivateUser(user);
+  }
+
+  // Listings and accepted rentals rely on the phone (it is revealed after acceptance).
+  async function assertPhoneNotInUse(userId: string) {
+    const [listed, accepted] = await Promise.all([
+      gear.findAllByOwner(userId),
+      rentals.countAcceptedByParty(userId),
+    ]);
+    if (listed.length > 0 || accepted > 0) throw new AppError(409, 'users.phoneInUse');
+  }
+
   return {
     async getPublicProfile(id: string) {
-      const user = await repo.findById(id);
-      if (!user) throw notFound('users.notFound');
+      const user = await load(id);
       const listed = await gear.findByOwner(id);
       return { ...toPublicUser(user), gear: listed.map(toPublicGear) };
     },
     async getMe(userId: string) {
-      const user = await repo.findById(userId);
-      if (!user) throw notFound('users.notFound');
-      return toPrivateUser(user);
+      return toPrivateUser(await load(userId));
     },
     // Always writes to the caller's own id: there is no way to address another user's profile.
     async updateMe(userId: string, input: UpdateProfileInput) {
-      const { phone, ...rest } = input;
-      const patch = {
+      const { phone, whatsappShareConsent, ...rest } = input;
+      const current = await load(userId);
+      const nextPhone =
+        phone === undefined ? current.phone : phone === '' ? null : normalizePhone(phone);
+      const nextConsent = whatsappShareConsent ?? Boolean(current.whatsappShareConsent);
+
+      const removesPhone = Boolean(current.phone) && !nextPhone;
+      const withdrawsConsent = Boolean(current.whatsappShareConsent) && !nextConsent;
+      if (removesPhone || withdrawsConsent) await assertPhoneNotInUse(userId);
+
+      const touchesOwnerFields =
+        phone !== undefined || whatsappShareConsent !== undefined || input.role !== undefined;
+      if (touchesOwnerFields && isOwnerRole(input.role ?? current.role)) {
+        assertOwnerReady({ phone: nextPhone, whatsappShareConsent: nextConsent });
+      }
+
+      return save(userId, {
         ...rest,
-        ...(phone !== undefined && { phone: phone === '' ? null : normalizePhone(phone) }),
-      };
-      const user = await repo.updateProfile(userId, patch);
-      if (!user) throw notFound('users.notFound');
-      return toPrivateUser(user);
+        ...(phone !== undefined && { phone: nextPhone ?? null }),
+        ...(whatsappShareConsent !== undefined && { whatsappShareConsent }),
+        ...(whatsappShareConsent && !current.whatsappShareConsent && { consentAt: clock() }),
+      });
+    },
+    // Step 2 of onboarding. Owners must give a phone and consent; renters may skip the phone.
+    async completeOnboarding(userId: string, input: OnboardingInput) {
+      const { role, name, language, phone, whatsappShareConsent } = input;
+      const current = await load(userId);
+      const owner = isOwnerRole(role);
+      const normalized = phone ? normalizePhone(phone) : undefined;
+      if (owner) {
+        assertOwnerReady({ phone: normalized ?? current.phone, whatsappShareConsent });
+      }
+      const now = clock();
+      return save(userId, {
+        role,
+        ...(name && { name }),
+        ...(language && { language }),
+        ...(normalized && { phone: normalized }),
+        ...(owner && !current.whatsappShareConsent && { whatsappShareConsent: true, consentAt: now }),
+        onboardingCompletedAt: now,
+      });
     },
     // Placeholder: real account deletion (GDPR) comes in Prompt 9.
     async deleteMe(): Promise<never> {

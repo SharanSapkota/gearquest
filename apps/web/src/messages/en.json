@@ -15,7 +15,8 @@
     "pendingRequests": "{count, plural, one {# pending request} other {# pending requests}}",
     "addGear": "Add gear",
     "profile": "Profile",
-    "rentalsShort": "Rentals"
+    "rentalsShort": "Rentals",
+    "signUp": "Sign up"
   },
   "home": {
     "title": "Rent the gear. Skip the buying.",
@@ -159,7 +160,22 @@
   "auth": {
     "signingIn": "Signing in…",
     "signInFailed": "Sign-in failed. Try again.",
-    "notConfigured": "Google sign-in is not configured."
+    "notConfigured": "Google sign-in is not configured.",
+    "signInTitle": "Sign in",
+    "signInIntro": "Welcome back. Sign in with your Google account.",
+    "signUpTitle": "Create your account",
+    "signUpIntro": "GearShare uses your Google account, so there is no new password to remember.",
+    "noAccount": "New to GearShare?",
+    "signUpLink": "Create an account",
+    "haveAccount": "Already have an account?",
+    "signInLink": "Sign in",
+    "acceptTerms": "I accept the <terms>Terms</terms> and <privacy>Privacy Policy</privacy>",
+    "acceptTermsFirst": "Accept the Terms and Privacy Policy to continue with Google.",
+    "dev": {
+      "googleError": "Dev: Google sign-in failed in the browser. Check that Authorized JavaScript origins in Google Cloud include exactly {origin}.",
+      "apiUnreachable": "Dev: the API could not be reached at {url}. Is it running, and is the root .env loaded?",
+      "apiRejected": "Dev: the API rejected sign-in ({code}). The API terminal logs the reason."
+    }
   },
   "profile": {
     "loading": "Loading…",
@@ -179,7 +195,21 @@
     "language": "Language",
     "save": "Save",
     "saving": "Saving…",
-    "saveFailed": "Saving failed. Try again."
+    "saveFailed": "Saving failed. Try again.",
+    "role": "How I use GearShare",
+    "roles": {
+      "renter": "Renter: I rent gear",
+      "owner": "Owner: I rent out my gear",
+      "both": "Both"
+    },
+    "consent": "I agree that my WhatsApp number is shared with a renter only after I accept their rental request.",
+    "privacyText": "Your number is never shown on your profile or listings. A renter sees it only after you accept their request, so you can agree on pickup on WhatsApp.",
+    "ownerPhoneRequired": "Owners need a mobile number.",
+    "consentRequired": "Owners need to agree to sharing the number after acceptance.",
+    "phoneInUse": "You cannot remove your number or consent while you have listings or accepted rentals. Delete or finish them first.",
+    "becomeOwner": "Become an owner",
+    "becomeOwnerText": "Earn from gear you are not using. Add a mobile number to start listing.",
+    "addGear": "Add gear"
   },
   "gearForm": {
     "createTitle": "Add gear",
@@ -329,7 +359,6 @@
       "ownGear": "You cannot rent your own gear.",
       "tooManyOpenRequests": "You have too many open requests. Wait for answers or cancel some.",
       "renterPhoneRequired": "Add a phone number to your profile before requesting a rental.",
-      "ownerPhoneRequired": "Add a phone number to your profile before accepting a rental.",
       "gearNotActive": "This gear is not available for rent right now.",
       "startInPast": "The start must be in the future.",
       "invalidRange": "The end must be after the start.",
@@ -352,6 +381,10 @@
       "rateLimited": "Too many requests. Wait a moment and try again.",
       "unauthorized": "Sign in to continue.",
       "validation": "Check the details and try again."
+    },
+    "owner": {
+      "phoneRequired": "Add your mobile number in your profile first.",
+      "consentRequired": "Agree to share your number after acceptance in your profile first."
     }
   },
   "rentals": {
@@ -390,7 +423,7 @@
     "decline": "Decline",
     "cancel": "Cancel request",
     "complete": "Mark as completed",
-    "ownerPhoneNeeded": "Add your phone number to accept requests.",
+    "ownerPhoneNeeded": "Add your mobile number and WhatsApp consent to accept requests.",
     "addPhone": "Edit profile",
     "confirm": {
       "acceptTitle": "Confirm acceptance",
@@ -431,5 +464,53 @@
     "pickStart": "Choose the first day.",
     "pickEnd": "Choose the last day.",
     "clearDates": "Clear dates"
+  },
+  "legalPages": {
+    "terms": {
+      "title": "Terms of Service",
+      "body": "The full terms are being prepared and will be published here before launch."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "body": "The full privacy policy is being prepared and will be published here before launch."
+    }
+  },
+  "onboarding": {
+    "title": "Welcome to GearShare",
+    "progress": "Step {current} of {total}",
+    "roleTitle": "How do you want to use GearShare?",
+    "renterTitle": "Renter",
+    "renterText": "I want to rent gear",
+    "ownerTitle": "Owner",
+    "ownerText": "I want to rent out my gear",
+    "both": "I want to do both",
+    "roleHint": "You can change this later in your profile.",
+    "continue": "Continue",
+    "back": "Back",
+    "finish": "Finish",
+    "saving": "Saving…",
+    "detailsTitle": "A few details",
+    "displayName": "Display name",
+    "language": "Language",
+    "renterPhoneNote": "You can add a phone number later, when you send your first rental request.",
+    "contactTitle": "Your contact number",
+    "phone": "Mobile number (WhatsApp)",
+    "phoneHint": "Finnish numbers start with +358.",
+    "phoneInvalid": "Enter a valid mobile number, for example +358 40 123 4567.",
+    "privacyTitle": "Your number stays private",
+    "privacyText": "Your number is never shown on your profile or listings. A renter sees it only after you accept their request, so you can agree on pickup on WhatsApp.",
+    "consent": "I agree that my WhatsApp number is shared with a renter only after I accept their rental request.",
+    "consentRequired": "You need to agree to this to rent out gear.",
+    "gearTitle": "Add your first gear",
+    "gearText": "Photos, a location and a price are all it takes. You can also do this later.",
+    "addGear": "Add your first gear",
+    "skip": "Skip for now",
+    "saveFailed": "Saving failed. Try again."
+  },
+  "gearGate": {
+    "title": "Rent out your gear",
+    "notOwner": "To list gear, switch your profile to owner and add your mobile number.",
+    "missingDetails": "Before listing gear, add your mobile number and agree to share it with renters after you accept a request.",
+    "action": "Complete owner details"
   }
 }

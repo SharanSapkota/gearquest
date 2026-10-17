@@ -42,7 +42,8 @@
   align-items: center;
   gap: 0.5rem;
 }
-.header__signin {
+.header__signin,
+.header__add {
   display: none;
 }
 
@@ -168,7 +169,8 @@
 }
 @media (min-width: 768px) {
   .tabs,
-  .header__signin {
+  .header__signin,
+  .header__add {
     display: inline-flex;
   }
   .tabbar {

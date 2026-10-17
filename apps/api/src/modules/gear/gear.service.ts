@@ -2,6 +2,8 @@ import type { CreateGearInput, GearFilters, UpdateGearInput } from '@gearshare/s
 import { GEAR_IMAGE_FOLDER, MAP_LOCATION_OFFSET_METERS, MAX_GEAR_IMAGES } from '@gearshare/shared';
 import { AppError, forbidden, notFound } from '../../lib/errors';
 import { toOwnerGear, toPublicGear, toPublicGearDetail } from './gear.mapper';
+import { assertOwnerReady } from '../users/users.policy';
+import type { UsersRepository } from '../users/users.repository';
 import type { GearRepository, Point } from './gear.repository';
 
 type Repo = Pick<
@@ -45,6 +47,7 @@ export function isOwnImageUrl(value: string, cloudName: string): boolean {
 
 export function createGearService(
   repo: Repo,
+  users: Pick<UsersRepository, 'findById'>,
   rng: () => number = Math.random,
   cloudName: string = '',
 ) {
@@ -77,6 +80,7 @@ export function createGearService(
       return toPublicGearDetail(gear);
     },
     async create(userId: string, input: CreateGearInput) {
+      assertOwnerReady(await users.findById(userId));
       assertImages(input.images);
       const gear = await repo.create(userId, {
         ...input,

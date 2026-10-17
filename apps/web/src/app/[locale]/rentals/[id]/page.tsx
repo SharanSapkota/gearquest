@@ -2,9 +2,9 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { buttonClass } from '@/components/ui/Button';
 import { RentalCard } from '@/components/rentals/RentalCard';
-import { Link, redirect } from '@/i18n/navigation';
+import { Link } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
-import { getCurrentUser } from '@/lib/auth';
+import { requireUser } from '@/lib/auth';
 import { getNow } from '@/lib/format';
 
 export default async function RentalDetailPage({
@@ -14,8 +14,7 @@ export default async function RentalDetailPage({
 }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
-  const user = await getCurrentUser();
-  if (!user) return redirect({ href: '/', locale });
+  await requireUser(locale, `/rentals/${id}`);
   const t = await getTranslations('rentals');
   // The API answers 404 for non-parties, so a rental's existence is never leaked.
   const rental = await api.getRental(id).catch((err: unknown) => {

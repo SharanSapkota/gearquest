@@ -15,7 +15,8 @@
     "pendingRequests": "{count, plural, one {# odottava pyyntö} other {# odottavaa pyyntöä}}",
     "addGear": "Lisää väline",
     "profile": "Profiili",
-    "rentalsShort": "Vuokraukset"
+    "rentalsShort": "Vuokraukset",
+    "signUp": "Rekisteröidy"
   },
   "home": {
     "title": "Vuokraa varusteet. Jätä ostamatta.",
@@ -159,7 +160,22 @@
   "auth": {
     "signingIn": "Kirjaudutaan sisään…",
     "signInFailed": "Kirjautuminen epäonnistui. Yritä uudelleen.",
-    "notConfigured": "Google-kirjautumista ei ole määritetty."
+    "notConfigured": "Google-kirjautumista ei ole määritetty.",
+    "signInTitle": "Kirjaudu sisään",
+    "signInIntro": "Tervetuloa takaisin. Kirjaudu Google-tililläsi.",
+    "signUpTitle": "Luo tili",
+    "signUpIntro": "GearShare käyttää Google-tiliäsi, joten uutta salasanaa ei tarvitse muistaa.",
+    "noAccount": "Uusi GearSharessa?",
+    "signUpLink": "Luo tili",
+    "haveAccount": "Onko sinulla jo tili?",
+    "signInLink": "Kirjaudu sisään",
+    "acceptTerms": "Hyväksyn <terms>käyttöehdot</terms> ja <privacy>tietosuojaselosteen</privacy>",
+    "acceptTermsFirst": "Hyväksy käyttöehdot ja tietosuojaseloste jatkaaksesi Googlella.",
+    "dev": {
+      "googleError": "Kehitys: Google-kirjautuminen epäonnistui selaimessa. Tarkista, että Google Cloudin Authorized JavaScript origins sisältää täsmälleen {origin}.",
+      "apiUnreachable": "Kehitys: API:in ei saatu yhteyttä osoitteessa {url}. Onko se käynnissä ja onko juuren .env ladattu?",
+      "apiRejected": "Kehitys: API hylkäsi kirjautumisen ({code}). Syy näkyy API:n terminaalissa."
+    }
   },
   "profile": {
     "loading": "Ladataan…",
@@ -179,7 +195,21 @@
     "language": "Kieli",
     "save": "Tallenna",
     "saving": "Tallennetaan…",
-    "saveFailed": "Tallennus epäonnistui. Yritä uudelleen."
+    "saveFailed": "Tallennus epäonnistui. Yritä uudelleen.",
+    "role": "Miten käytän GearSharea",
+    "roles": {
+      "renter": "Vuokraaja: vuokraan varusteita",
+      "owner": "Omistaja: vuokraan omia varusteitani",
+      "both": "Molemmat"
+    },
+    "consent": "Hyväksyn, että WhatsApp-numeroni jaetaan vuokraajalle vasta, kun olen hyväksynyt hänen vuokrauspyyntönsä.",
+    "privacyText": "Numeroasi ei koskaan näytetä profiilissasi tai ilmoituksissasi. Vuokraaja näkee sen vasta, kun olet hyväksynyt hänen pyyntönsä, jotta voitte sopia noudosta WhatsAppissa.",
+    "ownerPhoneRequired": "Omistajalla on oltava matkapuhelinnumero.",
+    "consentRequired": "Omistajan on hyväksyttävä numeron jakaminen hyväksynnän jälkeen.",
+    "phoneInUse": "Et voi poistaa numeroasi tai hyväksyntääsi, kun sinulla on ilmoituksia tai hyväksyttyjä vuokrauksia. Poista tai päätä ne ensin.",
+    "becomeOwner": "Ryhdy omistajaksi",
+    "becomeOwnerText": "Ansaitse varusteilla, joita et juuri nyt käytä. Lisää matkapuhelinnumero aloittaaksesi.",
+    "addGear": "Lisää väline"
   },
   "gearForm": {
     "createTitle": "Lisää varuste",
@@ -329,7 +359,6 @@
       "ownGear": "Et voi vuokrata omaa varustettasi.",
       "tooManyOpenRequests": "Sinulla on liian monta avointa pyyntöä. Odota vastauksia tai peru joitakin.",
       "renterPhoneRequired": "Lisää profiiliisi puhelinnumero ennen vuokrauspyyntöä.",
-      "ownerPhoneRequired": "Lisää profiiliisi puhelinnumero ennen vuokrauksen hyväksymistä.",
       "gearNotActive": "Tämä varuste ei ole juuri nyt vuokrattavissa.",
       "startInPast": "Alkamisajan on oltava tulevaisuudessa.",
       "invalidRange": "Päättymisen on oltava alkamisen jälkeen.",
@@ -352,6 +381,10 @@
       "rateLimited": "Liian monta pyyntöä. Odota hetki ja yritä uudelleen.",
       "unauthorized": "Kirjaudu sisään jatkaaksesi.",
       "validation": "Tarkista tiedot ja yritä uudelleen."
+    },
+    "owner": {
+      "phoneRequired": "Lisää ensin matkapuhelinnumerosi profiiliin.",
+      "consentRequired": "Hyväksy ensin profiilissasi numeron jakaminen hyväksynnän jälkeen."
     }
   },
   "rentals": {
@@ -390,7 +423,7 @@
     "decline": "Hylkää",
     "cancel": "Peru pyyntö",
     "complete": "Merkitse valmiiksi",
-    "ownerPhoneNeeded": "Lisää puhelinnumerosi hyväksyäksesi pyyntöjä.",
+    "ownerPhoneNeeded": "Lisää matkapuhelinnumerosi ja WhatsApp-hyväksyntä hyväksyäksesi pyyntöjä.",
     "addPhone": "Muokkaa profiilia",
     "confirm": {
       "acceptTitle": "Vahvista hyväksyntä",
@@ -431,5 +464,53 @@
     "pickStart": "Valitse ensimmäinen päivä.",
     "pickEnd": "Valitse viimeinen päivä.",
     "clearDates": "Tyhjennä päivät"
+  },
+  "legalPages": {
+    "terms": {
+      "title": "Käyttöehdot",
+      "body": "Käyttöehtoja valmistellaan, ja ne julkaistaan tällä sivulla ennen palvelun avaamista."
+    },
+    "privacy": {
+      "title": "Tietosuojaseloste",
+      "body": "Tietosuojaselostetta valmistellaan, ja se julkaistaan tällä sivulla ennen palvelun avaamista."
+    }
+  },
+  "onboarding": {
+    "title": "Tervetuloa GearShareen",
+    "progress": "Vaihe {current}/{total}",
+    "roleTitle": "Miten haluat käyttää GearSharea?",
+    "renterTitle": "Vuokraaja",
+    "renterText": "Haluan vuokrata varusteita",
+    "ownerTitle": "Omistaja",
+    "ownerText": "Haluan vuokrata omia varusteitani",
+    "both": "Haluan tehdä molempia",
+    "roleHint": "Voit muuttaa tätä myöhemmin profiilissasi.",
+    "continue": "Jatka",
+    "back": "Takaisin",
+    "finish": "Valmis",
+    "saving": "Tallennetaan…",
+    "detailsTitle": "Muutama tieto",
+    "displayName": "Näyttönimi",
+    "language": "Kieli",
+    "renterPhoneNote": "Voit lisätä puhelinnumeron myöhemmin, kun lähetät ensimmäisen vuokrauspyyntösi.",
+    "contactTitle": "Yhteysnumerosi",
+    "phone": "Matkapuhelinnumero (WhatsApp)",
+    "phoneHint": "Suomalaiset numerot alkavat +358.",
+    "phoneInvalid": "Anna kelvollinen matkapuhelinnumero, esimerkiksi +358 40 123 4567.",
+    "privacyTitle": "Numerosi pysyy yksityisenä",
+    "privacyText": "Numeroasi ei koskaan näytetä profiilissasi tai ilmoituksissasi. Vuokraaja näkee sen vasta, kun olet hyväksynyt hänen pyyntönsä, jotta voitte sopia noudosta WhatsAppissa.",
+    "consent": "Hyväksyn, että WhatsApp-numeroni jaetaan vuokraajalle vasta, kun olen hyväksynyt hänen vuokrauspyyntönsä.",
+    "consentRequired": "Tämä hyväksyntä tarvitaan varusteiden vuokraamiseen.",
+    "gearTitle": "Lisää ensimmäinen välineesi",
+    "gearText": "Tarvitset vain kuvat, sijainnin ja hinnan. Voit tehdä tämän myös myöhemmin.",
+    "addGear": "Lisää ensimmäinen välineesi",
+    "skip": "Ohita toistaiseksi",
+    "saveFailed": "Tallennus epäonnistui. Yritä uudelleen."
+  },
+  "gearGate": {
+    "title": "Vuokraa omia varusteitasi",
+    "notOwner": "Lisätäksesi varusteita vaihda profiilisi omistajaksi ja lisää matkapuhelinnumerosi.",
+    "missingDetails": "Ennen ilmoittamista lisää matkapuhelinnumerosi ja hyväksy sen jakaminen vuokraajalle pyynnön hyväksymisen jälkeen.",
+    "action": "Täydennä omistajan tiedot"
   }
 }

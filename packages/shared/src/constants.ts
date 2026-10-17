@@ -23,6 +23,8 @@ export const RENTAL_STATUSES = [
   'expired',
 ] as const;
 export const REVIEW_ROLES = ['owner', 'renter'] as const;
+// How a user uses GearShare, chosen in onboarding and changeable in profile settings.
+export const USER_ROLES = ['renter', 'owner', 'both'] as const;
 
 export const GEAR_SORTS = ['newest', 'priceAsc', 'priceDesc'] as const;
 

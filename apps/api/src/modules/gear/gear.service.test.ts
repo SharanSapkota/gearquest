@@ -26,6 +26,11 @@ const record = {
   createdAt: new Date(),
 };
 
+// An owner with phone and WhatsApp consent on file.
+const readyOwners = {
+  findById: vi.fn().mockResolvedValue({ _id: 'u1', phone: '+358401234567', whatsappShareConsent: true }),
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const asRecord = (r: unknown) => r as any;
 
@@ -103,19 +108,19 @@ describe('gear validation schemas', () => {
 
 describe('gear service: reads', () => {
   it('never exposes exact location or address', async () => {
-    const { items } = await createGearService(makeRepo()).list(gearFiltersSchema.parse({}));
+    const { items } = await createGearService(makeRepo(), readyOwners).list(gearFiltersSchema.parse({}));
     expect(items[0]).not.toHaveProperty('address');
     expect(items[0]?.location).toEqual([24.901, 60.102]);
   });
 
   it('returns pagination metadata', async () => {
-    const res = await createGearService(makeRepo()).list(gearFiltersSchema.parse({ page: '2', limit: '10' }));
+    const res = await createGearService(makeRepo(), readyOwners).list(gearFiltersSchema.parse({ page: '2', limit: '10' }));
     expect(res).toMatchObject({ total: 1, page: 2, limit: 10 });
   });
 
   it('throws gear.notFound for a missing gear', async () => {
     const repo = makeRepo({ findDetail: vi.fn().mockResolvedValue(null) });
-    await expect(createGearService(repo).get('x')).rejects.toMatchObject({
+    await expect(createGearService(repo, readyOwners).get('x')).rejects.toMatchObject({
       status: 404,
       code: 'gear.notFound',
     });
@@ -127,7 +132,7 @@ describe('gear service: reads', () => {
       ownerId: { _id: 'u1', name: 'Anna', avatarUrl: 'a.png', ratingAvg: 4.5, phone: '+358', email: 'a@b.fi' },
     };
     const repo = makeRepo({ findDetail: vi.fn().mockResolvedValue(asRecord(detail)) });
-    const res = await createGearService(repo).get('g1');
+    const res = await createGearService(repo, readyOwners).get('g1');
     expect(res.owner).toEqual({ id: 'u1', name: 'Anna', avatarUrl: 'a.png', rating: 4.5 });
     expect(res.ownerId).toBe('u1');
     expect(JSON.stringify(res)).not.toMatch(/phone|email|Secret street/);
@@ -137,7 +142,7 @@ describe('gear service: reads', () => {
 describe('gear service: owner-only writes', () => {
   it('lets the owner update and delete', async () => {
     const repo = makeRepo();
-    const service = createGearService(repo);
+    const service = createGearService(repo, readyOwners);
     await expect(service.update('u1', 'g1', { title: 'Better skis' })).resolves.toMatchObject({
       title: 'Better skis',
     });
@@ -147,7 +152,7 @@ describe('gear service: owner-only writes', () => {
 
   it('forbids a non-owner from updating or deleting', async () => {
     const repo = makeRepo();
-    const service = createGearService(repo);
+    const service = createGearService(repo, readyOwners);
     await expect(service.update('u2', 'g1', { title: 'x' })).rejects.toMatchObject({
       status: 403,
       code: 'gear.forbidden',
@@ -158,7 +163,7 @@ describe('gear service: owner-only writes', () => {
   });
 
   it('returns 404 for a missing or deleted gear', async () => {
-    const service = createGearService(makeRepo({ findById: vi.fn().mockResolvedValue(null) }));
+    const service = createGearService(makeRepo({ findById: vi.fn().mockResolvedValue(null) }), readyOwners);
     await expect(service.update('u1', 'g1', {})).rejects.toMatchObject({ status: 404 });
     await expect(service.remove('u1', 'g1')).rejects.toMatchObject({ status: 404 });
   });
@@ -178,7 +183,7 @@ describe('gear service: location fuzzing', () => {
 
   it('stores a public location different from the exact one on create', async () => {
     const repo = makeRepo();
-    const res = await createGearService(repo, () => 0.5).create('u1', validInput);
+    const res = await createGearService(repo, readyOwners, () => 0.5).create('u1', validInput);
     const data = repo.create.mock.calls[0]?.[1];
     expect(data.location.coordinates).toEqual([24.9, 60.1]);
     expect(data.publicLocation.coordinates).not.toEqual([24.9, 60.1]);
@@ -187,7 +192,7 @@ describe('gear service: location fuzzing', () => {
 
   it('regenerates the public location only when location changes', async () => {
     const repo = makeRepo();
-    const service = createGearService(repo, () => 0.5);
+    const service = createGearService(repo, readyOwners, () => 0.5);
     await service.update('u1', 'g1', { title: 'Renamed' });
     expect(repo.update.mock.calls[0]?.[1]).not.toHaveProperty('publicLocation');
     await service.update('u1', 'g1', { location: { lng: 25, lat: 61 } });
@@ -202,7 +207,7 @@ const img = (name: string, cloud = CLOUD) =>
   `https://res.cloudinary.com/${cloud}/image/upload/v1700000000/gear/${name}.jpg`;
 
 describe('gear service: image validation', () => {
-  const service = (repo = makeRepo()) => ({ repo, svc: createGearService(repo, () => 0.5, CLOUD) });
+  const service = (repo = makeRepo()) => ({ repo, svc: createGearService(repo, readyOwners, () => 0.5, CLOUD) });
 
   it('accepts our own Cloudinary images, up to 6', async () => {
     const { svc } = service();
@@ -258,7 +263,7 @@ describe('gear service: image validation', () => {
 describe('gear service: status and owner listing', () => {
   it('lets the owner pause and activate, and forbids others', async () => {
     const repo = makeRepo();
-    const svc = createGearService(repo, () => 0.5, CLOUD);
+    const svc = createGearService(repo, readyOwners, () => 0.5, CLOUD);
     await expect(svc.update('u1', 'g1', { status: 'paused' })).resolves.toMatchObject({ status: 'paused' });
     expect(repo.update.mock.calls[0]?.[1]).toMatchObject({ status: 'paused' });
     await expect(svc.update('u2', 'g1', { status: 'active' })).rejects.toMatchObject({ status: 403 });
@@ -281,7 +286,7 @@ describe('gear service: status and owner listing', () => {
       }),
       findAllByOwner: vi.fn().mockResolvedValue(all),
     });
-    const svc = createGearService(repo, () => 0.5, CLOUD);
+    const svc = createGearService(repo, readyOwners, () => 0.5, CLOUD);
 
     const pub = await svc.list(gearFiltersSchema.parse({}));
     expect(pub.items.map((g) => g.id)).toEqual(['g1']);
@@ -292,10 +297,38 @@ describe('gear service: status and owner listing', () => {
   });
 
   it('returns the exact pin only in the owner view, and the public view stays offset', async () => {
-    const svc = createGearService(makeRepo(), () => 0.5, CLOUD);
+    const svc = createGearService(makeRepo(), readyOwners, () => 0.5, CLOUD);
     const { items } = await svc.listMine('u1');
     expect(items[0]?.exactLocation).toEqual({ lng: 24.9, lat: 60.1 });
     const pub = await svc.list(gearFiltersSchema.parse({}));
     expect(pub.items[0]).not.toHaveProperty('exactLocation');
+  });
+});
+
+describe('gear service: owner readiness on create', () => {
+  const owners = (user: object | null) => ({ findById: vi.fn().mockResolvedValue(user) });
+  const create = (user: object | null, repo = makeRepo()) =>
+    createGearService(repo, owners(user), () => 0.5).create('u1', validInput);
+
+  it('rejects an owner without a phone, without writing', async () => {
+    const repo = makeRepo();
+    await expect(create({ _id: 'u1', whatsappShareConsent: true }, repo)).rejects.toMatchObject({
+      status: 409,
+      code: 'owner.phoneRequired',
+    });
+    expect(repo.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects an owner without WhatsApp consent', async () => {
+    await expect(create({ _id: 'u1', phone: '+358401234567' })).rejects.toMatchObject({
+      status: 409,
+      code: 'owner.consentRequired',
+    });
+  });
+
+  it('allows the same owner once phone and consent are on file', async () => {
+    const repo = makeRepo();
+    await create({ _id: 'u1', phone: '+358401234567', whatsappShareConsent: true }, repo);
+    expect(repo.create).toHaveBeenCalledTimes(1);
   });
 });

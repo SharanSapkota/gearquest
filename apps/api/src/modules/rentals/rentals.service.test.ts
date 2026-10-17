@@ -21,7 +21,7 @@ const gear = {
   status: 'active',
   pricing: { hourlyCents: 1000, dailyCents: 4000, minHours: 2 },
 };
-const owner = { _id: OWNER, name: 'Olli', phone: '+358401111111' };
+const owner = { _id: OWNER, name: 'Olli', phone: '+358401111111', whatsappShareConsent: true };
 const renter = { _id: RENTER, name: 'Rita', phone: '+358402222222' };
 
 // 5 Jun 00:00 -> 7 Jun 00:00 Helsinki (UTC+3 in June)
@@ -252,12 +252,30 @@ describe('accept', () => {
 
   it('blocks accept when the owner has no phone', async () => {
     const d = makeDeps({
-      users: { findById: vi.fn().mockResolvedValue(as({ _id: OWNER, name: 'Olli' })) },
+      users: {
+        findById: vi.fn().mockResolvedValue(as({ _id: OWNER, name: 'Olli', whatsappShareConsent: true })),
+      },
     });
     expect(await code(createRentalsService(d.deps, clock).accept(OWNER, 'rent1'))).toBe(
-      '409 rentals.ownerPhoneRequired',
+      '409 owner.phoneRequired',
     );
     expect(d.rentals.acceptIfFree).not.toHaveBeenCalled();
+  });
+
+  it('blocks accept when the owner has not consented to sharing the number', async () => {
+    const d = makeDeps({
+      users: { findById: vi.fn().mockResolvedValue(as({ ...owner, whatsappShareConsent: false })) },
+    });
+    expect(await code(createRentalsService(d.deps, clock).accept(OWNER, 'rent1'))).toBe(
+      '409 owner.consentRequired',
+    );
+    expect(d.rentals.acceptIfFree).not.toHaveBeenCalled();
+  });
+
+  it('allows accept once the owner has phone and consent on file', async () => {
+    const { deps, rentals } = makeDeps();
+    await createRentalsService(deps, clock).accept(OWNER, 'rent1');
+    expect(rentals.acceptIfFree).toHaveBeenCalledTimes(1);
   });
 
   it('re-checks overlap at accept time: an overlap result is a 409', async () => {

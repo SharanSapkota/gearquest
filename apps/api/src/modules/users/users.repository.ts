@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import type { UpdateProfileInput } from '@gearshare/shared';
+import type { UpdateProfileInput, USER_ROLES } from '@gearshare/shared';
 import { UserModel } from './users.model';
 
 export type UserRecord = NonNullable<Awaited<ReturnType<typeof findById>>>;
@@ -11,7 +11,12 @@ export type GoogleProfile = {
   avatarUrl?: string;
 };
 
-export type ProfilePatch = Omit<UpdateProfileInput, 'phone'> & { phone?: string | null };
+export type ProfilePatch = Omit<UpdateProfileInput, 'phone' | 'role'> & {
+  phone?: string | null;
+  role?: (typeof USER_ROLES)[number];
+  consentAt?: Date;
+  onboardingCompletedAt?: Date;
+};
 
 async function findById(id: string) {
   if (!Types.ObjectId.isValid(id)) return null;
@@ -23,10 +28,14 @@ async function findByIds(ids: string[]) {
   return UserModel.find({ _id: { $in: valid }, deletedAt: { $exists: false } }).lean();
 }
 
-// Creates the user on first login. Later logins change nothing (name/bio stay as the user set
-// them), so repeat logins never duplicate or overwrite. May return a soft-deleted user; the
-// caller decides what that means.
-async function upsertFromGoogle(profile: GoogleProfile) {
+// May return a soft-deleted user; the caller decides what that means.
+async function findByGoogleId(googleId: string) {
+  return UserModel.findOne({ googleId }).lean();
+}
+
+// Creates the user at signup. $setOnInsert + the unique googleId index make a concurrent second
+// signup return the same user instead of a duplicate, and never overwrite an existing one.
+async function createFromGoogle(profile: GoogleProfile & { termsAcceptedAt: Date }) {
   const { googleId, ...onInsert } = profile;
   return UserModel.findOneAndUpdate(
     { googleId },
@@ -46,5 +55,11 @@ async function updateProfile(id: string, patch: ProfilePatch) {
   }).lean();
 }
 
-export const usersRepository = { findById, findByIds, upsertFromGoogle, updateProfile };
+export const usersRepository = {
+  findById,
+  findByIds,
+  findByGoogleId,
+  createFromGoogle,
+  updateProfile,
+};
 export type UsersRepository = typeof usersRepository;

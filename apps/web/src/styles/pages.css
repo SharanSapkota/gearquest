@@ -692,3 +692,158 @@
 .page > .chips {
   margin-bottom: 1.25rem;
 }
+
+/* Own profile actions: edit + add gear / become an owner */
+.profile__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+/* Sign in / sign up */
+.auth-page h1 {
+  margin-top: 0;
+}
+.signin {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.signin__google {
+  min-height: var(--tap);
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.signin__google[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.signin__dev {
+  display: block;
+  margin-top: 0.25rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+.signin__switch {
+  margin: 0;
+}
+.check--top {
+  align-items: flex-start;
+}
+.check--top input {
+  margin-top: 0.2rem;
+  flex: none;
+}
+
+/* Owner phone privacy explainer */
+.privacy-note {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--secondary-50);
+  border: 1px solid var(--secondary-200);
+  font-size: var(--text-sm);
+}
+.privacy-note strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--secondary-800);
+}
+.privacy-note p {
+  margin: 0;
+}
+
+/* Onboarding */
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.onboarding h2 {
+  margin: 0;
+  font-size: var(--text-xl);
+}
+.steps {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0;
+  margin: 0.4rem 0 0;
+  list-style: none;
+}
+.steps__item {
+  flex: 1;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+}
+.steps__item--done {
+  background: var(--primary-600);
+}
+.role-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+.role-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  min-height: 9rem;
+  padding: 1.1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+.role-card:hover {
+  border-color: var(--border-strong);
+}
+.role-card:has(:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.role-card--checked {
+  border-color: var(--primary-600);
+  box-shadow: var(--shadow-md);
+}
+.role-card__icon {
+  color: var(--secondary-700);
+}
+.role-card--checked .role-card__icon {
+  color: var(--primary-700);
+}
+.role-card__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+.role-card__text {
+  font-weight: 400;
+  color: var(--muted);
+}
+.onboarding__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.onboarding__done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+.onboarding__done p {
+  margin: 0;
+  color: var(--muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  .role-card,
+  .signin__google {
+    transition: none;
+  }
+}

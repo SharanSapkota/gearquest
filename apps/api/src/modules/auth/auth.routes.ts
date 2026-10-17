@@ -3,6 +3,7 @@ import { googleLoginSchema } from '@gearshare/shared';
 import { requireAuth } from '../../middleware/requireAuth';
 import { validateBody } from '../../middleware/validate';
 import { gearRepository } from '../gear/gear.repository';
+import { rentalsRepository } from '../rentals/rentals.repository';
 import { usersRepository } from '../users/users.repository';
 import { createUsersService } from '../users/users.service';
 import { authService } from './auth.instance';
@@ -10,7 +11,7 @@ import { createAuthController } from './auth.controller';
 
 const controller = createAuthController(
   authService,
-  createUsersService(usersRepository, gearRepository),
+  createUsersService(usersRepository, gearRepository, rentalsRepository),
 );
 
 export const authRouter = Router();

@@ -8,6 +8,7 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { CalendarIcon, HomeIcon, MapIcon, PlusIcon, UserIcon } from '@/components/ui/icons';
 import { Link, usePathname } from '@/i18n/navigation';
 import { carryFilterParams } from '@/lib/mapView';
+import { isOwner } from '@/lib/roles';
 
 const SignInSheet = dynamic(() => import('@/components/auth/SignInSheet'), { ssr: false });
 
@@ -21,7 +22,7 @@ type Tab = {
   add?: boolean;
 };
 
-// Phone-only tab bar. Signed in: Home, Map, Add gear, Rentals, Profile. Guests: Home, Map, Sign in.
+// Phone-only tab bar. Signed in: Home, Map, Add gear (owners), Rentals, Profile. Guests: Home, Map, Sign in.
 export function BottomTabs({ pendingCount }: { pendingCount: number }) {
   const t = useTranslations('nav');
   const user = useAuth();
@@ -35,8 +36,10 @@ export function BottomTabs({ pendingCount }: { pendingCount: number }) {
     { key: 'map', href: { pathname: '/map', query }, label: t('map'), icon: <MapIcon size={22} />, active: pathname.startsWith('/map') },
   ];
   if (user) {
+    if (isOwner(user)) {
+      tabs.push({ key: 'add', href: '/gear/new', label: t('addGear'), icon: <PlusIcon size={24} />, active: pathname.startsWith('/gear/new'), add: true });
+    }
     tabs.push(
-      { key: 'add', href: '/gear/new', label: t('addGear'), icon: <PlusIcon size={24} />, active: pathname.startsWith('/gear/new'), add: true },
       { key: 'rentals', href: '/rentals', label: t('rentalsShort'), icon: <CalendarIcon size={22} />, active: pathname.startsWith('/rentals'), badge: pendingCount },
       { key: 'profile', href: `/users/${user.id}`, label: t('profile'), icon: <UserIcon size={22} />, active: pathname.startsWith('/users/') || pathname.startsWith('/profile') || pathname.startsWith('/gear/mine') },
     );
@@ -61,7 +64,8 @@ export function BottomTabs({ pendingCount }: { pendingCount: number }) {
             )}
           </Link>
         ))}
-        {!user && (
+        {/* Not on /login and /signup: they have their own Google button (one per page). */}
+        {!user && pathname !== '/login' && pathname !== '/signup' && (
           <button type="button" className="tabbar__item" onClick={() => setSignInOpen(true)} aria-haspopup="dialog">
             <UserIcon size={22} />
             {t('signIn')}
