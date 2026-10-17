@@ -2,42 +2,44 @@
 
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
-import { useState, type FormEvent } from 'react';
-import { CATEGORIES } from '@gearshare/shared';
+import { useCallback, useState, type FormEvent } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Chip } from '@/components/ui/Chip';
 import { FilterIcon, SearchIcon } from '@/components/ui/icons';
-import { useRouter } from '@/i18n/navigation';
-import { countActiveFilters, withParams } from '@/lib/filterUrl';
+import { Popover } from '@/components/ui/Popover';
+import { countActiveFilters } from '@/lib/filterUrl';
 import type { SearchParams } from '@/lib/gearFilters';
+import { useMediaQuery } from '@/lib/useMediaQuery';
+import { CategoryChips } from './CategoryChips';
+import { FilterForm } from './FilterForm';
+import { FilterActions } from './FilterSheet';
+import { useFilterNav } from './useFilterNav';
 
 const FilterSheet = dynamic(() => import('./FilterSheet'), { ssr: false });
 
 const str = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
 
-// Search box, "Filters" button and quick category chips. Used on the home page and floating over
-// the map: only the presentation differs, the state is the same URL params.
+// The single filter row: category chips with a "Filters" button. Popover on desktop (home),
+// bottom sheet on phones. On the map it also carries a search box and always opens the side
+// sheet, so nothing is clipped by the full-screen map.
 export function FilterControls({
   basePath,
   values,
   preserve,
+  variant = 'bar',
 }: {
   basePath: string;
   values: SearchParams;
   // Non-filter params that survive Apply/Reset (e.g. the map position).
   preserve?: string[];
+  variant?: 'bar' | 'map';
 }) {
   const t = useTranslations();
-  const router = useRouter();
+  const push = useFilterNav(basePath);
   const [open, setOpen] = useState(false);
+  const close = useCallback(() => setOpen(false), []);
+  const desktop = useMediaQuery('(min-width: 768px)');
   const active = countActiveFilters(values);
   const category = str(values.category);
-
-  // Quick changes start from the live URL so the map position and other params are kept.
-  const push = (changes: Record<string, string | undefined>) => {
-    const qs = withParams(window.location.search, changes).toString();
-    router.push(`${basePath}${qs ? `?${qs}` : ''}`);
-  };
 
   const onSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,60 +47,82 @@ export function FilterControls({
     push({ q: typeof q === 'string' ? q.trim() : undefined });
   };
 
+  const button = (
+    <Button
+      variant="outline"
+      className="filters-btn"
+      data-popover-trigger
+      onClick={() => setOpen((o) => !o)}
+      aria-haspopup="dialog"
+      aria-expanded={open}
+      aria-label={active > 0 ? `${t('filters.title')}, ${t('filters.active', { count: active })}` : undefined}
+    >
+      <FilterIcon size={18} />
+      <span className="filters-btn__label">{t('filters.title')}</span>
+      {active > 0 && (
+        <span className="count-badge" aria-hidden="true">
+          {active}
+        </span>
+      )}
+    </Button>
+  );
+
+  const asPopover = variant === 'bar' && desktop;
+  const trigger = asPopover ? (
+    <Popover
+      open={open}
+      onClose={close}
+      label={t('filters.title')}
+      align="end"
+      trigger={button}
+      className="filters-pop"
+    >
+      <div className="pop__scroll">
+        <FilterForm basePath={basePath} values={values} preserve={preserve} onDone={close} />
+      </div>
+      <div className="pop__foot">
+        <FilterActions />
+      </div>
+    </Popover>
+  ) : (
+    button
+  );
+
+  if (variant === 'map') {
+    return (
+      <>
+        <div className="filterbar filterbar--map">
+          <form className="searchbar" role="search" onSubmit={onSearch} key={str(values.q)}>
+            <div className="searchbar__field">
+              <SearchIcon size={18} />
+              <input
+                type="search"
+                name="q"
+                enterKeyHint="search"
+                defaultValue={str(values.q)}
+                placeholder={t('filters.searchPlaceholder')}
+                aria-label={t('filters.search')}
+              />
+            </div>
+            {trigger}
+          </form>
+          <CategoryChips basePath={basePath} category={category} />
+        </div>
+        {open && (
+          <FilterSheet open onClose={close} basePath={basePath} values={values} preserve={preserve} />
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <div className="filterbar">
-        <form className="searchbar" role="search" onSubmit={onSearch} key={str(values.q)}>
-          <div className="searchbar__field">
-            <SearchIcon size={18} />
-            <input
-              type="search"
-              name="q"
-              enterKeyHint="search"
-              defaultValue={str(values.q)}
-              placeholder={t('filters.searchPlaceholder')}
-              aria-label={t('filters.search')}
-            />
-          </div>
-          <Button
-            variant="outline"
-            className="filters-btn"
-            onClick={() => setOpen(true)}
-            aria-haspopup="dialog"
-            aria-label={active > 0 ? `${t('filters.title')}, ${t('filters.active', { count: active })}` : undefined}
-          >
-            <FilterIcon size={18} />
-            <span className="filters-btn__label">{t('filters.title')}</span>
-            {active > 0 && (
-              <span className="count-badge" aria-hidden="true">
-                {active}
-              </span>
-            )}
-          </Button>
-        </form>
-        <div className="chips" role="group" aria-label={t('filters.category')}>
-          <Chip pressed={category === ''} onClick={() => push({ category: undefined })}>
-            {t('filters.allCategories')}
-          </Chip>
-          {CATEGORIES.map((c) => (
-            <Chip
-              key={c}
-              pressed={category === c}
-              onClick={() => push({ category: category === c ? undefined : c })}
-            >
-              {t(`categories.${c}`)}
-            </Chip>
-          ))}
-        </div>
+        <CategoryChips basePath={basePath} category={category} />
+        {trigger}
       </div>
-      {open && (
-        <FilterSheet
-          open
-          onClose={() => setOpen(false)}
-          basePath={basePath}
-          values={values}
-          preserve={preserve}
-        />
+      {open && !asPopover && (
+        <FilterSheet open onClose={close} basePath={basePath} values={values} preserve={preserve} />
       )}
     </>
   );

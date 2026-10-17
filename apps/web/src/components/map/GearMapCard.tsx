@@ -1,7 +1,7 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { buttonClass, IconButton } from '@/components/ui/Button';
 import { GearImage } from '@/components/ui/GearImage';
-import { CloseIcon } from '@/components/ui/icons';
+import { CloseIcon, StarIcon } from '@/components/ui/icons';
 import { Link } from '@/i18n/navigation';
 import type { PublicGear } from '@/lib/api';
 import { formatMoney } from '@/lib/format';
@@ -35,9 +35,14 @@ export function GearMapCard({ gear, onClose }: { gear: PublicGear; onClose: () =
                 : ''}
           </strong>{' '}
           ·{' '}
-          {gear.ownerRatingAvg
-            ? t('gear.rating', { rating: gear.ownerRatingAvg.toFixed(1) })
-            : t('gear.noRating')}
+          {gear.ownerRatingAvg ? (
+            <span className="rating">
+              <StarIcon size={13} />
+              {gear.ownerRatingAvg.toFixed(1)}
+            </span>
+          ) : (
+            t('gear.noRating')
+          )}
         </p>
         <Link href={`/gear/${gear.id}`} className={buttonClass({ size: 'sm' })}>
           {t('map.viewGear')}

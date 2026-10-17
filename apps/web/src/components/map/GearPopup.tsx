@@ -1,6 +1,7 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { GearImage } from '@/components/ui/GearImage';
 import { buttonClass } from '@/components/ui/Button';
+import { StarIcon } from '@/components/ui/icons';
 import { Link } from '@/i18n/navigation';
 import type { PublicGear } from '@/lib/api';
 import { formatMoney } from '@/lib/format';
@@ -27,9 +28,14 @@ export function GearPopup({ gear }: { gear: PublicGear }) {
         )}
       </p>
       <p className="map-popup__meta">
-        {gear.ownerRatingAvg
-          ? t('gear.rating', { rating: gear.ownerRatingAvg.toFixed(1) })
-          : t('gear.noRating')}
+        {gear.ownerRatingAvg ? (
+          <span className="rating">
+            <StarIcon size={13} />
+            {gear.ownerRatingAvg.toFixed(1)}
+          </span>
+        ) : (
+          t('gear.noRating')
+        )}
       </p>
       <Link
         href={`/gear/${gear.id}`}

@@ -10,7 +10,7 @@ export default async function EditProfilePage({ params }: { params: Promise<{ lo
   if (!user) return redirect({ href: '/', locale });
   const t = await getTranslations('profile');
   return (
-    <main className="page">
+    <main className="page page--form">
       <h1>{t('editTitle')}</h1>
       <ProfileForm user={user} />
     </main>

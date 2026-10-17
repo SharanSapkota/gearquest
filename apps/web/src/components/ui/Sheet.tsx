@@ -9,7 +9,7 @@ import { CloseIcon } from './icons';
 const FOCUSABLE =
   'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
 
-// Bottom sheet on phones, floating left panel on desktop, centred dialog with variant="center".
+// Bottom sheet on phones, side panel on desktop, centred dialog with variant="center" (or "wide").
 // Escape and the scrim close it; focus is kept inside and restored on close.
 export function Sheet({
   open,
@@ -23,7 +23,7 @@ export function Sheet({
   onClose: () => void;
   title: string;
   footer?: ReactNode;
-  variant?: 'sheet' | 'center';
+  variant?: 'sheet' | 'center' | 'wide';
   children: ReactNode;
 }) {
   const t = useTranslations('ui');
@@ -62,7 +62,7 @@ export function Sheet({
   if (!open || typeof document === 'undefined') return null;
   // Portalled to <body> so no ancestor stacking context (e.g. the full-screen map) can cover it.
   return createPortal(
-    <div className={variant === 'center' ? 'sheet sheet--center' : 'sheet'}>
+    <div className={variant === 'center' ? 'sheet sheet--center' : variant === 'wide' ? 'sheet sheet--center sheet--wide' : 'sheet'}>
       <div className="sheet__scrim" onClick={onClose} aria-hidden="true" />
       <div
         ref={panel}

@@ -8,6 +8,9 @@
 - Format money and dates with Intl using the active locale and Europe/Helsinki.
 - Every page needs the intermediary disclaimer in the footer (key: legal.disclaimer).
 ## Design system
-- Tokens (colours, radii, shadows, safe-area vars) only in src/styles/tokens.css. Primary = orange (white text needs 600+), secondary = green. No raw hex elsewhere except SVG marker colours and Google Maps circle options.
-- Shared primitives in src/components/ui (Button, IconButton, Field/Input/Select/Textarea, Badge, Card, Chip, Sheet, Toast, Skeleton, EmptyState, GearImage). Reuse them, do not restyle ad hoc.
-- Mobile first: 44px touch targets, bottom tab bar under 768px, safe-area insets, 16px input text.
+- Art direction: Nordic outdoor, warm and confident. Cream paper (--bg), charcoal ink, deep forest (--forest) for footer/hero band, orange only for primary action, active state and price. Fonts: Fraunces (display) + Figtree (body) via next/font; prices use tabular numbers.
+- Tokens (colours, radii, shadows, type and spacing scale, safe-area vars) only in src/styles/tokens.css. Primary = orange (white text needs 600+, orange text on cream needs 700), secondary = forest green. No raw hex elsewhere except SVG marker colours and Google Maps circle options.
+- Layout is fluid: no max-width wrapper. Pages use padding-inline var(--gutter); only forms (.page--form) and prose (.page--narrow) get a readable width. Gear grid is auto-fill minmax(260px, 1fr).
+- Icons: one set (lucide-react) re-exported from src/components/ui/icons.tsx. Category glyphs live in src/components/map/categoryIcons.ts and are shared by chips, cards and map markers (CategoryIcon). No emojis. The contour motif is public/contour.svg, applied with the .contour class.
+- Shared primitives in src/components/ui (Button, IconButton, Field/Input/Select/Textarea/Switch, Badge, Card, Chip, Sheet, Popover, Toast, Skeleton/GearCardSkeleton, EmptyState, GearImage, CategoryIcon). Reuse them, do not restyle ad hoc. Filters: SegmentedSearch (What/Where/When), CategoryChips, FilterControls (popover on desktop, sheet on phones).
+- Mobile first: 44px touch targets, bottom tab bar under 768px, safe-area insets, 16px input text, sticky booking bar on the gear page. Respect prefers-reduced-motion.

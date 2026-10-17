@@ -1,5 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { buttonClass } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { CalendarIcon } from '@/components/ui/icons';
 import { Pagination } from '@/components/gear/Pagination';
 import { RentalCard } from '@/components/rentals/RentalCard';
 import { RentalsFilter } from '@/components/rentals/RentalsFilter';
@@ -38,8 +40,9 @@ export default async function RentalsPage({
 
   return (
     <main className="page">
-      <h1>{t('title')}</h1>
-      <nav className="tabs tabs--page" aria-label={t('tabs')}>
+      <div className="page__head">
+        <h1>{t('title')}</h1>
+        <nav className="tabs tabs--page" aria-label={t('tabs')}>
         {(['renter', 'owner'] as const).map((r) => (
           <Link
             key={r}
@@ -50,10 +53,24 @@ export default async function RentalsPage({
             {t(r === 'renter' ? 'asRenter' : 'asOwner')}
           </Link>
         ))}
-      </nav>
+        </nav>
+      </div>
       <RentalsFilter role={role} status={status} />
       {items.length === 0 ? (
-        <EmptyState>{t(role === 'renter' ? 'emptyRenter' : 'emptyOwner')}</EmptyState>
+        <EmptyState
+          icon={<CalendarIcon size={34} />}
+          title={t(role === 'renter' ? 'emptyTitle' : 'emptyOwnerTitle')}
+          action={
+            <Link
+              href={role === 'renter' ? '/' : '/gear/new'}
+              className={buttonClass({ variant: role === 'renter' ? 'primary' : 'outline' })}
+            >
+              {t(role === 'renter' ? 'browse' : 'listGear')}
+            </Link>
+          }
+        >
+          {t(role === 'renter' ? 'emptyRenter' : 'emptyOwner')}
+        </EmptyState>
       ) : (
         <div className="rental-list">
           {items.map((rental) => (

@@ -18,19 +18,37 @@
     "rentalsShort": "Vuokraukset"
   },
   "home": {
-    "title": "Vuokraa seikkailuvarusteita",
-    "empty": "Varusteita ei löytynyt.",
+    "title": "Vuokraa varusteet. Jätä ostamatta.",
+    "empty": "Kokeile toista hakua tai poista suodattimia, niin löydät varusteita.",
     "loading": "Ladataan varusteita…",
     "results": "{count, plural, one {# varuste} other {# varustetta}}",
     "availableRange": "saatavilla {from} – {to}",
-    "subtitle": "Lainaa suksia, telttoja, kajakkeja ja muuta lähialueen ihmisiltä."
+    "subtitle": "Lainaa suksia, telttoja ja kajakkeja ihmisiltä aivan lähelläsi.",
+    "emptyTitle": "Ei osumia",
+    "how": {
+      "title": "Näin se toimii",
+      "find": {
+        "title": "Löydä",
+        "text": "Selaa varusteita läheltäsi ja katso vapaat päivät."
+      },
+      "request": {
+        "title": "Pyydä",
+        "text": "Lähetä vuokrauspyyntö. Hinta lasketaan palvelimella."
+      },
+      "meet": {
+        "title": "Tapaa",
+        "text": "Omistaja hyväksyy, ja sovitte noudosta suoraan keskenänne."
+      }
+    },
+    "trust": "Kirjautuminen Googlella: jokainen jäsen on vahvistettu."
   },
   "legal": {
     "disclaimer": "GearShare on vain alusta, joka yhdistää varusteiden omistajat ja vuokraajat. Emme ole osapuoli vuokrasopimuksissa emmekä vastaa vahingoista, katoamisesta, loukkaantumisista tai riidoista. Kaikki tällaiset asiat ovat yksin vuokraajan ja omistajan välisiä."
   },
   "errors": {
     "loadFailed": "Tietojen lataus epäonnistui.",
-    "retry": "Yritä uudelleen"
+    "retry": "Yritä uudelleen",
+    "title": "Hups, jokin meni pieleen"
   },
   "language": {
     "label": "Kieli",
@@ -74,7 +92,8 @@
     "noRating": "Ei arvosteluja",
     "detailTitle": "Varusteen tiedot",
     "detailPlaceholder": "Varustesivu tulossa pian.",
-    "back": "Takaisin varusteisiin"
+    "back": "Takaisin varusteisiin",
+    "ratingLabel": "Arvosana {rating} / 5"
   },
   "categories": {
     "ski": "Sukset",
@@ -129,7 +148,8 @@
     "apply": "Käytä",
     "reset": "Tyhjennä suodattimet",
     "allCategories": "Kaikki",
-    "active": "{count, plural, one {# aktiivinen suodatin} other {# aktiivista suodatinta}}"
+    "active": "{count, plural, one {# aktiivinen suodatin} other {# aktiivista suodatinta}}",
+    "andUp": "ja yli"
   },
   "pagination": {
     "label": "Sivutus",
@@ -257,7 +277,15 @@
     "nextPhoto": "Seuraava kuva",
     "photoN": "Kuva {n}",
     "notFound": "Varustetta ei löytynyt.",
-    "back": "Takaisin kaikkiin varusteisiin"
+    "back": "Takaisin kaikkiin varusteisiin",
+    "requestShort": "Pyydä",
+    "showAll": "Näytä kaikki kuvat",
+    "photoCounter": "{current} / {total}",
+    "about": "Tietoja varusteesta",
+    "hostedBy": "Omistaja",
+    "verified": "Vahvistettu Googlella",
+    "ratingCount": "{count, plural, one {# arvostelu} other {# arvostelua}}",
+    "from": "alkaen"
   },
   "rentalForm": {
     "title": "Pyydä vuokrausta",
@@ -372,10 +400,36 @@
       "declineText": "Hylätäänkö pyyntö?",
       "declineYes": "Kyllä, hylkää",
       "back": "Takaisin"
-    }
+    },
+    "browse": "Selaa varusteita",
+    "emptyTitle": "Ei vuokrauksia vielä",
+    "emptyOwnerTitle": "Ei pyyntöjä vielä",
+    "listGear": "Lisää väline",
+    "totalLabel": "Yhteensä"
   },
   "ui": {
     "close": "Sulje",
     "dismiss": "Ohita"
+  },
+  "footer": {
+    "tagline": "Seikkailuvarusteet kiertoon, naapurilta naapurille.",
+    "explore": "Tutustu",
+    "account": "Oma tili"
+  },
+  "search": {
+    "title": "Hae varusteita",
+    "what": "Mitä",
+    "where": "Missä",
+    "when": "Milloin",
+    "whatPlaceholder": "Sukset, teltta, kajakki…",
+    "wherePlaceholder": "Kaikkialla",
+    "whenPlaceholder": "Mikä tahansa päivä",
+    "go": "Hae",
+    "edit": "Muokkaa hakua",
+    "nearMe": "Lähelläni",
+    "nearMeOn": "Lähelläni (poista)",
+    "pickStart": "Valitse ensimmäinen päivä.",
+    "pickEnd": "Valitse viimeinen päivä.",
+    "clearDates": "Tyhjennä päivät"
   }
 }

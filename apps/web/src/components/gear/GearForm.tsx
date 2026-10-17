@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import { CATEGORIES, CONDITIONS } from '@gearshare/shared';
 import { Button } from '@/components/ui/Button';
-import { Field, Input, Select, Textarea } from '@/components/ui/Field';
+import { Field, Input, Select, Switch, Textarea } from '@/components/ui/Field';
 import { useRouter } from '@/i18n/navigation';
 import { ApiError, api, type OwnerGear } from '@/lib/api';
 import {
@@ -139,14 +139,11 @@ export function GearForm({ gear }: { gear?: OwnerGear }) {
 
       <fieldset className="field">
         <legend>{t('pricing.label')}</legend>
-        <label className="check">
-          <input
-            type="checkbox"
-            checked={values.hourly}
-            onChange={(e) => set('hourly', e.target.checked)}
-          />
-          {t('pricing.hourly')}
-        </label>
+        <Switch
+          checked={values.hourly}
+          onChange={(e) => set('hourly', e.target.checked)}
+          label={t('pricing.hourly')}
+        />
         {values.hourly && (
           <>
             <Field label={t('pricing.hourlyPrice')} error={err('hourlyPrice')}>
@@ -168,10 +165,11 @@ export function GearForm({ gear }: { gear?: OwnerGear }) {
             </Field>
           </>
         )}
-        <label className="check">
-          <input type="checkbox" checked={values.daily} onChange={(e) => set('daily', e.target.checked)} />
-          {t('pricing.daily')}
-        </label>
+        <Switch
+          checked={values.daily}
+          onChange={(e) => set('daily', e.target.checked)}
+          label={t('pricing.daily')}
+        />
         {values.daily && (
           <Field label={t('pricing.dailyPrice')} error={err('dailyPrice')}>
             <Input

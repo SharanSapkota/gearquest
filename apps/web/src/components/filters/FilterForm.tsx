@@ -2,18 +2,25 @@
 
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
-import { CATEGORIES, CONDITIONS, GEAR_SORTS, RENTAL_MODES } from '@gearshare/shared';
+import { CONDITIONS, GEAR_SORTS, RENTAL_MODES } from '@gearshare/shared';
 import { Button } from '@/components/ui/Button';
-import { Field, Input, Select } from '@/components/ui/Field';
+import { Field, Select } from '@/components/ui/Field';
+import { StarIcon } from '@/components/ui/icons';
 import { useRouter } from '@/i18n/navigation';
 import type { SearchParams } from '@/lib/gearFilters';
+import { PillGroup } from './PillGroup';
+import { PriceRange } from './PriceRange';
 
 const RADII_KM = [5, 10, 25, 50, 100];
-const RATINGS = [1, 2, 3, 4, 5];
+const RATINGS = [3, 4, 5];
 
 export const FILTER_FORM_ID = 'gear-filters';
 
 const str = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
+
+// Search text, category and dates are edited in the search bar and chips; the form carries them
+// through as hidden fields so Apply keeps them.
+const CARRIED = ['q', 'category', 'from', 'to'] as const;
 
 type Props = {
   // Page the filters submit to (without locale), e.g. "/" or "/map".
@@ -26,8 +33,8 @@ type Props = {
   onDone: () => void;
 };
 
-// The full filter set. The submit and reset buttons live in the sheet footer (FilterSheet) and
-// reach this form through FILTER_FORM_ID. State is the URL: Apply pushes the params.
+// The detailed filters. The submit and reset buttons live in the panel footer and reach this
+// form through FILTER_FORM_ID. State is the URL: Apply pushes the params.
 export function FilterForm({ basePath, values, preserve = [], onDone }: Props) {
   const t = useTranslations();
   const router = useRouter();
@@ -71,6 +78,11 @@ export function FilterForm({ basePath, values, preserve = [], onDone }: Props) {
       </option>
     ));
 
+  const choice = (group: string, list: readonly string[]) => [
+    { value: '', label: t('filters.any') },
+    ...list.map((v) => ({ value: v, label: t(`${group}.${v}`) })),
+  ];
+
   return (
     <form
       id={FILTER_FORM_ID}
@@ -78,69 +90,58 @@ export function FilterForm({ basePath, values, preserve = [], onDone }: Props) {
       onSubmit={submit}
       onReset={(e) => {
         e.preventDefault();
-        router.push(withPreserved(new URLSearchParams()));
+        // Reset clears the detailed filters only; what the search bar and chips show stays.
+        const keep = new URLSearchParams();
+        for (const key of CARRIED) if (str(values[key])) keep.set(key, str(values[key]));
+        router.push(withPreserved(keep));
         onDone();
       }}
       aria-label={t('filters.title')}
       // Re-mount when the URL changes so inputs reflect the current params.
       key={JSON.stringify(values)}
     >
-      <Field label={t('filters.search')}>
-        <Input
-          type="search"
-          name="q"
-          enterKeyHint="search"
-          defaultValue={str(values.q)}
-          placeholder={t('filters.searchPlaceholder')}
-        />
-      </Field>
-      <Field label={t('filters.category')}>
-        <Select name="category" defaultValue={str(values.category)}>
-          <option value="">{t('filters.any')}</option>
-          {options('categories', CATEGORIES)}
-        </Select>
-      </Field>
-      <Field label={t('filters.condition')}>
-        <Select name="condition" defaultValue={str(values.condition)}>
-          <option value="">{t('filters.any')}</option>
-          {options('conditions', CONDITIONS)}
-        </Select>
-      </Field>
-      <Field label={t('filters.mode')}>
-        <Select name="mode" defaultValue={str(values.mode)}>
-          <option value="">{t('filters.any')}</option>
-          {options('modes', RENTAL_MODES)}
-        </Select>
-      </Field>
+      {CARRIED.map((key) =>
+        str(values[key]) ? <input key={key} type="hidden" name={key} value={str(values[key])} /> : null,
+      )}
 
-      <fieldset className="field field--pair">
+      <fieldset className="field">
         <legend>{t('filters.price')}</legend>
-        <Input
-          type="number"
-          name="minPrice"
-          min={0}
-          step="1"
-          inputMode="decimal"
-          defaultValue={str(values.minPrice)}
-          placeholder={t('filters.min')}
-          aria-label={t('filters.minPrice')}
-        />
-        <Input
-          type="number"
-          name="maxPrice"
-          min={0}
-          step="1"
-          inputMode="decimal"
-          defaultValue={str(values.maxPrice)}
-          placeholder={t('filters.max')}
-          aria-label={t('filters.maxPrice')}
+        <PriceRange initialMin={str(values.minPrice)} initialMax={str(values.maxPrice)} />
+      </fieldset>
+
+      <fieldset className="field">
+        <legend>{t('filters.mode')}</legend>
+        <PillGroup name="mode" defaultValue={str(values.mode)} options={choice('modes', RENTAL_MODES)} />
+      </fieldset>
+
+      <fieldset className="field">
+        <legend>{t('filters.condition')}</legend>
+        <PillGroup
+          name="condition"
+          defaultValue={str(values.condition)}
+          options={choice('conditions', CONDITIONS)}
         />
       </fieldset>
 
-      <fieldset className="field field--pair">
-        <legend>{t('filters.dates')}</legend>
-        <Input type="date" name="from" defaultValue={str(values.from)} aria-label={t('filters.from')} />
-        <Input type="date" name="to" defaultValue={str(values.to)} aria-label={t('filters.to')} />
+      <fieldset className="field">
+        <legend>{t('filters.minRating')}</legend>
+        <PillGroup
+          name="minOwnerRating"
+          defaultValue={str(values.minOwnerRating)}
+          options={[
+            { value: '', label: t('filters.any') },
+            ...RATINGS.map((r) => ({
+              value: String(r),
+              label: (
+                <>
+                  {r}
+                  <StarIcon size={14} />
+                  {t('filters.andUp')}
+                </>
+              ),
+            })),
+          ]}
+        />
       </fieldset>
 
       <fieldset className="field">
@@ -172,16 +173,6 @@ export function FilterForm({ basePath, values, preserve = [], onDone }: Props) {
         {geoError && <small role="alert">{t('filters.locationFailed')}</small>}
       </fieldset>
 
-      <Field label={t('filters.minRating')}>
-        <Select name="minOwnerRating" defaultValue={str(values.minOwnerRating)}>
-          <option value="">{t('filters.any')}</option>
-          {RATINGS.map((r) => (
-            <option key={r} value={r}>
-              {t('filters.ratingAtLeast', { rating: r })}
-            </option>
-          ))}
-        </Select>
-      </Field>
       <Field label={t('filters.sort')}>
         <Select name="sort" defaultValue={str(values.sort)}>
           <option value="">{t('sorts.newest')}</option>

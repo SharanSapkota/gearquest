@@ -12,7 +12,7 @@ export function Legend() {
         {CATEGORIES.map((category) => (
           <li key={category}>
             {/* Static, trusted SVG from categoryIcons.ts (same markup as the map markers). */}
-            <span dangerouslySetInnerHTML={{ __html: categoryPinSvg(category, 18) }} />
+            <span dangerouslySetInnerHTML={{ __html: categoryPinSvg(category, 20) }} />
             {t(`categories.${category}`)}
           </li>
         ))}

@@ -1,38 +1,53 @@
-/* Design tokens: the only place raw colours, radii and shadows are defined. */
+/* Design tokens: the only place raw colours, radii, shadows and type scale are defined.
+   Art direction: Nordic outdoor, warm and confident. Cream paper, charcoal ink, deep forest
+   for contrast moments, orange used sparingly (primary action, active state, price). */
 :root {
-  /* Primary: warm orange. 600 is the lightest step that carries white text at WCAG AA (4.7:1);
-     500 is the brand colour for fills, icons and focus rings. */
-  --primary-50: #fff4ec;
-  --primary-100: #ffe5d1;
-  --primary-200: #ffc8a0;
-  --primary-300: #ffa568;
-  --primary-400: #fa8638;
-  --primary-500: #f26a1b;
-  --primary-600: #c94a0a;
-  --primary-700: #b03f08;
-  --primary-800: #8f3207;
-  --primary-900: #6e2a0e;
+  /* Orange (primary). 600 is the lightest step that carries white text at WCAG AA (5.0:1);
+     700 is the orange-as-text step on cream (6.2:1). 500 is for fills, icons and focus rings. */
+  --primary-50: #fff5ec;
+  --primary-100: #ffe7d2;
+  --primary-200: #ffcba3;
+  --primary-300: #ffa96c;
+  --primary-400: #f98b3a;
+  --primary-500: #ee6e1c;
+  --primary-600: #c2470a;
+  --primary-700: #a33a08;
+  --primary-800: #842f09;
+  --primary-900: #5e230a;
 
-  /* Secondary: forest/sage green for accents, availability and success. 600 carries white text (5:1). */
-  --secondary-50: #eef7f1;
-  --secondary-100: #d7ebdd;
-  --secondary-200: #b0d6bc;
-  --secondary-300: #82bc96;
-  --secondary-400: #55a072;
-  --secondary-500: #3b8b5d;
-  --secondary-600: #2f7d4f;
-  --secondary-700: #256440;
-  --secondary-800: #1e5033;
-  --secondary-900: #153823;
+  /* Forest green (secondary). 900 is the deep surface for footer, hero band and contrast moments. */
+  --secondary-50: #eff5f0;
+  --secondary-100: #dbe8de;
+  --secondary-200: #b6d0bc;
+  --secondary-300: #8bb396;
+  --secondary-400: #5e9370;
+  --secondary-500: #3f7855;
+  --secondary-600: #2f6244;
+  --secondary-700: #254e37;
+  --secondary-800: #1c3d2b;
+  --secondary-900: #142e21;
 
-  --bg: #fffaf5;
+  /* Warm neutrals */
+  --bg: #fbf7f0;
   --surface: #ffffff;
-  --surface-2: #f6efe8;
-  --fg: #2a1d14;
-  --muted: #6b5b4e;
-  --border: #e7dace;
+  --surface-2: #f3ede2;
+  --surface-3: #ebe3d5;
+  --fg: #2a2520;
+  --muted: #675d52;
+  --border: #e6ddce;
+  --border-strong: #d3c7b4;
   --danger: #b3261e;
   --danger-bg: #fdecea;
+  --amber-bg: #fdebc4;
+  --amber-fg: #6d4a05;
+  --rose-bg: #f2e3e0;
+  --rose-fg: #7a3b34;
+
+  /* Deep forest surface + the text colours that sit on it */
+  --forest: var(--secondary-900);
+  --forest-2: var(--secondary-800);
+  --on-forest: #f6efe2;
+  --on-forest-muted: #b9c9bd;
 
   --link: var(--primary-700);
   --focus: var(--primary-500);
@@ -42,16 +57,46 @@
   --radius-lg: 24px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 2px rgb(73 40 15 / 0.06), 0 1px 3px rgb(73 40 15 / 0.08);
-  --shadow-md: 0 4px 12px rgb(73 40 15 / 0.1), 0 2px 4px rgb(73 40 15 / 0.06);
-  --shadow-lg: 0 12px 32px rgb(73 40 15 / 0.18), 0 4px 8px rgb(73 40 15 / 0.08);
+  /* Soft layered, warm-tinted shadows */
+  --shadow-sm: 0 1px 2px rgb(60 40 20 / 0.05), 0 1px 3px rgb(60 40 20 / 0.06);
+  --shadow-md: 0 2px 4px rgb(60 40 20 / 0.04), 0 8px 20px rgb(60 40 20 / 0.08);
+  --shadow-lg: 0 4px 8px rgb(40 28 14 / 0.06), 0 16px 40px rgb(40 28 14 / 0.16);
+  --shadow-lift: 0 2px 4px rgb(60 40 20 / 0.05), 0 14px 32px rgb(60 40 20 / 0.14);
 
-  --font-body: var(--font-inter), system-ui, sans-serif;
-  --font-display: var(--font-jakarta), var(--font-inter), system-ui, sans-serif;
+  --font-body: var(--font-figtree), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
+
+  /* Type scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-hero: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+
+  /* Spacing scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Fluid page gutter: no centred column, the content owns the width. */
+  --gutter: clamp(16px, 3vw, 48px);
+  --readable: 68ch;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur: 220ms;
 
   --tap: 44px;
-  --header-h: 56px;
-  --tabbar-h: 60px;
+  --header-h: 60px;
+  --tabbar-h: 64px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
@@ -60,7 +105,7 @@
 
 @media (min-width: 768px) {
   :root {
-    --header-h: 64px;
+    --header-h: 68px;
     --tabbar-h: 0px;
   }
 }

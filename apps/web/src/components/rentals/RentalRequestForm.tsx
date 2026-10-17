@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { MAX_RENTAL_DAYS } from '@gearshare/shared';
 import { SignInButton } from '@/components/auth/SignInButton';
 import { Button } from '@/components/ui/Button';
+import { Select, Textarea } from '@/components/ui/Field';
 import { Link, useRouter } from '@/i18n/navigation';
 import { api, type PublicGear } from '@/lib/api';
 import {
@@ -185,9 +186,9 @@ export function RentalRequestForm({
       {modes.length > 1 && (
         <fieldset className="field">
           <legend>{t('mode')}</legend>
-          <div className="toggle" role="radiogroup">
+          <div className="pillgroup" role="radiogroup">
             {modes.map((m) => (
-              <label key={m} className={m === mode ? 'toggle__item toggle__item--on' : 'toggle__item'}>
+              <label key={m} className="pillgroup__item">
                 <input
                   type="radio"
                   name="mode"
@@ -225,7 +226,7 @@ export function RentalRequestForm({
         <div className="field field--pair">
           <label className="field">
             {t('startTime')}
-            <select
+            <Select
               value={startHour}
               disabled={!startDay}
               onChange={(e) => {
@@ -239,18 +240,18 @@ export function RentalRequestForm({
                   {hourLabel(h)}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
           <label className="field">
             {t('endTime')}
-            <select value={endHour} disabled={sh === null} onChange={(e) => setEndHour(e.target.value)}>
+            <Select value={endHour} disabled={sh === null} onChange={(e) => setEndHour(e.target.value)}>
               <option value="">{t('choose')}</option>
               {Array.from({ length: 24 }, (_, i) => i + 1).map((h) => (
                 <option key={h} value={h} disabled={endHourDisabled(h)}>
                   {hourLabel(h)}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         </div>
       )}
@@ -260,7 +261,7 @@ export function RentalRequestForm({
 
       <label className="field">
         {t('message')}
-        <textarea
+        <Textarea
           value={message}
           maxLength={1000}
           rows={3}

@@ -5,16 +5,18 @@
 }
 html {
   -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 16px);
 }
 body {
   margin: 0;
   min-height: 100dvh;
   font-family: var(--font-body);
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: var(--text-base);
+  line-height: 1.6;
   color: var(--fg);
   background: var(--bg);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
   /* Room for the fixed bottom tab bar on phones. */
   padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom));
 }
@@ -22,24 +24,25 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-optical-sizing: auto;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  font-weight: 600;
   margin: 0 0 0.5rem;
+  text-wrap: balance;
 }
 h1 {
-  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.25rem);
-  font-weight: 800;
+  font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);
 }
 h2 {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: var(--text-xl);
 }
 p {
   margin: 0 0 0.5rem;
 }
 a {
   color: var(--link);
-  text-underline-offset: 2px;
+  text-underline-offset: 3px;
 }
 img {
   max-width: 100%;
@@ -57,43 +60,235 @@ button {
 button:disabled {
   cursor: not-allowed;
 }
+/* Prices and counts line up in columns. */
+.num,
+.price,
+.calendar,
+.count-badge {
+  font-variant-numeric: tabular-nums;
+}
+/* One stroke weight for every line icon. */
+.lucide {
+  stroke-width: 1.75;
+}
 
-/* Visible keyboard focus everywhere. */
+/* Visible keyboard focus everywhere: orange, 2px, offset. */
 :focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
+/* Form controls: custom, warm, 16px text (stops iOS zoom), 44px+ targets. */
 input:not([type='checkbox'], [type='radio'], [type='hidden'], [type='file'], [type='range']),
 select,
 textarea {
   width: 100%;
   min-height: var(--tap);
-  padding: 0.6rem 0.9rem;
-  border: 1.5px solid var(--border);
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   background: var(--surface);
-  font-size: 1rem; /* 16px stops iOS from zooming on focus */
+  font-size: 1rem;
+  transition:
+    border-color var(--dur-fast),
+    box-shadow var(--dur-fast);
+}
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--muted) 92%, white);
+}
+input:not([type='checkbox'], [type='radio'], [type='range']):hover,
+select:hover,
+textarea:hover {
+  border-color: var(--muted);
 }
 textarea {
   resize: vertical;
+  line-height: 1.5;
 }
 input:not([type='checkbox'], [type='radio']):focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: none;
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px var(--primary-200);
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-color: var(--primary-600);
 }
+input[type='search']::-webkit-search-cancel-button {
+  display: none;
+}
+select {
+  appearance: none;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+select:disabled,
+input:disabled,
+textarea:disabled {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+/* Native date inputs: keep the platform picker but make the field match. */
+input[type='date'] {
+  appearance: none;
+  min-width: 0;
+}
+
+/* Select wrapper (Select primitive) draws the chevron. */
+.select {
+  position: relative;
+  display: block;
+}
+.select > svg {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* Checkbox / radio: custom, orange when on. */
 input[type='checkbox'],
 input[type='radio'] {
-  width: 1.25rem;
-  height: 1.25rem;
-  accent-color: var(--primary-600);
+  appearance: none;
+  flex: none;
+  width: 1.375rem;
+  height: 1.375rem;
+  margin: 0;
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface);
+  display: inline-grid;
+  place-content: center;
+  transition:
+    background-color var(--dur-fast),
+    border-color var(--dur-fast);
+}
+input[type='checkbox'] {
+  border-radius: 7px;
+}
+input[type='radio'] {
+  border-radius: 50%;
+}
+input[type='checkbox']::after {
+  content: '';
+  width: 0.7rem;
+  height: 0.4rem;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: translateY(-1px) rotate(-45deg) scale(0);
+  transition: transform var(--dur-fast) var(--ease);
+}
+input[type='radio']::after {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #fff;
+  transform: scale(0);
+  transition: transform var(--dur-fast) var(--ease);
+}
+input[type='checkbox']:checked,
+input[type='radio']:checked {
+  background: var(--primary-600);
+  border-color: var(--primary-600);
+}
+input[type='checkbox']:checked::after {
+  transform: translateY(-1px) rotate(-45deg) scale(1);
+}
+input[type='radio']:checked::after {
+  transform: scale(1);
+}
+input[type='checkbox']:focus-visible,
+input[type='radio']:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Toggle switch: <input type="checkbox" role="switch"> */
+input[role='switch'] {
+  width: 2.75rem;
+  height: 1.625rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+  border: 0;
+  place-content: unset;
+  display: inline-block;
+  position: relative;
+}
+input[role='switch']::after {
+  content: '';
+  position: absolute;
+  inset: 3px auto 3px 3px;
+  width: calc(1.625rem - 6px);
+  height: auto;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  transform: none;
+  transition: transform var(--dur) var(--ease);
+}
+input[role='switch']:checked {
+  background: var(--primary-600);
+}
+input[role='switch']:checked::after {
+  transform: translateX(1.125rem);
+  border: 0;
+}
+
+/* Range slider (single and the dual price slider) */
+input[type='range'] {
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 4px;
+  background: transparent;
+}
+input[type='range']::-moz-range-track {
+  height: 4px;
+  background: transparent;
+}
+input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  margin-top: -10px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-600);
+  background: #fff;
+  box-shadow: var(--shadow-md);
+  cursor: grab;
+}
+input[type='range']::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-600);
+  background: #fff;
+  box-shadow: var(--shadow-md);
+  cursor: grab;
+}
+input[type='range']:focus-visible {
+  outline: none;
+}
+input[type='range']:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+input[type='range']:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 progress {
   accent-color: var(--secondary-600);
+  width: 100%;
+  height: 6px;
 }
 
 .sr-only {
@@ -108,12 +303,65 @@ progress {
   border: 0;
 }
 
+/* Brand motif: topographic contour lines. A mask over a flat colour, so any surface can tint it. */
+.contour {
+  position: relative;
+  isolation: isolate;
+}
+.contour::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: currentColor;
+  opacity: var(--contour-opacity, 0.12);
+  -webkit-mask: url('/contour.svg') center / cover no-repeat;
+  mask: url('/contour.svg') center / cover no-repeat;
+  pointer-events: none;
+}
+
+/* Motion: short, purposeful. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes rise {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
