@@ -20,11 +20,7 @@ export default async function EditProfilePage({
   return (
     <main className="page page--form">
       <h1>{t('editTitle')}</h1>
-      <ProfileForm
-        user={user}
-        becomeOwner={one(sp.become) === 'owner'}
-        next={safeRedirect(one(sp.next), `/users/${user.id}`)}
-      />
+      <ProfileForm user={user} next={safeRedirect(one(sp.next), `/users/${user.id}`)} />
     </main>
   );
 }

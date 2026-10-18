@@ -19,9 +19,8 @@ export function toPrivateUser(user: UserRecord) {
     email: user.email,
     phone: user.phone,
     language: user.language,
-    role: user.role ?? undefined,
+    role: user.role ?? 'renter',
     whatsappShareConsent: Boolean(user.whatsappShareConsent),
     termsAccepted: Boolean(user.termsAcceptedAt),
-    onboardingCompleted: Boolean(user.onboardingCompletedAt),
   };
 }

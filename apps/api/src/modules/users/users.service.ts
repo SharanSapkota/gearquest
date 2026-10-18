@@ -1,4 +1,4 @@
-import { toE164, type OnboardingInput, type UpdateProfileInput } from '@gearshare/shared';
+import { toE164, type UpdateProfileInput, type UpgradeRoleInput } from '@gearshare/shared';
 import { AppError, notFound } from '../../lib/errors';
 import { toPublicGear } from '../gear/gear.mapper';
 import type { GearRecord } from '../gear/gear.repository';
@@ -66,8 +66,9 @@ export function createUsersService(
         ]);
         if (listings > 0 || accepted) throw new AppError(409, 'users.phoneInUse');
       }
-      if (isOwnerRole(rest.role ?? current.role)) {
+      if (isOwnerRole(current.role)) {
         assertOwnerReady({
+          role: current.role,
           phone: nextPhone,
           whatsappShareConsent: whatsappShareConsent ?? current.whatsappShareConsent,
         });
@@ -79,23 +80,22 @@ export function createUsersService(
         ...consentPatch(whatsappShareConsent, Boolean(current.whatsappShareConsent)),
       });
     },
-    // Step 2 of onboarding. Owners (and "both") must leave a phone and consent; renters need neither.
-    async completeOnboarding(userId: string, input: OnboardingInput) {
+    // A renter becomes an owner (or both) later. Same rules as signup: a valid phone and WhatsApp
+    // consent must be on file afterwards (already stored values count).
+    async upgradeRole(userId: string, input: UpgradeRoleInput) {
       const current = await repo.findById(userId);
       if (!current) throw notFound('users.notFound');
-      const { phone, whatsappShareConsent, ...rest } = input;
+      const { phone, whatsappShareConsent } = input;
       const nextPhone = phone ? normalizePhone(phone) : current.phone;
-      if (isOwnerRole(input.role)) {
-        assertOwnerReady({
-          phone: nextPhone,
-          whatsappShareConsent: whatsappShareConsent ?? current.whatsappShareConsent,
-        });
-      }
+      assertOwnerReady({
+        role: input.role,
+        phone: nextPhone,
+        whatsappShareConsent: whatsappShareConsent ?? current.whatsappShareConsent,
+      });
       return save(userId, {
-        ...rest,
+        role: input.role,
         ...(phone && { phone: nextPhone }),
         ...consentPatch(whatsappShareConsent, Boolean(current.whatsappShareConsent)),
-        onboardingCompletedAt: current.onboardingCompletedAt ?? clock(),
       });
     },
     // Placeholder: real account deletion (GDPR) comes in Prompt 9.

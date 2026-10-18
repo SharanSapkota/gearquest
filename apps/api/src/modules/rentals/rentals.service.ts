@@ -7,7 +7,7 @@ import { MAX_OPEN_REQUESTS_PER_RENTER, REQUEST_EXPIRY_HOURS } from '@gearshare/s
 import { AppError, notFound, unauthorized } from '../../lib/errors';
 import type { GearRepository } from '../gear/gear.repository';
 import type { UsersRepository } from '../users/users.repository';
-import { assertOwnerReady } from '../users/users.policy';
+import { assertOwnerReady, assertOwnerRole } from '../users/users.policy';
 import { toRentalResponse, type PartiesById } from './rentals.mapper';
 import { computePrice } from './rentals.pricing';
 import type { RentalRecord, RentalsRepository } from './rentals.repository';
@@ -137,10 +137,10 @@ export function createRentalsService(
 
     async accept(userId: string, id: string) {
       const now = clock();
+      // Role first, so a renter-role caller learns nothing about the rental.
+      assertOwnerReady(await users.findById(userId));
       const { rental, actor } = await loadAsParty(userId, id);
       assertTransition(rental, 'accept', actor, now);
-
-      assertOwnerReady(await users.findById(userId));
 
       // Overlap is re-checked here, atomically, because several pending requests can overlap.
       const result = await rentals.acceptIfFree(rental, now);
@@ -149,7 +149,10 @@ export function createRentalsService(
       return respond(result.rental, userId, now);
     },
 
-    decline: (userId: string, id: string) => applyTransition(userId, id, 'decline'),
+    async decline(userId: string, id: string) {
+      assertOwnerRole(await users.findById(userId));
+      return applyTransition(userId, id, 'decline');
+    },
     cancel: (userId: string, id: string) => applyTransition(userId, id, 'cancel'),
     complete: (userId: string, id: string) => applyTransition(userId, id, 'complete'),
 

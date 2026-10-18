@@ -1,9 +1,9 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { SignInPanel } from '@/components/auth/SignInPanel';
+import { LoginPanel } from '@/components/auth/LoginPanel';
 import { Card } from '@/components/ui/Card';
 import { redirect } from '@/i18n/navigation';
 import { getCurrentUser } from '@/lib/auth';
-import { afterLoginPath } from '@/lib/onboarding';
+import { afterLoginPath } from '@/lib/roles';
 import { safeRedirect } from '@/lib/safeRedirect';
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
@@ -17,7 +17,7 @@ export default async function LoginPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const next = safeRedirect(one((await searchParams).next));
+  const next = safeRedirect(one((await searchParams).next), '');
   const user = await getCurrentUser();
   if (user) return redirect({ href: afterLoginPath(user, next), locale });
   const t = await getTranslations('auth');
@@ -26,7 +26,7 @@ export default async function LoginPage({
       <h1>{t('loginTitle')}</h1>
       <p className="lead">{t('loginLead')}</p>
       <Card>
-        <SignInPanel mode="login" next={next} />
+        <LoginPanel next={next || undefined} />
       </Card>
     </main>
   );

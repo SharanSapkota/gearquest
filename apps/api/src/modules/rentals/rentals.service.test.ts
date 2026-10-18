@@ -21,8 +21,8 @@ const gear = {
   status: 'active',
   pricing: { hourlyCents: 1000, dailyCents: 4000, minHours: 2 },
 };
-const owner = { _id: OWNER, name: 'Olli', phone: '+358401111111', whatsappShareConsent: true };
-const renter = { _id: RENTER, name: 'Rita', phone: '+358402222222' };
+const owner = { _id: OWNER, name: 'Olli', role: 'owner', phone: '+358401111111', whatsappShareConsent: true };
+const renter = { _id: RENTER, name: 'Rita', role: 'renter', phone: '+358402222222' };
 
 // 5 Jun 00:00 -> 7 Jun 00:00 Helsinki (UTC+3 in June)
 const DAILY = {
@@ -61,6 +61,7 @@ function makeDeps(over: { rentals?: object; gear?: object; users?: object } = {}
   const users = new Map([
     [OWNER, owner],
     [RENTER, renter],
+    [STRANGER, { _id: STRANGER, name: 'Sami', role: 'owner', phone: '+358403333333', whatsappShareConsent: true }],
   ]);
   const rentals = {
     create: vi.fn().mockImplementation(async (data: object) => rental(data as never)),
@@ -242,17 +243,17 @@ describe('accept', () => {
     expect(res.counterparty.whatsappUrl).toBe('https://wa.me/358402222222');
   });
 
-  it('only the owner can accept: renter 403, stranger 404', async () => {
+  it('only the owner can accept: a renter-role user gets ROLE_REQUIRED, a stranger 404', async () => {
     const { deps, rentals } = makeDeps();
     const svc = createRentalsService(deps, clock);
-    expect(await code(svc.accept(RENTER, 'rent1'))).toBe('403 rentals.forbidden');
+    expect(await code(svc.accept(RENTER, 'rent1'))).toBe('403 ROLE_REQUIRED');
     expect(await code(svc.accept(STRANGER, 'rent1'))).toBe('404 rentals.notFound');
     expect(rentals.acceptIfFree).not.toHaveBeenCalled();
   });
 
   it.each([
-    ['no phone', { _id: OWNER, name: 'Olli', whatsappShareConsent: true }, '409 users.phoneRequired'],
-    ['no consent', { _id: OWNER, name: 'Olli', phone: '+358401111111' }, '409 users.consentRequired'],
+    ['no phone', { _id: OWNER, name: 'Olli', role: 'owner', whatsappShareConsent: true }, '409 PHONE_REQUIRED'],
+    ['no consent', { _id: OWNER, name: 'Olli', role: 'owner', phone: '+358401111111' }, '409 CONSENT_REQUIRED'],
   ])('blocks accept when the owner has %s', async (_label, ownerRecord, expected) => {
     const d = makeDeps({ users: { findById: vi.fn().mockResolvedValue(as(ownerRecord)) } });
     expect(await code(createRentalsService(d.deps, clock).accept(OWNER, 'rent1'))).toBe(expected);
@@ -260,10 +261,10 @@ describe('accept', () => {
   });
 
   it('allows accept once the owner has added phone and consent', async () => {
-    const findById = vi.fn().mockResolvedValue(as({ _id: OWNER, name: 'Olli' }));
+    const findById = vi.fn().mockResolvedValue(as({ _id: OWNER, name: 'Olli', role: 'owner' }));
     const d = makeDeps({ users: { findById } });
     const svc = createRentalsService(d.deps, clock);
-    expect(await code(svc.accept(OWNER, 'rent1'))).toBe('409 users.phoneRequired');
+    expect(await code(svc.accept(OWNER, 'rent1'))).toBe('409 PHONE_REQUIRED');
     findById.mockResolvedValue(as(owner));
     await expect(svc.accept(OWNER, 'rent1')).resolves.toMatchObject({ status: 'accepted' });
   });
@@ -360,7 +361,7 @@ describe('decline', () => {
   it('renter 403, stranger 404, non-pending 409', async () => {
     const { deps } = makeDeps();
     const svc = createRentalsService(deps, clock);
-    expect(await code(svc.decline(RENTER, 'rent1'))).toBe('403 rentals.forbidden');
+    expect(await code(svc.decline(RENTER, 'rent1'))).toBe('403 ROLE_REQUIRED');
     expect(await code(svc.decline(STRANGER, 'rent1'))).toBe('404 rentals.notFound');
     const acc = makeDeps({ rentals: { findById: vi.fn().mockResolvedValue(rental({ status: 'accepted' })) } });
     expect(await code(createRentalsService(acc.deps, clock).decline(OWNER, 'rent1'))).toBe(

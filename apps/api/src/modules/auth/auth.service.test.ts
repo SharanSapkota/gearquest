@@ -27,80 +27,72 @@ const userRecord = (overrides: Record<string, unknown> = {}) =>
 
 const NOW = new Date('2026-10-18T10:00:00Z');
 
-// existing = what findByGoogleId returns before login (null: first login).
+const OK_RENTER = { role: 'renter' as const, termsAccepted: true };
+const OK_OWNER = {
+  role: 'owner' as const,
+  termsAccepted: true,
+  phone: '040 123 4567',
+  whatsappShareConsent: true,
+};
+
+// existing = what findByGoogleId returns (null: no account for this Google user yet).
 function setup(
   verified: GoogleClaims | null = claims,
   user = userRecord(),
   existing: UserRecord | null = user,
+  now: () => Date = () => NOW,
 ) {
   const repo = {
     findByGoogleId: vi.fn().mockResolvedValue(existing),
-    upsertFromGoogle: vi.fn().mockResolvedValue(user),
-    acceptTerms: vi.fn().mockResolvedValue({ ...user, termsAcceptedAt: NOW }),
+    createFromGoogle: vi.fn().mockResolvedValue(user),
     findById: vi.fn().mockResolvedValue(user),
   };
   const verify = vi.fn().mockResolvedValue(verified ?? undefined);
-  return { repo, verify, service: createAuthService(repo, verify, SECRET, () => NOW) };
+  return { repo, verify, service: createAuthService(repo, verify, SECRET, now) };
 }
 
-describe('auth service', () => {
-  it('first signup creates the user from verified claims only, with onboarding incomplete', async () => {
-    const { service, repo } = setup(claims, userRecord({ termsAcceptedAt: NOW }), null);
-    const { user, isNew } = await service.loginWithGoogle('tok', true);
-    expect(repo.upsertFromGoogle).toHaveBeenCalledWith({
-      googleId: 'google-1',
-      email: 'a@example.com',
-      name: 'Anna',
-      avatarUrl: 'https://img/a.png',
-      termsAcceptedAt: NOW,
-    });
-    expect(isNew).toBe(true);
-    expect(user.email).toBe('a@example.com');
-    expect(user.onboardingCompleted).toBe(false);
-    expect(user.termsAccepted).toBe(true);
-    expect(user).not.toHaveProperty('googleId');
-  });
+// Signin of an unknown Google account, returning the signup token the cookie would carry.
+async function newUserToken(service: ReturnType<typeof setup>['service']) {
+  const res = await service.googleAuth('tok', 'signin');
+  if (res.status !== 'NEW_USER') throw new Error('expected NEW_USER');
+  return res.signupToken;
+}
 
-  it('repeat login finds the existing user and never creates another', async () => {
-    const { service, repo } = setup();
-    const a = await service.loginWithGoogle('tok');
-    const b = await service.loginWithGoogle('tok');
-    expect(repo.upsertFromGoogle).not.toHaveBeenCalled();
-    expect(a.isNew).toBe(false);
-    expect(a.user.id).toBe(b.user.id);
-  });
+const ownerRecord = () =>
+  userRecord({ role: 'owner', phone: '+358401234567', whatsappShareConsent: true, consentAt: NOW });
 
-  it('signup is blocked without terms acceptance: nothing is created', async () => {
+describe('sign in', () => {
+  it('unknown Google account creates nothing and returns NEW_USER with a signup token', async () => {
     const { service, repo } = setup(claims, userRecord(), null);
-    await expect(service.loginWithGoogle('tok')).rejects.toMatchObject({
-      status: 403,
-      code: 'auth.termsRequired',
-    });
-    await expect(service.loginWithGoogle('tok', false)).rejects.toMatchObject({ status: 403 });
-    expect(repo.upsertFromGoogle).not.toHaveBeenCalled();
+    const res = await service.googleAuth('tok', 'signin');
+    expect(res.status).toBe('NEW_USER');
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+    if (res.status !== 'NEW_USER') return;
+    expect(res.signupToken).toEqual(expect.any(String));
+    // Only name and avatar are exposed for prefill.
+    expect(res.profile).toEqual({ name: 'Anna', avatarUrl: 'https://img/a.png' });
+    expect(JSON.stringify(res.profile)).not.toContain('a@example.com');
   });
 
-  it('an existing account without recorded terms must accept them once', async () => {
-    const legacy = userRecord({ termsAcceptedAt: undefined });
-    const { service, repo } = setup(claims, legacy, legacy);
-    await expect(service.loginWithGoogle('tok')).rejects.toMatchObject({ code: 'auth.termsRequired' });
-    const { user, isNew } = await service.loginWithGoogle('tok', true);
-    expect(repo.acceptTerms).toHaveBeenCalledWith('65a000000000000000000001', NOW);
-    expect(isNew).toBe(false);
-    expect(user.termsAccepted).toBe(true);
+  it('existing account logs in and returns the dashboard path by role', async () => {
+    const { service, repo } = setup(claims, ownerRecord());
+    const res = await service.googleAuth('tok', 'signin');
+    if (res.status !== 'OK') throw new Error('expected OK');
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+    expect(res.isNew).toBe(false);
+    expect(res.dashboardPath).toBe('/dashboard/owner');
+    expect(res.user).not.toHaveProperty('googleId');
+    await expect(service.authenticate(res.token)).resolves.toBe('65a000000000000000000001');
+
+    const renter = setup(claims, userRecord({ role: 'renter' }));
+    const r = await renter.service.googleAuth('tok', 'signin');
+    expect(r.status === 'OK' && r.dashboardPath).toBe('/dashboard/renter');
   });
 
-  it('reports onboarding as completed once it is', async () => {
-    const { service } = setup(claims, userRecord({ onboardingCompletedAt: NOW, role: 'renter' }));
-    const { user } = await service.loginWithGoogle('tok');
-    expect(user.onboardingCompleted).toBe(true);
-    expect(user.role).toBe('renter');
-  });
-
-  it('issues a token that authenticates the same user', async () => {
-    const { service } = setup();
-    const { token } = await service.loginWithGoogle('tok');
-    await expect(service.authenticate(token)).resolves.toBe('65a000000000000000000001');
+  it('treats an account without a stored role as a renter', async () => {
+    const { service } = setup(claims, userRecord({ role: undefined }));
+    const res = await service.googleAuth('tok', 'signin');
+    expect(res.status === 'OK' && res.user.role).toBe('renter');
   });
 
   it.each([
@@ -108,40 +100,216 @@ describe('auth service', () => {
     ['unverified email', { ...claims, email_verified: false }],
     ['missing email', { ...claims, email: undefined }],
   ])('rejects %s', async (_label, bad) => {
-    const { service, repo } = setup(bad);
-    await expect(service.loginWithGoogle('tok')).rejects.toMatchObject({ status: 401 });
-    expect(repo.upsertFromGoogle).not.toHaveBeenCalled();
+    const { service, repo } = setup(bad, userRecord(), null);
+    await expect(service.googleAuth('tok', 'signin')).rejects.toMatchObject({ status: 401 });
+    await expect(service.googleAuth('tok', 'signup', OK_RENTER)).rejects.toMatchObject({ status: 401 });
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
   });
 
   it('rejects when the verifier throws', async () => {
     const { service, verify } = setup();
     verify.mockRejectedValue(new Error('bad signature'));
-    await expect(service.loginWithGoogle('tok')).rejects.toMatchObject({ status: 401 });
+    await expect(service.googleAuth('tok', 'signin')).rejects.toMatchObject({ status: 401 });
   });
 
-  it('rejects login for a soft-deleted user', async () => {
+  it('rejects a soft-deleted user', async () => {
     const { service } = setup(claims, userRecord({ deletedAt: new Date() }));
-    await expect(service.loginWithGoogle('tok', true)).rejects.toMatchObject({ status: 401 });
+    await expect(service.googleAuth('tok', 'signin')).rejects.toMatchObject({ status: 401 });
+    await expect(service.googleAuth('tok', 'signup', OK_RENTER)).rejects.toMatchObject({ status: 401 });
+  });
+});
+
+describe('sign up', () => {
+  it('renter signup without a phone succeeds; identity comes from the verified claims only', async () => {
+    const { service, repo } = setup(claims, userRecord({ role: 'renter' }), null);
+    const res = await service.googleAuth('tok', 'signup', OK_RENTER);
+    if (res.status !== 'OK') throw new Error('expected OK');
+    expect(res.isNew).toBe(true);
+    expect(repo.createFromGoogle).toHaveBeenCalledWith({
+      googleId: 'google-1',
+      email: 'a@example.com',
+      name: 'Anna',
+      avatarUrl: 'https://img/a.png',
+      role: 'renter',
+      termsAcceptedAt: NOW,
+    });
+    expect(res.dashboardPath).toBe('/dashboard/renter');
   });
 
+  it('fails without accepted terms and creates nothing', async () => {
+    const { service, repo } = setup(claims, userRecord(), null);
+    await expect(
+      service.googleAuth('tok', 'signup', { ...OK_RENTER, termsAccepted: false }),
+    ).rejects.toMatchObject({ status: 403, code: 'auth.termsRequired' });
+    await expect(
+      service.googleAuth('tok', 'signup', { ...OK_OWNER, termsAccepted: false }),
+    ).rejects.toMatchObject({ code: 'auth.termsRequired' });
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+  });
+
+  it.each(['owner', 'both'] as const)('%s signup fails without a phone', async (role) => {
+    const { service, repo } = setup(claims, userRecord(), null);
+    await expect(
+      service.googleAuth('tok', 'signup', { role, termsAccepted: true, whatsappShareConsent: true }),
+    ).rejects.toMatchObject({ status: 409, code: 'PHONE_REQUIRED' });
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+  });
+
+  it.each(['owner', 'both'] as const)('%s signup fails without consent', async (role) => {
+    const { service, repo } = setup(claims, userRecord(), null);
+    for (const consent of [undefined, false]) {
+      await expect(
+        service.googleAuth('tok', 'signup', {
+          role,
+          termsAccepted: true,
+          phone: '0401234567',
+          whatsappShareConsent: consent,
+        }),
+      ).rejects.toMatchObject({ status: 409, code: 'CONSENT_REQUIRED' });
+    }
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+  });
+
+  it('rejects an invalid owner phone', async () => {
+    const { service } = setup(claims, userRecord(), null);
+    await expect(
+      service.googleAuth('tok', 'signup', { ...OK_OWNER, phone: '123' }),
+    ).rejects.toMatchObject({ status: 400, code: 'users.invalidPhone' });
+  });
+
+  it('owner signup stores an E.164 phone and the consent time', async () => {
+    const { service, repo } = setup(claims, ownerRecord(), null);
+    await service.googleAuth('tok', 'signup', { ...OK_OWNER, language: 'en' });
+    expect(repo.createFromGoogle).toHaveBeenCalledWith(
+      expect.objectContaining({
+        role: 'owner',
+        phone: '+358401234567',
+        whatsappShareConsent: true,
+        consentAt: NOW,
+        termsAcceptedAt: NOW,
+        language: 'en',
+      }),
+    );
+  });
+
+  it('signup for an account that already exists just logs in and changes nothing', async () => {
+    const { service, repo } = setup(claims, ownerRecord());
+    const res = await service.googleAuth('tok', 'signup', OK_RENTER);
+    expect(res.status === 'OK' && res.isNew).toBe(false);
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+  });
+
+  it('signup intent without signupData is rejected', async () => {
+    const { service, repo } = setup(claims, userRecord(), null);
+    await expect(service.googleAuth('tok', 'signup')).rejects.toMatchObject({ status: 400 });
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+  });
+});
+
+describe('signup completion (signupToken)', () => {
+  it('creates the account from the Google profile inside the token', async () => {
+    const { service, repo } = setup(claims, userRecord(), null);
+    const signupToken = await newUserToken(service);
+    expect(await service.pendingSignup(signupToken)).toEqual({
+      name: 'Anna',
+      avatarUrl: 'https://img/a.png',
+    });
+    const res = await service.completeSignup(signupToken, OK_RENTER);
+    expect(res.isNew).toBe(true);
+    expect(repo.createFromGoogle).toHaveBeenCalledWith(
+      expect.objectContaining({ googleId: 'google-1', email: 'a@example.com', name: 'Anna' }),
+    );
+  });
+
+  it('applies the same rules: terms, and owner phone + consent', async () => {
+    const { service, repo } = setup(claims, userRecord(), null);
+    const token = await newUserToken(service);
+    await expect(
+      service.completeSignup(token, { ...OK_RENTER, termsAccepted: false }),
+    ).rejects.toMatchObject({ code: 'auth.termsRequired' });
+    await expect(
+      service.completeSignup(token, { role: 'owner', termsAccepted: true }),
+    ).rejects.toMatchObject({ code: 'PHONE_REQUIRED' });
+    await expect(
+      service.completeSignup(token, { role: 'owner', termsAccepted: true, phone: '0401234567' }),
+    ).rejects.toMatchObject({ code: 'CONSENT_REQUIRED' });
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+  });
+
+  it('logs in instead of duplicating when the account already exists', async () => {
+    const { service, repo } = setup(claims, userRecord(), null);
+    const token = await newUserToken(service);
+    repo.findByGoogleId.mockResolvedValue(userRecord({ role: 'renter' }));
+    const res = await service.completeSignup(token, OK_RENTER);
+    expect(res.isNew).toBe(false);
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+  });
+
+  it('rejects a missing, garbage or forged signupToken', async () => {
+    const { service, repo } = setup(claims, userRecord(), null);
+    const other = createAuthService(
+      setup(claims, userRecord(), null).repo,
+      vi.fn().mockResolvedValue(claims),
+      'x'.repeat(32),
+      () => NOW,
+    );
+    const forged = await newUserToken(other as unknown as ReturnType<typeof setup>['service']);
+    for (const bad of [undefined, 'garbage', forged]) {
+      await expect(service.completeSignup(bad, OK_RENTER)).rejects.toMatchObject({
+        status: 401,
+        code: 'auth.signupTokenInvalid',
+      });
+      await expect(service.pendingSignup(bad)).rejects.toMatchObject({ status: 401 });
+    }
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+  });
+
+  it('rejects an expired signupToken (10 minute lifetime)', async () => {
+    let now = NOW;
+    const { service, repo } = setup(claims, userRecord(), null, () => now);
+    const token = await newUserToken(service);
+    now = new Date(NOW.getTime() + 9 * 60_000);
+    await expect(service.completeSignup(token, OK_RENTER)).resolves.toMatchObject({ status: 'OK' });
+    now = new Date(NOW.getTime() + 11 * 60_000);
+    repo.createFromGoogle.mockClear();
+    await expect(service.completeSignup(token, OK_RENTER)).rejects.toMatchObject({ status: 401 });
+    expect(repo.createFromGoogle).not.toHaveBeenCalled();
+  });
+
+  it('a session token is not a signup token, and a signup token is not a session', async () => {
+    const { service } = setup(claims, ownerRecord());
+    const login = await service.googleAuth('tok', 'signin');
+    if (login.status !== 'OK') throw new Error('expected OK');
+    await expect(service.completeSignup(login.token, OK_RENTER)).rejects.toMatchObject({ status: 401 });
+
+    const fresh = setup(claims, userRecord(), null);
+    const signupToken = await newUserToken(fresh.service);
+    await expect(fresh.service.authenticate(signupToken)).rejects.toMatchObject({ status: 401 });
+  });
+});
+
+describe('session tokens', () => {
   it('rejects missing, garbage, or foreign-signed session tokens', async () => {
     const { service } = setup();
     const other = createAuthService(
       setup().repo,
       vi.fn().mockResolvedValue(claims),
       'x'.repeat(32),
+      () => NOW,
     );
-    const { token: foreign } = await other.loginWithGoogle('tok');
+    const foreign = await other.googleAuth('tok', 'signin');
+    if (foreign.status !== 'OK') throw new Error('expected OK');
     await expect(service.authenticate(undefined)).rejects.toMatchObject({ status: 401 });
     await expect(service.authenticate('garbage')).rejects.toMatchObject({ status: 401 });
-    await expect(service.authenticate(foreign)).rejects.toMatchObject({ status: 401 });
+    await expect(service.authenticate(foreign.token)).rejects.toMatchObject({ status: 401 });
   });
 
   it('rejects a valid token whose user no longer exists', async () => {
     const { service, repo } = setup();
-    const { token } = await service.loginWithGoogle('tok');
+    const res = await service.googleAuth('tok', 'signin');
+    if (res.status !== 'OK') throw new Error('expected OK');
     repo.findById.mockResolvedValue(null);
-    await expect(service.authenticate(token)).rejects.toMatchObject({ status: 401 });
+    await expect(service.authenticate(res.token)).rejects.toMatchObject({ status: 401 });
   });
 });
 

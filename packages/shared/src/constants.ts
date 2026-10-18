@@ -1,4 +1,5 @@
 export const LOCALES = ['fi', 'en'] as const;
+export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE = 'fi';
 
 export const CATEGORIES = [
@@ -42,6 +43,16 @@ export const MAX_OPEN_REQUESTS_PER_RENTER = 10;
 export const MAX_AVAILABILITY_WINDOW_DAYS = 90;
 export const RENTAL_TIME_ZONE = 'Europe/Helsinki';
 
-// What the user told us in onboarding. Owners (and "both") must have a phone and WhatsApp consent.
+// Chosen at signup (or upgraded later). Owners (and "both") must have a phone and WhatsApp consent.
 export const USER_ROLES = ['renter', 'owner', 'both'] as const;
 export const OWNER_ROLES = ['owner', 'both'] as const;
+export type UserRole = (typeof USER_ROLES)[number];
+
+export const AUTH_INTENTS = ['signin', 'signup'] as const;
+export const SIGNUP_TOKEN_TTL_SECONDS = 10 * 60;
+
+export const OWNER_DASHBOARD_PATH = '/dashboard/owner';
+export const RENTER_DASHBOARD_PATH = '/dashboard/renter';
+// Where a user lands after signing in. "both" defaults to renting; the web remembers the last view.
+export const dashboardPath = (role: UserRole | undefined) =>
+  role === 'owner' ? OWNER_DASHBOARD_PATH : RENTER_DASHBOARD_PATH;

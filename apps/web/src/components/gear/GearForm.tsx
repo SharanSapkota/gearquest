@@ -82,7 +82,9 @@ export function GearForm({ gear }: { gear?: OwnerGear }) {
         setErrors({ images: 'images' });
       } else if (
         error instanceof ApiError &&
-        (error.code === 'users.phoneRequired' || error.code === 'users.consentRequired')
+        (error.code === 'PHONE_REQUIRED' ||
+          error.code === 'CONSENT_REQUIRED' ||
+          error.code === 'ROLE_REQUIRED')
       ) {
         setOwnerNotReady(true);
       } else {
@@ -202,7 +204,7 @@ export function GearForm({ gear }: { gear?: OwnerGear }) {
       {ownerNotReady && (
         <p role="alert" className="form-error">
           {t('ownerNotReady')}{' '}
-          <Link href={`/profile/edit?become=owner&next=${encodeURIComponent('/gear/new')}`}>
+          <Link href={`/become-owner?next=${encodeURIComponent(gear ? `/gear/${gear.id}/edit` : '/gear/new')}`}>
             {t('fixInProfile')}
           </Link>
         </p>

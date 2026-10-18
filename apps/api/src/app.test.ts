@@ -15,9 +15,13 @@ describe('auth', () => {
     const app = createApp('http://localhost:3000');
     expect((await request(app).get('/api/v1/auth/me')).status).toBe(401);
     expect((await request(app).patch('/api/v1/users/me').send({})).status).toBe(401);
-    expect((await request(app).post('/api/v1/users/me/onboarding').send({ role: 'renter' })).status).toBe(401);
+    expect((await request(app).patch('/api/v1/users/me/role').send({ role: 'owner' })).status).toBe(401);
     expect((await request(app).get('/api/v1/gear/mine')).status).toBe(401);
     expect((await request(app).post('/api/v1/uploads/sign')).status).toBe(401);
+    expect((await request(app).get('/api/v1/dashboard/owner')).status).toBe(401);
+    expect((await request(app).get('/api/v1/dashboard/renter')).status).toBe(401);
+    expect((await request(app).patch('/api/v1/rentals/r1/accept')).status).toBe(401);
+    expect((await request(app).get('/api/v1/auth/signup/pending')).status).toBe(401);
     const bad = await request(app).get('/api/v1/auth/me').set('Cookie', 'gs_session=garbage');
     expect(bad.status).toBe(401);
   });

@@ -28,6 +28,9 @@ import {
   Send,
   LockKeyhole,
   Backpack,
+  LayoutDashboard,
+  Clock,
+  Wallet,
   type LucideProps,
 } from 'lucide-react';
 
@@ -71,3 +74,6 @@ export const FindIcon = wrap(PackageSearch);
 export const SendIcon = wrap(Send);
 export const LockIcon = wrap(LockKeyhole);
 export const BackpackIcon = wrap(Backpack);
+export const DashboardIcon = wrap(LayoutDashboard);
+export const ClockIcon = wrap(Clock);
+export const WalletIcon = wrap(Wallet);

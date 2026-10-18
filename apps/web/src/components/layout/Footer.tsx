@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import type { Me } from '@/lib/api';
+import { isOwnerRole } from '@/lib/roles';
 import { Logo } from './Logo';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -22,9 +23,10 @@ export function Footer({ user }: { user: Me | null }) {
         {user && (
           <nav className="footer__col" aria-label={t('footer.account')}>
             <h2>{t('footer.account')}</h2>
+            {isOwnerRole(user.role) && <Link href="/dashboard">{t('nav.dashboard')}</Link>}
             <Link href="/rentals">{t('nav.rentals')}</Link>
-            <Link href="/gear/mine">{t('nav.myGear')}</Link>
-            <Link href="/gear/new">{t('nav.addGear')}</Link>
+            {isOwnerRole(user.role) && <Link href="/gear/mine">{t('nav.myGear')}</Link>}
+            {isOwnerRole(user.role) && <Link href="/gear/new">{t('nav.addGear')}</Link>}
             <Link href={`/users/${user.id}`}>{t('nav.myProfile')}</Link>
           </nav>
         )}

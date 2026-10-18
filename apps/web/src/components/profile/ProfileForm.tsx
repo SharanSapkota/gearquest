@@ -3,10 +3,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import {
   LOCALES,
-  USER_ROLES,
   toE164,
   updateProfileSchema,
   type UpdateProfileInput,
@@ -16,29 +15,21 @@ import { Field, Input, Select, Textarea } from '@/components/ui/Field';
 import { LockIcon } from '@/components/ui/icons';
 import { useRouter } from '@/i18n/navigation';
 import { ApiError, api, type Me } from '@/lib/api';
-import { isOwnerRole } from '@/lib/onboarding';
+import { isOwnerRole } from '@/lib/roles';
 import { PhoneInput, cleanPhone } from './PhoneInput';
 
 type FormError = 'phoneInvalid' | 'phoneRequired' | 'consentRequired' | 'phoneInUse' | 'generic';
 
 const API_ERRORS: Record<string, FormError> = {
   'users.invalidPhone': 'phoneInvalid',
-  'users.phoneRequired': 'phoneRequired',
-  'users.consentRequired': 'consentRequired',
+  PHONE_REQUIRED: 'phoneRequired',
+  CONSENT_REQUIRED: 'consentRequired',
   'users.phoneInUse': 'phoneInUse',
 };
 
-// `becomeOwner` preselects the owner role (from "Become an owner" and the add-gear gate).
-// Owners (and "both") need a phone and WhatsApp consent; the API enforces the same rule.
-export function ProfileForm({
-  user,
-  becomeOwner = false,
-  next,
-}: {
-  user: Me;
-  becomeOwner?: boolean;
-  next: string;
-}) {
+// Owners (and "both") need a phone and WhatsApp consent; the API enforces the same rule. The role
+// itself is not edited here: becoming an owner goes through /become-owner.
+export function ProfileForm({ user, next }: { user: Me; next: string }) {
   const t = useTranslations();
   const router = useRouter();
   const [error, setError] = useState<FormError | null>(null);
@@ -54,11 +45,10 @@ export function ProfileForm({
       bio: user.bio ?? '',
       phone: user.phone ?? '',
       language: user.language,
-      role: becomeOwner && !isOwnerRole(user.role) ? 'owner' : (user.role ?? 'renter'),
       whatsappShareConsent: user.whatsappShareConsent,
     },
   });
-  const owner = isOwnerRole(useWatch({ control, name: 'role' }));
+  const owner = isOwnerRole(user.role);
 
   const onSubmit = async (values: UpdateProfileInput) => {
     setError(null);
@@ -97,18 +87,9 @@ export function ProfileForm({
       <Field label={t('profile.bio')}>
         <Textarea {...register('bio')} rows={4} maxLength={1000} />
       </Field>
-      <Field label={t('profile.role')} hint={t('profile.roleOwnerNeeds')}>
-        <Select {...register('role')}>
-          {USER_ROLES.map((r) => (
-            <option key={r} value={r}>
-              {t(`roles.${r}`)}
-            </option>
-          ))}
-        </Select>
-      </Field>
       <Field
         label={t('profile.phone')}
-        hint={owner ? t('onboarding.ownerPhoneHint') : t('profile.phoneNote')}
+        hint={owner ? t('signup.ownerPhoneHint') : t('profile.phoneNote')}
         error={phoneError}
       >
         <Controller
@@ -130,13 +111,13 @@ export function ProfileForm({
           <div className="privacy-note">
             <LockIcon size={20} />
             <div>
-              <strong>{t('onboarding.privacyTitle')}</strong>
-              <p>{t('onboarding.privacyBody')}</p>
+              <strong>{t('signup.privacyTitle')}</strong>
+              <p>{t('signup.privacyBody')}</p>
             </div>
           </div>
           <label className="check check--top">
             <input type="checkbox" {...register('whatsappShareConsent')} />
-            <span>{t('onboarding.consent')}</span>
+            <span>{t('signup.consent')}</span>
           </label>
           {error === 'consentRequired' && (
             <p role="alert" className="form-error">

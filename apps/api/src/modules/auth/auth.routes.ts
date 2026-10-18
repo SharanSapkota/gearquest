@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { googleLoginSchema } from '@gearshare/shared';
+import { completeSignupSchema, googleLoginSchema } from '@gearshare/shared';
 import { requireAuth } from '../../middleware/requireAuth';
 import { validateBody } from '../../middleware/validate';
 import { gearRepository } from '../gear/gear.repository';
@@ -16,5 +16,7 @@ const controller = createAuthController(
 
 export const authRouter = Router();
 authRouter.post('/google', validateBody(googleLoginSchema), controller.google);
+authRouter.get('/signup/pending', controller.pendingSignup);
+authRouter.post('/signup/complete', validateBody(completeSignupSchema), controller.completeSignup);
 authRouter.get('/me', requireAuth, controller.me);
 authRouter.post('/logout', controller.logout);

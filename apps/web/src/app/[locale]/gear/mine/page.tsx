@@ -3,12 +3,14 @@ import { buttonClass } from '@/components/ui/Button';
 import { MyGearList } from '@/components/gear/MyGearList';
 import { Link } from '@/i18n/navigation';
 import { api } from '@/lib/api';
-import { requireUser } from '@/lib/auth';
+import { OwnerGate } from '@/components/dashboard/OwnerGate';
+import { requireOwnerAccess } from '@/lib/auth';
 
 export default async function MyGearPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireUser(locale, '/gear/mine');
+  const access = await requireOwnerAccess(locale, '/gear/mine');
+  if (access.gate) return <OwnerGate next="/gear/mine" />;
   const t = await getTranslations('myGear');
   // Failures throw to the locale error boundary (error.tsx), which shows the retry state.
   const { items } = await api.getMyGear();

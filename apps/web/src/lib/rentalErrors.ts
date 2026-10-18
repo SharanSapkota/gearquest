@@ -20,8 +20,9 @@ export const KNOWN_ERROR_CODES = [
   'rentals.notEnded',
   'rentals.alreadyEnded',
   'rentals.notFound',
-  'users.phoneRequired',
-  'users.consentRequired',
+  'PHONE_REQUIRED',
+  'CONSENT_REQUIRED',
+  'ROLE_REQUIRED',
   'users.phoneInUse',
   'gear.notFound',
   'errors.rateLimited',
@@ -35,9 +36,11 @@ export function apiErrorKey(err: unknown): string {
   return code && (KNOWN_ERROR_CODES as readonly string[]).includes(code) ? code : 'generic';
 }
 
-// Errors that the user fixes in their profile (phone number, or the owner's WhatsApp consent).
-export const needsPhone = (err: unknown) =>
+// Errors fixed by completing owner setup (phone + WhatsApp consent, or becoming an owner).
+export const needsOwnerSetup = (err: unknown) =>
   err instanceof ApiError &&
-  (err.code === 'rentals.renterPhoneRequired' ||
-    err.code === 'users.phoneRequired' ||
-    err.code === 'users.consentRequired');
+  (err.code === 'PHONE_REQUIRED' || err.code === 'CONSENT_REQUIRED' || err.code === 'ROLE_REQUIRED');
+
+// A renter's own phone is missing: fixed in the profile.
+export const needsPhone = (err: unknown) =>
+  err instanceof ApiError && err.code === 'rentals.renterPhoneRequired';

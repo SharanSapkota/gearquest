@@ -3,8 +3,9 @@
 ## User
 googleId (unique), email (unique), name, avatarUrl, bio, language ("fi"|"en"),
 phone (E.164, private), ratingAvg, ratingCount, createdAt,
-termsAcceptedAt, role (renter|owner|both, set in onboarding), whatsappShareConsent + consentAt
-(owner's permission to reveal the phone after accepting; never makes it public), onboardingCompletedAt
+termsAcceptedAt, role (renter|owner|both, chosen at signup; renter -> owner/both later via PATCH /users/me/role),
+whatsappShareConsent + consentAt (owner's permission to reveal the phone after accepting; never makes
+it public). Owner/both always have a phone and consent.
 
 ## Gear
 ownerId (ref User), title, description, category (enum: ski, snowboard, tent, kayak, bike, climbing, camping, other),

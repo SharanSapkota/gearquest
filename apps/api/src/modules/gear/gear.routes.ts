@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { createGearSchema, gearFiltersSchema, updateGearSchema } from '@gearshare/shared';
 import { requireAuth } from '../../middleware/requireAuth';
+import { requireOwner } from '../../middleware/requireRole';
 import { validateBody, validateQuery } from '../../middleware/validate';
 import { env } from '../../config/env';
 import { usersRepository } from '../users/users.repository';
@@ -15,8 +16,8 @@ const controller = createGearController(
 export const gearRouter = Router();
 gearRouter.get('/', validateQuery(gearFiltersSchema), controller.list);
 // Before '/:id' so "mine" is not captured as an id.
-gearRouter.get('/mine', requireAuth, controller.listMine);
+gearRouter.get('/mine', requireAuth, requireOwner, controller.listMine);
 gearRouter.get('/:id', controller.get);
-gearRouter.post('/', requireAuth, validateBody(createGearSchema), controller.create);
-gearRouter.patch('/:id', requireAuth, validateBody(updateGearSchema), controller.update);
-gearRouter.delete('/:id', requireAuth, controller.remove);
+gearRouter.post('/', requireAuth, requireOwner, validateBody(createGearSchema), controller.create);
+gearRouter.patch('/:id', requireAuth, requireOwner, validateBody(updateGearSchema), controller.update);
+gearRouter.delete('/:id', requireAuth, requireOwner, controller.remove);

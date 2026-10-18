@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  AUTH_INTENTS,
   CATEGORIES,
   CONDITIONS,
   DEFAULT_PAGE_SIZE,
@@ -10,6 +11,7 @@ import {
   MAX_GEAR_IMAGES,
   MAX_PAGE_SIZE,
   OWNER_GEAR_STATUSES,
+  OWNER_ROLES,
   RENTAL_MODES,
   RENTAL_STATUSES,
   REVIEW_ROLES,
@@ -124,12 +126,33 @@ export const gearFiltersSchema = z
 export type GearFilters = z.infer<typeof gearFiltersSchema>;
 export type GearFiltersInput = z.input<typeof gearFiltersSchema>;
 
-// acceptTerms is only sent from the signup page; a new user cannot be created without it.
-export const googleLoginSchema = z.object({
-  idToken: z.string().min(1),
-  acceptTerms: z.boolean().optional(),
+// What a new user may tell us at signup. Identity (email, name, avatar) is never accepted from
+// the client: it comes from the verified Google token. Rules (terms, phone, consent) are enforced
+// by the auth service, not here.
+export const signupDataSchema = z.object({
+  role: userRoleSchema,
+  termsAccepted: z.boolean(),
+  phone: z.string().trim().max(30).optional(),
+  whatsappShareConsent: z.boolean().optional(),
+  language: localeSchema.optional(),
 });
+export type SignupData = z.infer<typeof signupDataSchema>;
+
+// intent "signup" creates the account (signupData required); "signin" never creates one.
+export const googleLoginSchema = z
+  .object({
+    idToken: z.string().min(1),
+    intent: z.enum(AUTH_INTENTS),
+    signupData: signupDataSchema.optional(),
+  })
+  .refine((v) => v.intent !== 'signup' || v.signupData !== undefined, {
+    message: 'auth.signupDataRequired',
+    path: ['signupData'],
+  });
 export type GoogleLoginInput = z.infer<typeof googleLoginSchema>;
+
+// POST /auth/signup/complete: the Google profile comes from the signupToken cookie.
+export const completeSignupSchema = signupDataSchema;
 
 // Phone format (Finnish or E.164) is validated and normalized server-side in the users service.
 // An empty string clears the phone. Owner rules (phone + consent) are enforced by the service.
@@ -139,21 +162,18 @@ export const updateProfileSchema = z
     bio: z.string().trim().max(1000),
     language: localeSchema,
     phone: z.string().trim().max(30),
-    role: userRoleSchema,
     whatsappShareConsent: z.boolean(),
   })
   .partial();
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
-// POST /users/me/onboarding. Phone is optional for renters, required (with consent) for owners.
-export const onboardingSchema = z.object({
-  role: userRoleSchema,
-  name: z.string().trim().min(1).max(100).optional(),
-  language: localeSchema.optional(),
+// PATCH /users/me/role: becoming an owner (or both) later. Same phone + consent rules as signup.
+export const upgradeRoleSchema = z.object({
+  role: z.enum(OWNER_ROLES),
   phone: z.string().trim().max(30).optional(),
   whatsappShareConsent: z.boolean().optional(),
 });
-export type OnboardingInput = z.infer<typeof onboardingSchema>;
+export type UpgradeRoleInput = z.infer<typeof upgradeRoleSchema>;
 
 // Response of POST /uploads/sign: everything the browser needs for a direct signed Cloudinary upload.
 export type UploadSignature = {

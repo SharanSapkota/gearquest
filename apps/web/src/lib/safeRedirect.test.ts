@@ -26,6 +26,6 @@ describe('safeRedirect', () => {
   });
 
   it('uses the given fallback', () => {
-    expect(safeRedirect('https://evil.example', '/onboarding')).toBe('/onboarding');
+    expect(safeRedirect('https://evil.example', '/login')).toBe('/login');
   });
 });

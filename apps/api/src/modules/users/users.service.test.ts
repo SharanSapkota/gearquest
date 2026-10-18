@@ -56,7 +56,6 @@ function setup(
 }
 
 const withFields = (fields: object) => ({ ...userRecord, ...fields }) as unknown as UserRecord;
-const noPhone = withFields({ phone: undefined });
 
 describe('normalizePhone', () => {
   it.each([
@@ -122,91 +121,71 @@ describe('users service', () => {
     expect(repo.updateProfile).not.toHaveBeenCalled();
   });
 
-  it.each(['owner', 'both'] as const)('becoming %s requires phone and consent', async (role) => {
-    const consenting = withFields({ whatsappShareConsent: true });
-    await expect(setup(noPhone).service.updateMe('u1', { role, whatsappShareConsent: true })).rejects.toMatchObject({
-      code: 'users.phoneRequired',
-    });
-    await expect(setup(userRecord).service.updateMe('u1', { role })).rejects.toMatchObject({
-      code: 'users.consentRequired',
-    });
-    const { service, repo } = setup(userRecord);
-    await service.updateMe('u1', { role, phone: '040 123 4567', whatsappShareConsent: true });
-    expect(repo.updateProfile).toHaveBeenCalledWith('u1', {
-      role,
-      phone: '+358401234567',
-      whatsappShareConsent: true,
-      consentAt: NOW,
-    });
-    // Already on file: the role change alone is enough.
-    await expect(setup(consenting).service.updateMe('u1', { role })).resolves.toMatchObject({ role });
-  });
-
   it('an owner cannot withdraw consent while staying an owner', async () => {
     const owner = withFields({ role: 'owner', whatsappShareConsent: true });
     await expect(setup(owner).service.updateMe('u1', { whatsappShareConsent: false })).rejects.toMatchObject({
-      code: 'users.consentRequired',
+      code: 'CONSENT_REQUIRED',
     });
   });
 });
 
-describe('onboarding', () => {
-  const fresh = withFields({ phone: undefined, role: undefined });
+describe('role upgrade', () => {
+  const renter = withFields({ phone: undefined, role: 'renter' });
 
-  it('renter onboarding succeeds without a phone and marks onboarding complete', async () => {
-    const { service, repo } = setup(fresh);
-    const me = await service.completeOnboarding('u1', { role: 'renter', name: 'Anna', language: 'en' });
-    expect(repo.updateProfile).toHaveBeenCalledWith('u1', {
-      role: 'renter',
-      name: 'Anna',
-      language: 'en',
-      onboardingCompletedAt: NOW,
+  it.each(['owner', 'both'] as const)('renter -> %s fails without a phone', async (role) => {
+    const { service, repo } = setup(renter);
+    await expect(service.upgradeRole('u1', { role, whatsappShareConsent: true })).rejects.toMatchObject({
+      status: 409,
+      code: 'PHONE_REQUIRED',
     });
-    expect(me.onboardingCompleted).toBe(true);
-    expect(me.phone).toBeUndefined();
-  });
-
-  it.each(['owner', 'both'] as const)('%s onboarding fails without a phone', async (role) => {
-    const { service, repo } = setup(fresh);
-    await expect(
-      service.completeOnboarding('u1', { role, whatsappShareConsent: true }),
-    ).rejects.toMatchObject({ status: 409, code: 'users.phoneRequired' });
     expect(repo.updateProfile).not.toHaveBeenCalled();
   });
 
-  it.each(['owner', 'both'] as const)('%s onboarding fails without consent', async (role) => {
-    const { service, repo } = setup(fresh);
+  it.each(['owner', 'both'] as const)('renter -> %s fails without consent', async (role) => {
+    const { service, repo } = setup(renter);
+    await expect(service.upgradeRole('u1', { role, phone: '0401234567' })).rejects.toMatchObject({
+      status: 409,
+      code: 'CONSENT_REQUIRED',
+    });
     await expect(
-      service.completeOnboarding('u1', { role, phone: '0401234567' }),
-    ).rejects.toMatchObject({ status: 409, code: 'users.consentRequired' });
-    await expect(
-      service.completeOnboarding('u1', { role, phone: '0401234567', whatsappShareConsent: false }),
-    ).rejects.toMatchObject({ code: 'users.consentRequired' });
+      service.upgradeRole('u1', { role, phone: '0401234567', whatsappShareConsent: false }),
+    ).rejects.toMatchObject({ code: 'CONSENT_REQUIRED' });
     expect(repo.updateProfile).not.toHaveBeenCalled();
   });
 
-  it('owner onboarding stores the phone as E.164 with the consent time', async () => {
-    const { service, repo } = setup(fresh);
-    const me = await service.completeOnboarding('u1', {
-      role: 'owner',
+  it('stores the E.164 phone, consent time and the new role', async () => {
+    const { service, repo } = setup(renter);
+    const me = await service.upgradeRole('u1', {
+      role: 'both',
       phone: '040 123 4567',
       whatsappShareConsent: true,
     });
     expect(repo.updateProfile).toHaveBeenCalledWith('u1', {
-      role: 'owner',
+      role: 'both',
       phone: '+358401234567',
       whatsappShareConsent: true,
       consentAt: NOW,
-      onboardingCompletedAt: NOW,
     });
-    expect(me.whatsappShareConsent).toBe(true);
+    expect(me.role).toBe('both');
   });
 
-  it('rejects an invalid owner phone', async () => {
-    const { service } = setup(fresh);
+  it('a phone and consent already on file are enough', async () => {
+    const onFile = withFields({ role: 'renter', whatsappShareConsent: true });
+    await expect(setup(onFile).service.upgradeRole('u1', { role: 'owner' })).resolves.toMatchObject({
+      role: 'owner',
+    });
+  });
+
+  it('rejects an invalid phone', async () => {
     await expect(
-      service.completeOnboarding('u1', { role: 'owner', phone: '123', whatsappShareConsent: true }),
+      setup(renter).service.upgradeRole('u1', { role: 'owner', phone: '123', whatsappShareConsent: true }),
     ).rejects.toMatchObject({ status: 400, code: 'users.invalidPhone' });
+  });
+
+  it('404s for an unknown user', async () => {
+    await expect(setup(null).service.upgradeRole('u1', { role: 'owner' })).rejects.toMatchObject({
+      status: 404,
+    });
   });
 });
 

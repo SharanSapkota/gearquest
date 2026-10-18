@@ -4,12 +4,15 @@ import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 import { Avatar } from '@/components/ui/Avatar';
 import { useToast } from '@/components/ui/Toast';
-import { Link, useRouter } from '@/i18n/navigation';
+import { ViewSwitcher } from '@/components/dashboard/ViewSwitcher';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { api, type Me } from '@/lib/api';
+import { isOwnerRole } from '@/lib/roles';
 
 export function UserMenu({ user, pendingCount }: { user: Me; pendingCount: number }) {
   const t = useTranslations('nav');
   const router = useRouter();
+  const pathname = usePathname();
   const toast = useToast();
   const menu = useRef<HTMLDetailsElement>(null);
   const [busy, setBusy] = useState(false);
@@ -44,8 +47,12 @@ export function UserMenu({ user, pendingCount }: { user: Me; pendingCount: numbe
       </summary>
       <div className="popover__panel" onClick={(e) => (e.target as HTMLElement).closest('a') && close()}>
         <p className="popover__note">{user.name}</p>
+        {user.role === 'both' && (
+          <ViewSwitcher current={pathname.startsWith('/dashboard/owner') ? 'owner' : 'renter'} />
+        )}
         <Link href={`/users/${user.id}`}>{t('myProfile')}</Link>
-        <Link href="/gear/mine">{t('myGear')}</Link>
+        {isOwnerRole(user.role) && <Link href="/dashboard">{t('dashboard')}</Link>}
+        {isOwnerRole(user.role) && <Link href="/gear/mine">{t('myGear')}</Link>}
         <Link href="/rentals">
           {t('rentals')}
           {pendingCount > 0 && <span className="count-badge">{pendingCount}</span>}

@@ -6,10 +6,11 @@ import type {
   RENTAL_MODES,
   RENTAL_STATUSES,
   CreateGearInput,
-  OnboardingInput,
+  SignupData,
   USER_ROLES,
   UpdateGearInput,
   UpdateProfileInput,
+  UpgradeRoleInput,
   UploadSignature,
 } from '@gearshare/shared';
 import { filterMockGear } from './mockGear';
@@ -66,16 +67,34 @@ export type ProfileWithGear = PublicProfile & { gear: PublicGear[] };
 
 export type UserRole = (typeof USER_ROLES)[number];
 
-// The signed-in user's own account. Only returned by /auth/me, login, onboarding and PATCH /users/me.
+// The signed-in user's own account. Only returned by /auth/me, login, signup and PATCH /users/me*.
 export type Me = PublicProfile & {
   email: string;
   phone?: string;
   language: (typeof LOCALES)[number];
-  role?: UserRole;
+  role: UserRole;
   whatsappShareConsent: boolean;
   termsAccepted: boolean;
-  onboardingCompleted: boolean;
 };
+
+// POST /auth/google and /auth/signup/complete. NEW_USER: nothing was created; finish at /signup/complete.
+export type AuthResult =
+  | { status: 'OK'; user: Me; dashboardPath: string; isNew: boolean }
+  | { status: 'NEW_USER'; profile: { name: string; avatarUrl?: string } };
+
+export type OwnerDashboard = {
+  counts: {
+    activeListings: number;
+    pendingRequests: number;
+    upcomingRentals: number;
+    completedRentals: number;
+  };
+  earningsCents: number;
+  pendingRequests: Rental[];
+  listings: OwnerGear[];
+};
+
+export type RenterDashboard = { upcoming: Rental[]; pending: Rental[]; past: Rental[] };
 
 export type PublicGear = {
   id: string;
@@ -204,15 +223,33 @@ export const api = {
       return null;
     }
   },
-  // acceptTerms is only sent from the signup page. A new user without it gets auth.termsRequired.
-  loginWithGoogle(idToken: string, acceptTerms?: boolean) {
-    return request<{ user: Me; isNew: boolean }>('/auth/google', {
+  // intent "signin" never creates an account (unknown Google users get NEW_USER); "signup" sends
+  // the role/terms/phone/consent chosen before Google. Identity always comes from the ID token.
+  googleAuth(idToken: string, intent: 'signin' | 'signup', signupData?: SignupData) {
+    return request<AuthResult>('/auth/google', {
       method: 'POST',
-      body: JSON.stringify({ idToken, ...(acceptTerms && { acceptTerms: true }) }),
+      body: JSON.stringify({ idToken, intent, ...(signupData && { signupData }) }),
     });
   },
-  completeOnboarding(input: OnboardingInput) {
-    return request<Me>('/users/me/onboarding', { method: 'POST', body: JSON.stringify(input) });
+  // Name and avatar from the short-lived signup cookie, to prefill "Create your account".
+  async getPendingSignup(): Promise<{ name: string; avatarUrl?: string } | null> {
+    try {
+      return await request<{ name: string; avatarUrl?: string }>('/auth/signup/pending');
+    } catch {
+      return null;
+    }
+  },
+  completeSignup(data: SignupData) {
+    return request<AuthResult>('/auth/signup/complete', { method: 'POST', body: JSON.stringify(data) });
+  },
+  upgradeRole(input: UpgradeRoleInput) {
+    return request<Me>('/users/me/role', { method: 'PATCH', body: JSON.stringify(input) });
+  },
+  getOwnerDashboard() {
+    return request<OwnerDashboard>('/dashboard/owner');
+  },
+  getRenterDashboard() {
+    return request<RenterDashboard>('/dashboard/renter');
   },
   logout() {
     return request<void>('/auth/logout', { method: 'POST' });

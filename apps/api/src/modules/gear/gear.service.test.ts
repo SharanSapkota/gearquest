@@ -48,7 +48,7 @@ function makeRepo(overrides: Record<string, unknown> = {}) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const owner = (fields: object): any => ({ findById: vi.fn().mockResolvedValue({ _id: 'u1', ...fields }) });
-const readyOwner = owner({ phone: '+358401234567', whatsappShareConsent: true });
+const readyOwner = owner({ role: 'owner', phone: '+358401234567', whatsappShareConsent: true });
 
 const validInput: CreateGearInput = {
   title: 'Alpine skis',
@@ -304,15 +304,17 @@ describe('gear service: status and owner listing', () => {
   });
 });
 
-describe('create requires an owner with phone and consent', () => {
+describe('create requires an owner role with phone and consent', () => {
   it.each([
-    ['no phone', owner({ whatsappShareConsent: true }), 'users.phoneRequired'],
-    ['no consent', owner({ phone: '+358401234567' }), 'users.consentRequired'],
-    ['unknown user', { findById: vi.fn().mockResolvedValue(null) }, 'users.phoneRequired'],
-  ])('rejects %s without writing', async (_label, users, expected) => {
+    ['a renter', owner({ role: 'renter', phone: '+358401234567', whatsappShareConsent: true }), 403, 'ROLE_REQUIRED'],
+    ['an account with no role', owner({ phone: '+358401234567', whatsappShareConsent: true }), 403, 'ROLE_REQUIRED'],
+    ['unknown user', { findById: vi.fn().mockResolvedValue(null) }, 403, 'ROLE_REQUIRED'],
+    ['no phone', owner({ role: 'owner', whatsappShareConsent: true }), 409, 'PHONE_REQUIRED'],
+    ['no consent', owner({ role: 'both', phone: '+358401234567' }), 409, 'CONSENT_REQUIRED'],
+  ])('rejects %s without writing', async (_label, users, status, expected) => {
     const repo = makeRepo();
     await expect(createGearService(repo, users, () => 0.5).create('u1', validInput)).rejects.toMatchObject({
-      status: 409,
+      status,
       code: expected,
     });
     expect(repo.create).not.toHaveBeenCalled();
@@ -320,10 +322,10 @@ describe('create requires an owner with phone and consent', () => {
 
   it('allows create after phone and consent are added', async () => {
     const repo = makeRepo();
-    const users = owner({});
+    const users = owner({ role: 'owner' });
     const svc = createGearService(repo, users, () => 0.5);
-    await expect(svc.create('u1', validInput)).rejects.toMatchObject({ code: 'users.phoneRequired' });
-    users.findById.mockResolvedValue({ _id: 'u1', phone: '+358401234567', whatsappShareConsent: true });
+    await expect(svc.create('u1', validInput)).rejects.toMatchObject({ code: 'PHONE_REQUIRED' });
+    users.findById.mockResolvedValue({ _id: 'u1', role: 'owner', phone: '+358401234567', whatsappShareConsent: true });
     await expect(svc.create('u1', validInput)).resolves.toMatchObject({ title: 'Alpine skis' });
     expect(users.findById).toHaveBeenCalledWith('u1');
   });

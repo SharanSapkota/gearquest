@@ -1,16 +1,13 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { CalendarIcon, HomeIcon, MapIcon, PlusIcon, UserIcon } from '@/components/ui/icons';
+import { CalendarIcon, DashboardIcon, HomeIcon, MapIcon, PlusIcon, UserIcon } from '@/components/ui/icons';
 import { Link, usePathname } from '@/i18n/navigation';
 import { carryFilterParams } from '@/lib/mapView';
-import { isOwnerRole } from '@/lib/onboarding';
-
-const SignInSheet = dynamic(() => import('@/components/auth/SignInSheet'), { ssr: false });
+import { isOwnerRole } from '@/lib/roles';
 
 type Tab = {
   key: string;
@@ -22,33 +19,34 @@ type Tab = {
   add?: boolean;
 };
 
-// Phone-only tab bar. Signed in: Home, Map, Add gear (owners only), Rentals, Profile.
-// Guests: Home, Map, Sign in.
+// Phone-only tab bar. Renter: Home, Map, Rentals, Profile. Owner/both: Home, Map, Add gear
+// (centre, highlighted), Dashboard, Profile. Guests: Home, Map, Sign in.
 export function BottomTabs({ pendingCount }: { pendingCount: number }) {
   const t = useTranslations('nav');
   const user = useAuth();
   const pathname = usePathname();
   const search = useSearchParams();
-  const [signInOpen, setSignInOpen] = useState(false);
   const query = Object.fromEntries(new URLSearchParams(carryFilterParams(search.toString())));
 
   const tabs: Tab[] = [
     { key: 'home', href: { pathname: '/', query }, label: t('home'), icon: <HomeIcon size={22} />, active: pathname === '/' },
     { key: 'map', href: { pathname: '/map', query }, label: t('map'), icon: <MapIcon size={22} />, active: pathname.startsWith('/map') },
   ];
-  if (user && isOwnerRole(user.role)) {
-    tabs.push({ key: 'add', href: '/gear/new', label: t('addGear'), icon: <PlusIcon size={24} />, active: pathname.startsWith('/gear/new'), add: true });
-  }
   if (user) {
-    tabs.push(
-      { key: 'rentals', href: '/rentals', label: t('rentalsShort'), icon: <CalendarIcon size={22} />, active: pathname.startsWith('/rentals'), badge: pendingCount },
-      { key: 'profile', href: `/users/${user.id}`, label: t('profile'), icon: <UserIcon size={22} />, active: pathname.startsWith('/users/') || pathname.startsWith('/profile') || pathname.startsWith('/gear/mine') },
-    );
+    const owner = isOwnerRole(user.role);
+    if (owner) {
+      tabs.push({ key: 'add', href: '/gear/new', label: t('addGear'), icon: <PlusIcon size={24} />, active: pathname.startsWith('/gear/new'), add: true });
+      tabs.push({ key: 'dashboard', href: '/dashboard', label: t('dashboard'), icon: <DashboardIcon size={22} />, active: pathname.startsWith('/dashboard') || pathname.startsWith('/gear/mine') || pathname.startsWith('/rentals'), badge: pendingCount });
+    } else {
+      tabs.push({ key: 'rentals', href: '/rentals', label: t('rentalsShort'), icon: <CalendarIcon size={22} />, active: pathname.startsWith('/rentals') || pathname.startsWith('/dashboard'), badge: pendingCount });
+    }
+    tabs.push({ key: 'profile', href: `/users/${user.id}`, label: t('profile'), icon: <UserIcon size={22} />, active: pathname.startsWith('/users/') || pathname.startsWith('/profile') });
+  } else {
+    tabs.push({ key: 'signin', href: '/login', label: t('signIn'), icon: <UserIcon size={22} />, active: pathname.startsWith('/login') || pathname.startsWith('/signup') });
   }
 
   return (
-    <>
-      <nav className="tabbar" aria-label={t('main')}>
+    <nav className="tabbar" aria-label={t('main')}>
         {tabs.map((tab) => (
           <Link
             key={tab.key}
@@ -65,14 +63,6 @@ export function BottomTabs({ pendingCount }: { pendingCount: number }) {
             )}
           </Link>
         ))}
-        {!user && (
-          <button type="button" className="tabbar__item" onClick={() => setSignInOpen(true)} aria-haspopup="dialog">
-            <UserIcon size={22} />
-            {t('signIn')}
-          </button>
-        )}
-      </nav>
-      {signInOpen && <SignInSheet onClose={() => setSignInOpen(false)} />}
-    </>
+    </nav>
   );
 }

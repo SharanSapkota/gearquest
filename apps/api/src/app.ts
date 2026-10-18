@@ -3,6 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import { errorHandler } from './middleware/errorHandler';
 import { authRouter } from './modules/auth/auth.routes';
+import { dashboardRouter } from './modules/dashboard/dashboard.routes';
 import { gearAvailabilityRouter, rentalsRouter } from './modules/rentals/rentals.routes';
 import { gearRouter } from './modules/gear/gear.routes';
 import { uploadsRouter } from './modules/uploads/uploads.routes';
@@ -18,6 +19,7 @@ export function createApp(webOrigin: string) {
     res.json({ ok: true });
   });
   app.use('/api/v1/auth', authRouter);
+  app.use('/api/v1/dashboard', dashboardRouter);
   app.use('/api/v1/gear', gearAvailabilityRouter);
   app.use('/api/v1/gear', gearRouter);
   app.use('/api/v1/rentals', rentalsRouter);

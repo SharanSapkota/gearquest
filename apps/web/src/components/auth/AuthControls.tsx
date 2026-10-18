@@ -4,13 +4,12 @@ import { useTranslations } from 'next-intl';
 import { buttonClass } from '@/components/ui/Button';
 import { PlusIcon } from '@/components/ui/icons';
 import { Link } from '@/i18n/navigation';
-import { isOwnerRole } from '@/lib/onboarding';
-import { SignInButton } from './SignInButton';
+import { isOwnerRole } from '@/lib/roles';
 import { useAuth } from './AuthProvider';
 import { UserMenu } from './UserMenu';
 
-// Guests sign in from the bottom tab bar on phones, so the header button is desktop-only.
-// So is "Add gear" for owners: phones have it in the tab bar.
+// Guests get "Sign in" and "Sign up". Phones show only "Sign up" in the header (the bottom tab
+// bar has "Sign in"); "Add gear" for owners is desktop-only for the same reason.
 export function AuthControls({ pendingCount }: { pendingCount: number }) {
   const t = useTranslations('nav');
   const user = useAuth();
@@ -28,8 +27,13 @@ export function AuthControls({ pendingCount }: { pendingCount: number }) {
     );
   }
   return (
-    <div className="header__signin">
-      <SignInButton />
-    </div>
+    <>
+      <Link href="/login" className={`${buttonClass({ variant: 'outline', size: 'sm' })} header__signin`}>
+        {t('signIn')}
+      </Link>
+      <Link href="/signup" className={buttonClass({ size: 'sm' })}>
+        {t('signUp')}
+      </Link>
+    </>
   );
 }

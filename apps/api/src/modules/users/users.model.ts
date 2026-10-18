@@ -13,12 +13,11 @@ const userSchema = new Schema(
     ratingAvg: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 },
     termsAcceptedAt: Date,
-    // Unset until onboarding step 1.
+    // Chosen at signup. Unset only on accounts created before roles existed (treated as renter).
     role: { type: String, enum: USER_ROLES },
     // Owner's permission to reveal the phone to a renter after accepting. Never makes it public.
     whatsappShareConsent: Boolean,
     consentAt: Date,
-    onboardingCompletedAt: Date,
     deletedAt: Date,
   },
   { timestamps: { createdAt: true, updatedAt: false } },

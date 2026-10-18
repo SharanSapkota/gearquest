@@ -8,7 +8,7 @@ import { GearGrid } from '@/components/gear/GearGrid';
 import { Link } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
 import { getCurrentUser } from '@/lib/auth';
-import { isOwnerRole } from '@/lib/onboarding';
+import { isOwnerRole } from '@/lib/roles';
 
 export default async function ProfilePage({
   params,
@@ -57,7 +57,7 @@ export default async function ProfilePage({
                   {t('profile.addGear')}
                 </Link>
               ) : (
-                <Link href="/profile/edit?become=owner" className={buttonClass({ variant: 'secondary', size: 'sm' })}>
+                <Link href="/become-owner" className={buttonClass({ variant: 'secondary', size: 'sm' })}>
                   {t('profile.becomeOwner')}
                 </Link>
               )}

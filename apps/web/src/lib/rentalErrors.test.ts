@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import en from '../messages/en.json';
 import fi from '../messages/fi.json';
 import { ApiError } from './api';
-import { KNOWN_ERROR_CODES, apiErrorKey, needsPhone } from './rentalErrors';
+import { KNOWN_ERROR_CODES, apiErrorKey, needsOwnerSetup, needsPhone } from './rentalErrors';
 
 const lookup = (messages: Record<string, unknown>, code: string) =>
   code.split('.').reduce<unknown>((o, k) => (o as Record<string, unknown> | undefined)?.[k], messages.apiErrors);
@@ -19,10 +19,12 @@ describe('apiErrorKey', () => {
       expect(typeof lookup(fi, code), code).toBe('string');
     }
   });
-  it('flags phone-required errors', () => {
+  it('flags renter phone errors and owner setup errors separately', () => {
     expect(needsPhone(new ApiError(409, 'rentals.renterPhoneRequired'))).toBe(true);
-    expect(needsPhone(new ApiError(409, 'users.phoneRequired'))).toBe(true);
-    expect(needsPhone(new ApiError(409, 'users.consentRequired'))).toBe(true);
     expect(needsPhone(new ApiError(409, 'rentals.overlap'))).toBe(false);
+    for (const code of ['PHONE_REQUIRED', 'CONSENT_REQUIRED', 'ROLE_REQUIRED']) {
+      expect(needsOwnerSetup(new ApiError(409, code))).toBe(true);
+    }
+    expect(needsOwnerSetup(new ApiError(409, 'rentals.overlap'))).toBe(false);
   });
 });

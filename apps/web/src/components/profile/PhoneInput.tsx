@@ -2,11 +2,9 @@
 
 import type { InputHTMLAttributes } from 'react';
 import { Input } from '@/components/ui/Field';
+import { PHONE_PREFIX } from '@/lib/phone';
 
-export const PHONE_PREFIX = '+358 ';
-
-// A bare country code means "no number".
-export const cleanPhone = (value: string) => (/^\s*(\+358)?\s*$/.test(value) ? '' : value.trim());
+export { PHONE_PREFIX, cleanPhone } from '@/lib/phone';
 
 // Finnish-friendly phone field: phone keypad, autofill, and +358 filled in on focus when empty.
 // Validation and E.164 normalization use toE164 from @gearshare/shared (same as the API).

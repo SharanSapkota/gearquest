@@ -3,10 +3,9 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MAX_RENTAL_DAYS } from '@gearshare/shared';
-import { SignInButton } from '@/components/auth/SignInButton';
-import { Button } from '@/components/ui/Button';
+import { Button, buttonClass } from '@/components/ui/Button';
 import { Select, Textarea } from '@/components/ui/Field';
-import { Link, useRouter } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { api, type PublicGear } from '@/lib/api';
 import {
   addDaysYmd,
@@ -43,6 +42,7 @@ export function RentalRequestForm({
   const tAll = useTranslations();
   const locale = useLocale();
   const router = useRouter();
+  const pathname = usePathname();
   const { hourlyCents, dailyCents, minHours } = gear.pricing;
 
   const modes = (['hourly', 'daily'] as const).filter((m) =>
@@ -307,7 +307,9 @@ export function RentalRequestForm({
           {submitting ? t('submitting') : t('submit')}
         </Button>
       ) : (
-        <SignInButton label={t('signInToRequest')} />
+        <Link href={{ pathname: '/login', query: { next: pathname } }} className={buttonClass()}>
+          {t('signInToRequest')}
+        </Link>
       )}
     </form>
   );

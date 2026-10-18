@@ -81,6 +81,20 @@ async function findMine(userId: string, q: ListMyRentalsQuery, now: Date) {
   return { items, total };
 }
 
+// Rentals where the user is the given party, newest first. Dashboards group them in the service.
+async function findByParty(
+  role: 'owner' | 'renter',
+  userId: string,
+  statuses: RentalStatus[] | undefined,
+  limit: number,
+) {
+  const party = role === 'owner' ? { ownerId: userId } : { renterId: userId };
+  return RentalModel.find({ ...party, ...(statuses && { status: { $in: statuses } }) })
+    .sort({ createdAt: -1, _id: -1 })
+    .limit(limit)
+    .lean();
+}
+
 async function countOpenByRenter(renterId: string, now: Date) {
   return RentalModel.countDocuments({ renterId, status: 'requested', expiresAt: { $gt: now } });
 }
@@ -158,6 +172,7 @@ export const rentalsRepository = {
   create,
   findById,
   findMine,
+  findByParty,
   countOpenByRenter,
   existsAcceptedOverlap,
   findAcceptedInWindow,

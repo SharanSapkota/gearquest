@@ -1,14 +1,19 @@
 import { Types } from 'mongoose';
-import type { UpdateProfileInput } from '@gearshare/shared';
+import type { Locale, UpdateProfileInput, UserRole } from '@gearshare/shared';
 import { UserModel } from './users.model';
 
 export type UserRecord = NonNullable<Awaited<ReturnType<typeof findById>>>;
 
-export type GoogleProfile = {
+export type NewUser = {
   googleId: string;
   email: string;
   name: string;
   avatarUrl?: string;
+  role: UserRole;
+  language?: Locale;
+  phone?: string;
+  whatsappShareConsent?: boolean;
+  consentAt?: Date;
   termsAcceptedAt: Date;
 };
 
@@ -16,7 +21,7 @@ export type GoogleProfile = {
 export type ProfilePatch = Omit<UpdateProfileInput, 'phone'> & {
   phone?: string | null;
   consentAt?: Date | null;
-  onboardingCompletedAt?: Date;
+  role?: UserRole;
 };
 
 async function findById(id: string) {
@@ -34,24 +39,15 @@ async function findByGoogleId(googleId: string) {
   return UserModel.findOne({ googleId }).lean();
 }
 
-// Creates the user on first login. Later logins change nothing (name/bio stay as the user set
-// them), so repeat logins never duplicate or overwrite. May return a soft-deleted user; the
-// caller decides what that means.
-async function upsertFromGoogle(profile: GoogleProfile) {
-  const { googleId, ...onInsert } = profile;
+// Creates the user from a verified Google profile. If the account already exists (e.g. a
+// double submit) nothing is overwritten and the existing user is returned. May return a
+// soft-deleted user; the caller decides what that means.
+async function createFromGoogle(user: NewUser) {
+  const { googleId, ...onInsert } = user;
   return UserModel.findOneAndUpdate(
     { googleId },
     { $setOnInsert: { googleId, ...onInsert } },
     { upsert: true, new: true },
-  ).lean();
-}
-
-// For accounts created before terms acceptance was recorded.
-async function acceptTerms(id: string, at: Date) {
-  return UserModel.findOneAndUpdate(
-    { _id: id, deletedAt: { $exists: false } },
-    { $set: { termsAcceptedAt: at } },
-    { new: true },
   ).lean();
 }
 
@@ -73,8 +69,7 @@ export const usersRepository = {
   findById,
   findByIds,
   findByGoogleId,
-  upsertFromGoogle,
-  acceptTerms,
+  createFromGoogle,
   updateProfile,
 };
 export type UsersRepository = typeof usersRepository;
