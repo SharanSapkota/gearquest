@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Sheet } from '@/components/ui/Sheet';
 import { Link, useRouter } from '@/i18n/navigation';
 import { api, type Rental } from '@/lib/api';
-import { apiErrorKey } from '@/lib/rentalErrors';
+import { apiErrorKey, needsPhone } from '@/lib/rentalErrors';
 
 type Action = 'accept' | 'decline' | 'cancel' | 'complete';
 
@@ -102,7 +102,8 @@ export function RentalActions({ rental, ended }: { rental: Rental; ended: boolea
       </Sheet>
       {error != null && (
         <p role="alert" className="form-error">
-          {tAll(`apiErrors.${apiErrorKey(error)}`)}
+          {tAll(`apiErrors.${apiErrorKey(error)}`)}{' '}
+          {needsPhone(error) && <Link href="/profile/edit?become=owner">{tAll('gearForm.fixInProfile')}</Link>}
         </p>
       )}
     </div>

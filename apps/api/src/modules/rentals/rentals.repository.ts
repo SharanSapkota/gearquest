@@ -140,6 +140,11 @@ async function acceptIfFree(rental: RentalRecord, now: Date): Promise<AcceptResu
   }
 }
 
+async function existsAcceptedAsOwner(ownerId: string) {
+  if (!Types.ObjectId.isValid(ownerId)) return false;
+  return (await RentalModel.exists({ ownerId, status: 'accepted' })) !== null;
+}
+
 // Sweep: persists the expired status for stale requests. Returns how many were expired.
 async function expireStale(now: Date) {
   const res = await RentalModel.updateMany(
@@ -158,6 +163,7 @@ export const rentalsRepository = {
   findAcceptedInWindow,
   transition,
   acceptIfFree,
+  existsAcceptedAsOwner,
   expireStale,
 };
 export type RentalsRepository = typeof rentalsRepository;

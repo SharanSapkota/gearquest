@@ -133,6 +133,12 @@ async function update(id: string, patch: GearData) {
   ).lean();
 }
 
+// Listings that still exist (active or paused).
+async function countByOwner(ownerId: string) {
+  if (!Types.ObjectId.isValid(ownerId)) return 0;
+  return GearModel.countDocuments({ ownerId, status: { $ne: 'deleted' } });
+}
+
 async function softDelete(id: string) {
   await GearModel.updateOne({ _id: id }, { $set: { status: 'deleted' } });
 }
@@ -143,6 +149,7 @@ export const gearRepository = {
   findDetail,
   findByOwner,
   findAllByOwner,
+  countByOwner,
   create,
   update,
   softDelete,

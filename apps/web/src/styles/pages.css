@@ -692,3 +692,186 @@
 .page > .chips {
   margin-bottom: 1.25rem;
 }
+
+/* Sign in / sign up (pages, header popover, phone sheet) */
+.signin {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.signin__google {
+  min-height: var(--tap);
+}
+.popover__panel .signin .note a,
+.signin .note a {
+  display: inline;
+  min-height: 0;
+  padding: 0;
+  color: var(--link);
+  text-decoration: underline;
+  font-weight: 600;
+}
+.check--top {
+  align-items: flex-start;
+}
+.check--top input {
+  flex: none;
+  margin-top: 0.2rem;
+}
+.check a {
+  color: var(--link);
+}
+.auth-page .surface-card {
+  margin-top: var(--space-4);
+}
+.lead {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-lg);
+}
+
+/* Onboarding */
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.onboarding__progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.progress {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary-600);
+  transition: width var(--dur) var(--ease);
+}
+.onboarding__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+.onboarding__actions > .btn--primary {
+  flex: 1 1 12rem;
+}
+.role-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+@media (min-width: 560px) {
+  .role-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.role-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 9rem;
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+.role-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+.role-card:has(input:checked) {
+  border-color: var(--primary-600);
+  background: var(--primary-50);
+}
+.role-card:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.role-card__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-md);
+  background: var(--secondary-100);
+  color: var(--secondary-700);
+}
+.role-card strong {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+}
+.role-card span {
+  color: var(--muted);
+}
+.role-card__check {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  color: var(--primary-700);
+  opacity: 0;
+}
+.role-card:has(input:checked) .role-card__check {
+  opacity: 1;
+}
+.role-both {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  font-weight: 600;
+  cursor: pointer;
+}
+.privacy-note {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--secondary-50);
+  color: var(--secondary-800);
+}
+.privacy-note svg {
+  flex: none;
+  margin-top: 0.15rem;
+}
+.privacy-note p {
+  margin: 0.25rem 0 0;
+  font-weight: 400;
+}
+
+/* Desktop-only header "Add gear" (phones use the tab bar) */
+.header__add {
+  display: none;
+}
+@media (min-width: 768px) {
+  .header__add {
+    display: inline-flex;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress > span,
+  .role-card {
+    transition: none;
+  }
+}
+.profile__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

@@ -13,10 +13,10 @@ import { MapUnavailable } from './MapUnavailable';
 
 // The one place that reads the Google Maps key. Every map in the app renders through this
 // component, so the script is requested once and the key never appears anywhere else.
-const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY;
+const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY || '';
 // Advanced markers need a map ID. DEMO_MAP_ID is Google's development ID (default styling);
 // set NEXT_PUBLIC_GOOGLE_MAP_ID to use the muted GearShare style (see apps/web/map-style.json).
-const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAP_ID || 'DEMO_MAP_ID';
+const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAP_ID || 'google-map-script';
 const LIBRARIES = ['marker'];
 
 type ShellProps = Partial<

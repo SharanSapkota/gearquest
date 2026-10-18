@@ -7,6 +7,7 @@ import { MAX_OPEN_REQUESTS_PER_RENTER, REQUEST_EXPIRY_HOURS } from '@gearshare/s
 import { AppError, notFound, unauthorized } from '../../lib/errors';
 import type { GearRepository } from '../gear/gear.repository';
 import type { UsersRepository } from '../users/users.repository';
+import { assertOwnerReady } from '../users/users.policy';
 import { toRentalResponse, type PartiesById } from './rentals.mapper';
 import { computePrice } from './rentals.pricing';
 import type { RentalRecord, RentalsRepository } from './rentals.repository';
@@ -139,8 +140,7 @@ export function createRentalsService(
       const { rental, actor } = await loadAsParty(userId, id);
       assertTransition(rental, 'accept', actor, now);
 
-      const owner = await users.findById(userId);
-      if (!owner?.phone) throw new AppError(409, 'rentals.ownerPhoneRequired');
+      assertOwnerReady(await users.findById(userId));
 
       // Overlap is re-checked here, atomically, because several pending requests can overlap.
       const result = await rentals.acceptIfFree(rental, now);

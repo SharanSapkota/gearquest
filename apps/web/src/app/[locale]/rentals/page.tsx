@@ -5,9 +5,9 @@ import { CalendarIcon } from '@/components/ui/icons';
 import { Pagination } from '@/components/gear/Pagination';
 import { RentalCard } from '@/components/rentals/RentalCard';
 import { RentalsFilter } from '@/components/rentals/RentalsFilter';
-import { Link, redirect } from '@/i18n/navigation';
+import { Link } from '@/i18n/navigation';
 import { api, type RentalStatus } from '@/lib/api';
-import { getCurrentUser } from '@/lib/auth';
+import { requireUser } from '@/lib/auth';
 import { getNow } from '@/lib/format';
 import { RENTAL_STATUSES } from '@gearshare/shared';
 
@@ -23,8 +23,7 @@ export default async function RentalsPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const user = await getCurrentUser();
-  if (!user) return redirect({ href: '/', locale });
+  await requireUser(locale, '/rentals');
   const t = await getTranslations('rentals');
 
   const sp = await searchParams;

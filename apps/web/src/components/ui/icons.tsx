@@ -26,6 +26,8 @@ import {
   Handshake,
   PackageSearch,
   Send,
+  LockKeyhole,
+  Backpack,
   type LucideProps,
 } from 'lucide-react';
 
@@ -67,3 +69,5 @@ export const AlertIcon = wrap(CircleAlert);
 export const HandshakeIcon = wrap(Handshake);
 export const FindIcon = wrap(PackageSearch);
 export const SendIcon = wrap(Send);
+export const LockIcon = wrap(LockKeyhole);
+export const BackpackIcon = wrap(Backpack);

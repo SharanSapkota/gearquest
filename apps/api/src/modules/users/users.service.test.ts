@@ -34,17 +34,29 @@ const gearRecord = {
   createdAt: new Date(),
 } as unknown as NonNullable<GearRecord>;
 
-function setup(user: UserRecord | null = userRecord) {
+const NOW = new Date('2026-10-18T10:00:00Z');
+
+function setup(
+  user: UserRecord | null = userRecord,
+  commitments: { listings?: number; accepted?: boolean } = {},
+) {
   const repo = {
     findById: vi.fn().mockResolvedValue(user),
     updateProfile: vi.fn().mockImplementation(async (_id: string, patch: object) => ({
-      ...userRecord,
+      ...user,
       ...patch,
     })),
   };
-  const gear = { findByOwner: vi.fn().mockResolvedValue([gearRecord]) };
-  return { repo, gear, service: createUsersService(repo, gear) };
+  const gear = {
+    findByOwner: vi.fn().mockResolvedValue([gearRecord]),
+    countByOwner: vi.fn().mockResolvedValue(commitments.listings ?? 0),
+  };
+  const rentals = { existsAcceptedAsOwner: vi.fn().mockResolvedValue(commitments.accepted ?? false) };
+  return { repo, gear, rentals, service: createUsersService(repo, gear, rentals, () => NOW) };
 }
+
+const withFields = (fields: object) => ({ ...userRecord, ...fields }) as unknown as UserRecord;
+const noPhone = withFields({ phone: undefined });
 
 describe('normalizePhone', () => {
   it.each([
@@ -94,7 +106,111 @@ describe('users service', () => {
     const { service, repo } = setup();
     repo.updateProfile.mockResolvedValue(null);
     await expect(service.updateMe('u1', { bio: 'x' })).rejects.toMatchObject({ status: 404 });
+    const gone = setup(null);
+    await expect(gone.service.updateMe('u1', { bio: 'x' })).rejects.toMatchObject({ status: 404 });
   });
+
+  it.each([
+    ['active listings', { listings: 1 }],
+    ['accepted rentals', { accepted: true }],
+  ])('blocks removing the phone while the owner has %s', async (_label, commitments) => {
+    const { service, repo } = setup(userRecord, commitments);
+    await expect(service.updateMe('u1', { phone: '' })).rejects.toMatchObject({
+      status: 409,
+      code: 'users.phoneInUse',
+    });
+    expect(repo.updateProfile).not.toHaveBeenCalled();
+  });
+
+  it.each(['owner', 'both'] as const)('becoming %s requires phone and consent', async (role) => {
+    const consenting = withFields({ whatsappShareConsent: true });
+    await expect(setup(noPhone).service.updateMe('u1', { role, whatsappShareConsent: true })).rejects.toMatchObject({
+      code: 'users.phoneRequired',
+    });
+    await expect(setup(userRecord).service.updateMe('u1', { role })).rejects.toMatchObject({
+      code: 'users.consentRequired',
+    });
+    const { service, repo } = setup(userRecord);
+    await service.updateMe('u1', { role, phone: '040 123 4567', whatsappShareConsent: true });
+    expect(repo.updateProfile).toHaveBeenCalledWith('u1', {
+      role,
+      phone: '+358401234567',
+      whatsappShareConsent: true,
+      consentAt: NOW,
+    });
+    // Already on file: the role change alone is enough.
+    await expect(setup(consenting).service.updateMe('u1', { role })).resolves.toMatchObject({ role });
+  });
+
+  it('an owner cannot withdraw consent while staying an owner', async () => {
+    const owner = withFields({ role: 'owner', whatsappShareConsent: true });
+    await expect(setup(owner).service.updateMe('u1', { whatsappShareConsent: false })).rejects.toMatchObject({
+      code: 'users.consentRequired',
+    });
+  });
+});
+
+describe('onboarding', () => {
+  const fresh = withFields({ phone: undefined, role: undefined });
+
+  it('renter onboarding succeeds without a phone and marks onboarding complete', async () => {
+    const { service, repo } = setup(fresh);
+    const me = await service.completeOnboarding('u1', { role: 'renter', name: 'Anna', language: 'en' });
+    expect(repo.updateProfile).toHaveBeenCalledWith('u1', {
+      role: 'renter',
+      name: 'Anna',
+      language: 'en',
+      onboardingCompletedAt: NOW,
+    });
+    expect(me.onboardingCompleted).toBe(true);
+    expect(me.phone).toBeUndefined();
+  });
+
+  it.each(['owner', 'both'] as const)('%s onboarding fails without a phone', async (role) => {
+    const { service, repo } = setup(fresh);
+    await expect(
+      service.completeOnboarding('u1', { role, whatsappShareConsent: true }),
+    ).rejects.toMatchObject({ status: 409, code: 'users.phoneRequired' });
+    expect(repo.updateProfile).not.toHaveBeenCalled();
+  });
+
+  it.each(['owner', 'both'] as const)('%s onboarding fails without consent', async (role) => {
+    const { service, repo } = setup(fresh);
+    await expect(
+      service.completeOnboarding('u1', { role, phone: '0401234567' }),
+    ).rejects.toMatchObject({ status: 409, code: 'users.consentRequired' });
+    await expect(
+      service.completeOnboarding('u1', { role, phone: '0401234567', whatsappShareConsent: false }),
+    ).rejects.toMatchObject({ code: 'users.consentRequired' });
+    expect(repo.updateProfile).not.toHaveBeenCalled();
+  });
+
+  it('owner onboarding stores the phone as E.164 with the consent time', async () => {
+    const { service, repo } = setup(fresh);
+    const me = await service.completeOnboarding('u1', {
+      role: 'owner',
+      phone: '040 123 4567',
+      whatsappShareConsent: true,
+    });
+    expect(repo.updateProfile).toHaveBeenCalledWith('u1', {
+      role: 'owner',
+      phone: '+358401234567',
+      whatsappShareConsent: true,
+      consentAt: NOW,
+      onboardingCompletedAt: NOW,
+    });
+    expect(me.whatsappShareConsent).toBe(true);
+  });
+
+  it('rejects an invalid owner phone', async () => {
+    const { service } = setup(fresh);
+    await expect(
+      service.completeOnboarding('u1', { role: 'owner', phone: '123', whatsappShareConsent: true }),
+    ).rejects.toMatchObject({ status: 400, code: 'users.invalidPhone' });
+  });
+});
+
+describe('users service privacy', () => {
 
   it('public profile 404s for unknown users', async () => {
     const { service } = setup(null);
@@ -102,7 +218,8 @@ describe('users service', () => {
   });
 
   it('public profile never leaks phone, email or googleId (including nested gear)', async () => {
-    const { service } = setup();
+    // A consenting owner too: consent is permission to reveal after acceptance, not publicity.
+    const { service } = setup(withFields({ role: 'owner', whatsappShareConsent: true, consentAt: NOW }));
     const json = JSON.stringify(await service.getPublicProfile('u1'));
     for (const secret of [
       'secret-google-id',
@@ -112,6 +229,8 @@ describe('users service', () => {
       'email',
       'googleId',
       'Secret street',
+      'whatsapp',
+      'consent',
     ]) {
       expect(json).not.toContain(secret);
     }

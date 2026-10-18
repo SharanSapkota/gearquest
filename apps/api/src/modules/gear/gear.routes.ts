@@ -3,11 +3,14 @@ import { createGearSchema, gearFiltersSchema, updateGearSchema } from '@gearshar
 import { requireAuth } from '../../middleware/requireAuth';
 import { validateBody, validateQuery } from '../../middleware/validate';
 import { env } from '../../config/env';
+import { usersRepository } from '../users/users.repository';
 import { createGearController } from './gear.controller';
 import { gearRepository } from './gear.repository';
 import { createGearService } from './gear.service';
 
-const controller = createGearController(createGearService(gearRepository, Math.random, env.CLOUDINARY_CLOUD_NAME));
+const controller = createGearController(
+  createGearService(gearRepository, usersRepository, Math.random, env.CLOUDINARY_CLOUD_NAME),
+);
 
 export const gearRouter = Router();
 gearRouter.get('/', validateQuery(gearFiltersSchema), controller.list);

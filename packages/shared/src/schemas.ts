@@ -13,6 +13,7 @@ import {
   RENTAL_MODES,
   RENTAL_STATUSES,
   REVIEW_ROLES,
+  USER_ROLES,
 } from './constants';
 
 export const localeSchema = z.enum(LOCALES);
@@ -22,6 +23,7 @@ export const gearStatusSchema = z.enum(GEAR_STATUSES);
 export const rentalModeSchema = z.enum(RENTAL_MODES);
 export const rentalStatusSchema = z.enum(RENTAL_STATUSES);
 export const reviewRoleSchema = z.enum(REVIEW_ROLES);
+export const userRoleSchema = z.enum(USER_ROLES);
 
 const cents = z.number().int().positive();
 
@@ -122,20 +124,36 @@ export const gearFiltersSchema = z
 export type GearFilters = z.infer<typeof gearFiltersSchema>;
 export type GearFiltersInput = z.input<typeof gearFiltersSchema>;
 
-export const googleLoginSchema = z.object({ idToken: z.string().min(1) });
+// acceptTerms is only sent from the signup page; a new user cannot be created without it.
+export const googleLoginSchema = z.object({
+  idToken: z.string().min(1),
+  acceptTerms: z.boolean().optional(),
+});
 export type GoogleLoginInput = z.infer<typeof googleLoginSchema>;
 
 // Phone format (Finnish or E.164) is validated and normalized server-side in the users service.
-// An empty string clears the phone.
+// An empty string clears the phone. Owner rules (phone + consent) are enforced by the service.
 export const updateProfileSchema = z
   .object({
     name: z.string().trim().min(1).max(100),
     bio: z.string().trim().max(1000),
     language: localeSchema,
     phone: z.string().trim().max(30),
+    role: userRoleSchema,
+    whatsappShareConsent: z.boolean(),
   })
   .partial();
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+// POST /users/me/onboarding. Phone is optional for renters, required (with consent) for owners.
+export const onboardingSchema = z.object({
+  role: userRoleSchema,
+  name: z.string().trim().min(1).max(100).optional(),
+  language: localeSchema.optional(),
+  phone: z.string().trim().max(30).optional(),
+  whatsappShareConsent: z.boolean().optional(),
+});
+export type OnboardingInput = z.infer<typeof onboardingSchema>;
 
 // Response of POST /uploads/sign: everything the browser needs for a direct signed Cloudinary upload.
 export type UploadSignature = {

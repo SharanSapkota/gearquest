@@ -26,10 +26,10 @@ export function createAuthController(
   users: Pick<ReturnType<typeof createUsersService>, 'getMe'>,
 ) {
   const google: RequestHandler = async (req, res) => {
-    const { idToken } = req.body as GoogleLoginInput;
-    const { token, user } = await auth.loginWithGoogle(idToken);
+    const { idToken, acceptTerms } = req.body as GoogleLoginInput;
+    const { token, user, isNew } = await auth.loginWithGoogle(idToken, acceptTerms);
     res.cookie(AUTH_COOKIE, token, { ...cookieOptions, maxAge: SESSION_TTL_SECONDS * 1000 });
-    res.json(user);
+    res.json({ user, isNew });
   };
   const me: RequestHandler = async (req, res) => {
     res.json(await users.getMe(userId(req)));

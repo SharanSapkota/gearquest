@@ -9,9 +9,15 @@ export type GoogleProfile = {
   email: string;
   name: string;
   avatarUrl?: string;
+  termsAcceptedAt: Date;
 };
 
-export type ProfilePatch = Omit<UpdateProfileInput, 'phone'> & { phone?: string | null };
+// null clears a field.
+export type ProfilePatch = Omit<UpdateProfileInput, 'phone'> & {
+  phone?: string | null;
+  consentAt?: Date | null;
+  onboardingCompletedAt?: Date;
+};
 
 async function findById(id: string) {
   if (!Types.ObjectId.isValid(id)) return null;
@@ -21,6 +27,11 @@ async function findById(id: string) {
 async function findByIds(ids: string[]) {
   const valid = ids.filter((id) => Types.ObjectId.isValid(id));
   return UserModel.find({ _id: { $in: valid }, deletedAt: { $exists: false } }).lean();
+}
+
+// Includes soft-deleted users; the caller decides what that means.
+async function findByGoogleId(googleId: string) {
+  return UserModel.findOne({ googleId }).lean();
 }
 
 // Creates the user on first login. Later logins change nothing (name/bio stay as the user set
@@ -35,16 +46,35 @@ async function upsertFromGoogle(profile: GoogleProfile) {
   ).lean();
 }
 
-async function updateProfile(id: string, patch: ProfilePatch) {
-  const { phone, ...rest } = patch;
-  const update =
-    phone === null
-      ? { $set: rest, $unset: { phone: '' } }
-      : { $set: { ...rest, ...(phone && { phone }) } };
-  return UserModel.findOneAndUpdate({ _id: id, deletedAt: { $exists: false } }, update, {
-    new: true,
-  }).lean();
+// For accounts created before terms acceptance was recorded.
+async function acceptTerms(id: string, at: Date) {
+  return UserModel.findOneAndUpdate(
+    { _id: id, deletedAt: { $exists: false } },
+    { $set: { termsAcceptedAt: at } },
+    { new: true },
+  ).lean();
 }
 
-export const usersRepository = { findById, findByIds, upsertFromGoogle, updateProfile };
+async function updateProfile(id: string, patch: ProfilePatch) {
+  const $set: Record<string, unknown> = {};
+  const $unset: Record<string, ''> = {};
+  for (const [key, value] of Object.entries(patch)) {
+    if (value === null) $unset[key] = '';
+    else if (value !== undefined) $set[key] = value;
+  }
+  return UserModel.findOneAndUpdate(
+    { _id: id, deletedAt: { $exists: false } },
+    { $set, ...(Object.keys($unset).length > 0 && { $unset }) },
+    { new: true },
+  ).lean();
+}
+
+export const usersRepository = {
+  findById,
+  findByIds,
+  findByGoogleId,
+  upsertFromGoogle,
+  acceptTerms,
+  updateProfile,
+};
 export type UsersRepository = typeof usersRepository;

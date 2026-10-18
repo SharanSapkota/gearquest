@@ -21,6 +21,8 @@ describe('apiErrorKey', () => {
   });
   it('flags phone-required errors', () => {
     expect(needsPhone(new ApiError(409, 'rentals.renterPhoneRequired'))).toBe(true);
+    expect(needsPhone(new ApiError(409, 'users.phoneRequired'))).toBe(true);
+    expect(needsPhone(new ApiError(409, 'users.consentRequired'))).toBe(true);
     expect(needsPhone(new ApiError(409, 'rentals.overlap'))).toBe(false);
   });
 });

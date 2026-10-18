@@ -15,7 +15,8 @@
     "pendingRequests": "{count, plural, one {# odottava pyyntö} other {# odottavaa pyyntöä}}",
     "addGear": "Lisää väline",
     "profile": "Profiili",
-    "rentalsShort": "Vuokraukset"
+    "rentalsShort": "Vuokraukset",
+    "signUp": "Rekisteröidy"
   },
   "home": {
     "title": "Vuokraa varusteet. Jätä ostamatta.",
@@ -159,7 +160,20 @@
   "auth": {
     "signingIn": "Kirjaudutaan sisään…",
     "signInFailed": "Kirjautuminen epäonnistui. Yritä uudelleen.",
-    "notConfigured": "Google-kirjautumista ei ole määritetty."
+    "notConfigured": "Google-kirjautumista ei ole määritetty.",
+    "loginTitle": "Kirjaudu sisään",
+    "loginLead": "Tervetuloa takaisin. Kirjaudu Google-tililläsi.",
+    "signupTitle": "Luo tili",
+    "signupLead": "Vuokraa retkeilyvarusteita naapureiltasi tai ansaitse varusteilla, joita käytät harvoin. Rekisteröityminen Googlella vie minuutin.",
+    "acceptTerms": "Hyväksyn <terms>käyttöehdot</terms> ja <privacy>tietosuojaselosteen</privacy>",
+    "acceptTermsFirst": "Hyväksy käyttöehdot ja tietosuojaseloste jatkaaksesi.",
+    "termsRequired": "Uusi käyttäjä? Hyväksy ehdot alla luodaksesi tilin.",
+    "continueWithGoogle": "Jatka Googlella",
+    "noAccount": "Uusi GearSharessa?",
+    "signUpLink": "Luo tili",
+    "haveAccount": "Onko sinulla jo tili?",
+    "logInLink": "Kirjaudu sisään",
+    "notConfiguredDev": "Aseta {name} juuren .env-tiedostoon ja käynnistä pnpm dev uudelleen."
   },
   "profile": {
     "loading": "Ladataan…",
@@ -179,7 +193,14 @@
     "language": "Kieli",
     "save": "Tallenna",
     "saving": "Tallennetaan…",
-    "saveFailed": "Tallennus epäonnistui. Yritä uudelleen."
+    "saveFailed": "Tallennus epäonnistui. Yritä uudelleen.",
+    "role": "Miten käytät GearSharea",
+    "roleOwnerNeeds": "Omistajilla on oltava puhelinnumero ja WhatsApp-suostumus.",
+    "consentRequired": "Omistajan on hyväksyttävä WhatsApp-numeron jakaminen pyynnön hyväksymisen jälkeen.",
+    "phoneRequired": "Omistajilla on oltava puhelinnumero.",
+    "phoneInUse": "Et voi poistaa puhelinnumeroasi, kun sinulla on ilmoituksia tai hyväksyttyjä vuokrauksia.",
+    "becomeOwner": "Ryhdy omistajaksi",
+    "addGear": "Lisää varuste"
   },
   "gearForm": {
     "createTitle": "Lisää varuste",
@@ -243,7 +264,9 @@
       "hourlyPrice": "Anna hinta, joka on yli 0, esimerkiksi 5,50.",
       "dailyPrice": "Anna hinta, joka on yli 0, esimerkiksi 20,00.",
       "minHours": "Anna kokonaisluku tunteja, vähintään 1."
-    }
+    },
+    "ownerNotReady": "Lisää profiiliisi puhelinnumero ja WhatsApp-suostumus ennen varusteen lisäämistä.",
+    "fixInProfile": "Avaa profiili"
   },
   "myGear": {
     "title": "Varusteeni",
@@ -329,7 +352,6 @@
       "ownGear": "Et voi vuokrata omaa varustettasi.",
       "tooManyOpenRequests": "Sinulla on liian monta avointa pyyntöä. Odota vastauksia tai peru joitakin.",
       "renterPhoneRequired": "Lisää profiiliisi puhelinnumero ennen vuokrauspyyntöä.",
-      "ownerPhoneRequired": "Lisää profiiliisi puhelinnumero ennen vuokrauksen hyväksymistä.",
       "gearNotActive": "Tämä varuste ei ole juuri nyt vuokrattavissa.",
       "startInPast": "Alkamisajan on oltava tulevaisuudessa.",
       "invalidRange": "Päättymisen on oltava alkamisen jälkeen.",
@@ -352,6 +374,11 @@
       "rateLimited": "Liian monta pyyntöä. Odota hetki ja yritä uudelleen.",
       "unauthorized": "Kirjaudu sisään jatkaaksesi.",
       "validation": "Tarkista tiedot ja yritä uudelleen."
+    },
+    "users": {
+      "phoneRequired": "Lisää ensin puhelinnumero profiiliisi.",
+      "consentRequired": "Hyväksy ensin profiilissasi WhatsApp-numeron jakaminen hyväksymisen jälkeen.",
+      "phoneInUse": "Et voi poistaa puhelinnumeroasi, kun sinulla on ilmoituksia tai hyväksyttyjä vuokrauksia."
     }
   },
   "rentals": {
@@ -431,5 +458,51 @@
     "pickStart": "Valitse ensimmäinen päivä.",
     "pickEnd": "Valitse viimeinen päivä.",
     "clearDates": "Tyhjennä päivät"
+  },
+  "onboarding": {
+    "title": "Tervetuloa GearShareen",
+    "progress": "Vaihe {step}/{total}",
+    "roleTitle": "Miten haluat käyttää GearSharea?",
+    "roleRenter": "Vuokraaja",
+    "roleRenterBody": "Haluan vuokrata varusteita",
+    "roleOwner": "Omistaja",
+    "roleOwnerBody": "Haluan vuokrata omia varusteitani",
+    "roleBoth": "Haluan tehdä molempia",
+    "roleBothSelected": "Molemmat: voit vuokrata varusteita ja vuokrata omiasi.",
+    "roleHint": "Voit muuttaa tätä myöhemmin profiilissasi.",
+    "roleRequired": "Valitse, miten haluat käyttää GearSharea.",
+    "continue": "Jatka",
+    "back": "Takaisin",
+    "detailsTitle": "Muutama tieto",
+    "nameHint": "Näkyy julkisessa profiilissasi.",
+    "renterPhoneNote": "Puhelinnumeroa ei tarvita vielä. Kysymme sitä, kun lähetät ensimmäisen vuokrauspyyntösi.",
+    "ownerPhoneHint": "Pakollinen omistajille. Myös muoto 040 123 4567 käy.",
+    "phoneRequired": "Anna puhelinnumerosi.",
+    "privacyTitle": "Numerosi pysyy yksityisenä",
+    "privacyBody": "Numeroasi ei koskaan näytetä julkisesti. Se näytetään vuokraajalle vasta, kun olet hyväksynyt hänen vuokrauspyyntönsä, jotta voitte sopia luovutuksesta WhatsAppissa.",
+    "consent": "Hyväksyn, että WhatsApp-numeroni jaetaan vuokraajalle vasta, kun olen hyväksynyt hänen vuokrauspyyntönsä.",
+    "consentRequired": "Rastita ruutu jatkaaksesi.",
+    "finish": "Valmis",
+    "saving": "Tallennetaan…",
+    "saveFailed": "Tallennus epäonnistui. Yritä uudelleen.",
+    "gearTitle": "Kaikki valmista",
+    "gearBody": "Lisää ensimmäinen varusteesi nyt. Selkeät kuvat ja reilu hinta tuovat eniten pyyntöjä.",
+    "addGear": "Lisää ensimmäinen varusteesi",
+    "skip": "Ohita toistaiseksi"
+  },
+  "ownerGate": {
+    "title": "Ryhdy omistajaksi lisätäksesi varusteita",
+    "body": "Varusteiden lisäämiseen tarvitsemme puhelinnumerosi ja luvan jakaa se vuokraajalle, kun olet hyväksynyt hänen pyyntönsä. Numerosi ei ole koskaan julkinen.",
+    "profileAction": "Lisää puhelin ja suostumus"
+  },
+  "roles": {
+    "renter": "Vuokraaja",
+    "owner": "Omistaja",
+    "both": "Vuokraaja ja omistaja"
+  },
+  "legalPages": {
+    "termsTitle": "Käyttöehdot",
+    "privacyTitle": "Tietosuojaseloste",
+    "placeholder": "Tämä sivu on väliaikainen. Lopullinen teksti julkaistaan juridisen tarkistuksen jälkeen."
   }
 }

@@ -6,6 +6,8 @@ import type {
   RENTAL_MODES,
   RENTAL_STATUSES,
   CreateGearInput,
+  OnboardingInput,
+  USER_ROLES,
   UpdateGearInput,
   UpdateProfileInput,
   UploadSignature,
@@ -62,11 +64,17 @@ export type PublicProfile = {
 
 export type ProfileWithGear = PublicProfile & { gear: PublicGear[] };
 
-// The signed-in user's own account. Only returned by /auth/me and PATCH /users/me.
+export type UserRole = (typeof USER_ROLES)[number];
+
+// The signed-in user's own account. Only returned by /auth/me, login, onboarding and PATCH /users/me.
 export type Me = PublicProfile & {
   email: string;
   phone?: string;
   language: (typeof LOCALES)[number];
+  role?: UserRole;
+  whatsappShareConsent: boolean;
+  termsAccepted: boolean;
+  onboardingCompleted: boolean;
 };
 
 export type PublicGear = {
@@ -196,8 +204,15 @@ export const api = {
       return null;
     }
   },
-  loginWithGoogle(idToken: string) {
-    return request<Me>('/auth/google', { method: 'POST', body: JSON.stringify({ idToken }) });
+  // acceptTerms is only sent from the signup page. A new user without it gets auth.termsRequired.
+  loginWithGoogle(idToken: string, acceptTerms?: boolean) {
+    return request<{ user: Me; isNew: boolean }>('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ idToken, ...(acceptTerms && { acceptTerms: true }) }),
+    });
+  },
+  completeOnboarding(input: OnboardingInput) {
+    return request<Me>('/users/me/onboarding', { method: 'POST', body: JSON.stringify(input) });
   },
   logout() {
     return request<void>('/auth/logout', { method: 'POST' });

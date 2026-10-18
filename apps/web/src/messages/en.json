@@ -15,7 +15,8 @@
     "pendingRequests": "{count, plural, one {# pending request} other {# pending requests}}",
     "addGear": "Add gear",
     "profile": "Profile",
-    "rentalsShort": "Rentals"
+    "rentalsShort": "Rentals",
+    "signUp": "Sign up"
   },
   "home": {
     "title": "Rent the gear. Skip the buying.",
@@ -159,7 +160,20 @@
   "auth": {
     "signingIn": "Signing in…",
     "signInFailed": "Sign-in failed. Try again.",
-    "notConfigured": "Google sign-in is not configured."
+    "notConfigured": "Google sign-in is not configured.",
+    "loginTitle": "Sign in",
+    "loginLead": "Welcome back. Sign in with your Google account.",
+    "signupTitle": "Create your account",
+    "signupLead": "Rent adventure gear from your neighbours, or earn from gear you rarely use. Signing up takes a minute with Google.",
+    "acceptTerms": "I accept the <terms>Terms</terms> and <privacy>Privacy Policy</privacy>",
+    "acceptTermsFirst": "Accept the Terms and Privacy Policy to continue.",
+    "termsRequired": "New here? Accept the terms below to create your account.",
+    "continueWithGoogle": "Continue with Google",
+    "noAccount": "New to GearShare?",
+    "signUpLink": "Create an account",
+    "haveAccount": "Already have an account?",
+    "logInLink": "Sign in",
+    "notConfiguredDev": "Set {name} in the root .env and restart pnpm dev."
   },
   "profile": {
     "loading": "Loading…",
@@ -179,7 +193,14 @@
     "language": "Language",
     "save": "Save",
     "saving": "Saving…",
-    "saveFailed": "Saving failed. Try again."
+    "saveFailed": "Saving failed. Try again.",
+    "role": "How you use GearShare",
+    "roleOwnerNeeds": "Owners need a phone number and WhatsApp consent.",
+    "consentRequired": "Owners must agree to share their WhatsApp number after accepting a request.",
+    "phoneRequired": "Owners need a phone number.",
+    "phoneInUse": "You cannot remove your phone number while you have listings or accepted rentals.",
+    "becomeOwner": "Become an owner",
+    "addGear": "Add gear"
   },
   "gearForm": {
     "createTitle": "Add gear",
@@ -243,7 +264,9 @@
       "hourlyPrice": "Enter a price above 0, for example 5.50.",
       "dailyPrice": "Enter a price above 0, for example 20.00.",
       "minHours": "Enter a whole number of hours, 1 or more."
-    }
+    },
+    "ownerNotReady": "Add your phone number and WhatsApp consent in your profile before listing gear.",
+    "fixInProfile": "Open profile"
   },
   "myGear": {
     "title": "My gear",
@@ -329,7 +352,6 @@
       "ownGear": "You cannot rent your own gear.",
       "tooManyOpenRequests": "You have too many open requests. Wait for answers or cancel some.",
       "renterPhoneRequired": "Add a phone number to your profile before requesting a rental.",
-      "ownerPhoneRequired": "Add a phone number to your profile before accepting a rental.",
       "gearNotActive": "This gear is not available for rent right now.",
       "startInPast": "The start must be in the future.",
       "invalidRange": "The end must be after the start.",
@@ -352,6 +374,11 @@
       "rateLimited": "Too many requests. Wait a moment and try again.",
       "unauthorized": "Sign in to continue.",
       "validation": "Check the details and try again."
+    },
+    "users": {
+      "phoneRequired": "Add a phone number to your profile first.",
+      "consentRequired": "Agree to share your WhatsApp number after acceptance (in your profile) first.",
+      "phoneInUse": "You cannot remove your phone number while you have listings or accepted rentals."
     }
   },
   "rentals": {
@@ -431,5 +458,51 @@
     "pickStart": "Choose the first day.",
     "pickEnd": "Choose the last day.",
     "clearDates": "Clear dates"
+  },
+  "onboarding": {
+    "title": "Welcome to GearShare",
+    "progress": "Step {step} of {total}",
+    "roleTitle": "How do you want to use GearShare?",
+    "roleRenter": "Renter",
+    "roleRenterBody": "I want to rent gear",
+    "roleOwner": "Owner",
+    "roleOwnerBody": "I want to rent out my gear",
+    "roleBoth": "I want to do both",
+    "roleBothSelected": "Both: you can rent gear and rent out your own.",
+    "roleHint": "You can change this later in your profile.",
+    "roleRequired": "Choose how you want to use GearShare.",
+    "continue": "Continue",
+    "back": "Back",
+    "detailsTitle": "A few details",
+    "nameHint": "Shown on your public profile.",
+    "renterPhoneNote": "No phone number needed yet. We will ask for it when you send your first rental request.",
+    "ownerPhoneHint": "Required for owners. Finnish numbers like 040 123 4567 work too.",
+    "phoneRequired": "Enter your phone number.",
+    "privacyTitle": "Your number stays private",
+    "privacyBody": "Your number is never shown publicly. It is revealed only to a renter after you accept their rental request, so you can agree on the handover on WhatsApp.",
+    "consent": "I agree that my WhatsApp number is shared with a renter only after I accept their rental request.",
+    "consentRequired": "Tick the box to continue.",
+    "finish": "Finish",
+    "saving": "Saving…",
+    "saveFailed": "Saving failed. Try again.",
+    "gearTitle": "You are all set",
+    "gearBody": "Add your first gear now. Listings with clear photos and a fair price get the most requests.",
+    "addGear": "Add your first gear",
+    "skip": "Skip for now"
+  },
+  "ownerGate": {
+    "title": "Become an owner to list gear",
+    "body": "To list gear we need your phone number and your permission to share it with a renter after you accept their request. Your number is never public.",
+    "profileAction": "Add phone and consent"
+  },
+  "roles": {
+    "renter": "Renter",
+    "owner": "Owner",
+    "both": "Renter and owner"
+  },
+  "legalPages": {
+    "termsTitle": "Terms of use",
+    "privacyTitle": "Privacy policy",
+    "placeholder": "This page is a placeholder. The final text will be published after legal review."
   }
 }

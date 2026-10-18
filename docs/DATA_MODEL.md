@@ -2,7 +2,9 @@
 
 ## User
 googleId (unique), email (unique), name, avatarUrl, bio, language ("fi"|"en"),
-phone (E.164, private), ratingAvg, ratingCount, createdAt
+phone (E.164, private), ratingAvg, ratingCount, createdAt,
+termsAcceptedAt, role (renter|owner|both, set in onboarding), whatsappShareConsent + consentAt
+(owner's permission to reveal the phone after accepting; never makes it public), onboardingCompletedAt
 
 ## Gear
 ownerId (ref User), title, description, category (enum: ski, snowboard, tent, kayak, bike, climbing, camping, other),

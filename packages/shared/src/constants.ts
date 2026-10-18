@@ -41,3 +41,7 @@ export const MAX_RENTAL_DAYS = 30;
 export const MAX_OPEN_REQUESTS_PER_RENTER = 10;
 export const MAX_AVAILABILITY_WINDOW_DAYS = 90;
 export const RENTAL_TIME_ZONE = 'Europe/Helsinki';
+
+// What the user told us in onboarding. Owners (and "both") must have a phone and WhatsApp consent.
+export const USER_ROLES = ['renter', 'owner', 'both'] as const;
+export const OWNER_ROLES = ['owner', 'both'] as const;

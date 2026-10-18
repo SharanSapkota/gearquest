@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react';
 import { CATEGORIES, CONDITIONS } from '@gearshare/shared';
 import { Button } from '@/components/ui/Button';
 import { Field, Input, Select, Switch, Textarea } from '@/components/ui/Field';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { ApiError, api, type OwnerGear } from '@/lib/api';
 import {
   centsToEuros,
@@ -41,6 +41,8 @@ export function GearForm({ gear }: { gear?: OwnerGear }) {
   const [errors, setErrors] = useState<GearFormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [failed, setFailed] = useState(false);
+  // The API refuses new listings until the owner has a phone and WhatsApp consent on file.
+  const [ownerNotReady, setOwnerNotReady] = useState(false);
 
   const onPhotosChange = useCallback((state: PhotoState) => setPhotos(state), []);
   const set = <K extends keyof GearFormValues>(key: K, value: GearFormValues[K]) =>
@@ -50,6 +52,7 @@ export function GearForm({ gear }: { gear?: OwnerGear }) {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFailed(false);
+    setOwnerNotReady(false);
     if (photos.busy || photos.hasError) {
       setErrors({ images: 'images' });
       return;
@@ -77,6 +80,11 @@ export function GearForm({ gear }: { gear?: OwnerGear }) {
     } catch (error) {
       if (error instanceof ApiError && error.code === 'gear.invalidImageUrl') {
         setErrors({ images: 'images' });
+      } else if (
+        error instanceof ApiError &&
+        (error.code === 'users.phoneRequired' || error.code === 'users.consentRequired')
+      ) {
+        setOwnerNotReady(true);
       } else {
         setFailed(true);
       }
@@ -189,6 +197,14 @@ export function GearForm({ gear }: { gear?: OwnerGear }) {
       {failed && (
         <p role="alert" className="form-error">
           {t('saveFailed')}
+        </p>
+      )}
+      {ownerNotReady && (
+        <p role="alert" className="form-error">
+          {t('ownerNotReady')}{' '}
+          <Link href={`/profile/edit?become=owner&next=${encodeURIComponent('/gear/new')}`}>
+            {t('fixInProfile')}
+          </Link>
         </p>
       )}
     </form>

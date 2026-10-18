@@ -14,4 +14,19 @@ const envSchema = z.object({
   CLOUDINARY_UPLOAD_PRESET: z.string().min(1).optional(),
 });
 
-export const env = envSchema.parse(process.env);
+// Names only, never values: this message ends up in terminals and logs.
+export function describeEnvError(error: z.ZodError): string {
+  const names = [...new Set(error.issues.map((i) => String(i.path[0])))];
+  return [
+    `Invalid or missing environment variables: ${names.join(', ')}.`,
+    'Copy .env.example to .env at the repo root and fill in the values (pnpm dev loads it).',
+  ].join('\n');
+}
+
+function parseEnv() {
+  const result = envSchema.safeParse(process.env);
+  if (!result.success) throw new Error(describeEnvError(result.error));
+  return result.data;
+}
+
+export const env = parseEnv();

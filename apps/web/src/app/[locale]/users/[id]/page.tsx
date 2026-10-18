@@ -8,6 +8,7 @@ import { GearGrid } from '@/components/gear/GearGrid';
 import { Link } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
 import { getCurrentUser } from '@/lib/auth';
+import { isOwnerRole } from '@/lib/onboarding';
 
 export default async function ProfilePage({
   params,
@@ -47,9 +48,20 @@ export default async function ProfilePage({
           </p>
           {profile.bio && <p>{profile.bio}</p>}
           {me?.id === profile.id && (
-            <Link href="/profile/edit" className={buttonClass({ variant: 'outline', size: 'sm' })}>
-              {t('profile.edit')}
-            </Link>
+            <div className="profile__actions">
+              <Link href="/profile/edit" className={buttonClass({ variant: 'outline', size: 'sm' })}>
+                {t('profile.edit')}
+              </Link>
+              {isOwnerRole(me.role) ? (
+                <Link href="/gear/new" className={buttonClass({ size: 'sm' })}>
+                  {t('profile.addGear')}
+                </Link>
+              ) : (
+                <Link href="/profile/edit?become=owner" className={buttonClass({ variant: 'secondary', size: 'sm' })}>
+                  {t('profile.becomeOwner')}
+                </Link>
+              )}
+            </div>
           )}
         </div>
       </section>

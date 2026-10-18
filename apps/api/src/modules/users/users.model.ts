@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { LOCALES } from '@gearshare/shared';
+import { LOCALES, USER_ROLES } from '@gearshare/shared';
 
 const userSchema = new Schema(
   {
@@ -13,6 +13,12 @@ const userSchema = new Schema(
     ratingAvg: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 },
     termsAcceptedAt: Date,
+    // Unset until onboarding step 1.
+    role: { type: String, enum: USER_ROLES },
+    // Owner's permission to reveal the phone to a renter after accepting. Never makes it public.
+    whatsappShareConsent: Boolean,
+    consentAt: Date,
+    onboardingCompletedAt: Date,
     deletedAt: Date,
   },
   { timestamps: { createdAt: true, updatedAt: false } },
