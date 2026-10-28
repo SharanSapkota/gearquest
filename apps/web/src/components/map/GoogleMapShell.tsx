@@ -15,7 +15,7 @@ import { MapUnavailable } from './MapUnavailable';
 // component, so the script is requested once and the key never appears anywhere else.
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY || '';
 // Advanced markers need a map ID. DEMO_MAP_ID is Google's development ID (default styling);
-// set NEXT_PUBLIC_GOOGLE_MAP_ID to use the muted GearShare style (see apps/web/map-style.json).
+// set NEXT_PUBLIC_GOOGLE_MAP_ID to use the muted GearQuest style (see apps/web/map-style.json).
 const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAP_ID || 'google-map-script';
 const LIBRARIES = ['marker'];
 

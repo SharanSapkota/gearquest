@@ -72,7 +72,7 @@ button:disabled {
   stroke-width: 1.75;
 }
 
-/* Visible keyboard focus everywhere: orange, 2px, offset. */
+/* Visible keyboard focus everywhere: green, 2px, offset. */
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
@@ -148,7 +148,7 @@ input[type='date'] {
   pointer-events: none;
 }
 
-/* Checkbox / radio: custom, orange when on. */
+/* Checkbox / radio: custom, green when on. */
 input[type='checkbox'],
 input[type='radio'] {
   appearance: none;
@@ -303,6 +303,11 @@ progress {
   border: 0;
 }
 
+::selection {
+  background: var(--selection);
+  color: var(--fg);
+}
+
 /* Brand motif: topographic contour lines. A mask over a flat colour, so any surface can tint it. */
 .contour {
   position: relative;
@@ -365,4 +370,17 @@ progress {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Long Finnish compounds: hyphenate (html has lang) and never push a layout wider than the screen. */
+h1,
+h2,
+h3,
+.card__title,
+.stat__label,
+.role-card,
+.badge,
+.state p {
+  hyphens: auto;
+  overflow-wrap: break-word;
 }

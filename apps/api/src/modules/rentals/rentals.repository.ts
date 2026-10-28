@@ -1,5 +1,5 @@
 import mongoose, { Types } from 'mongoose';
-import type { ListMyRentalsQuery } from '@gearshare/shared';
+import type { ListMyRentalsQuery } from '@gearquest/shared';
 import { GearModel } from '../gear/gear.model';
 import type { RentalStatus } from './rentals.stateMachine';
 import { RentalModel } from './rentals.model';

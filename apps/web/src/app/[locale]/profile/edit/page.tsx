@@ -1,7 +1,10 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { pageTitle } from '@/lib/metadata';
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { requireUser } from '@/lib/auth';
 import { safeRedirect } from '@/lib/safeRedirect';
+
+export const generateMetadata = pageTitle('profile.editTitle');
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 

@@ -1,7 +1,7 @@
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import request from 'supertest';
-import { completeSignupSchema, googleLoginSchema } from '@gearshare/shared';
+import { completeSignupSchema, googleLoginSchema } from '@gearquest/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { errorHandler } from '../../middleware/errorHandler';
 import { validateBody } from '../../middleware/validate';

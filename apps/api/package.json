@@ -1,5 +1,5 @@
 {
-  "name": "@gearshare/api",
+  "name": "@gearquest/api",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",
-    "@gearshare/shared": "workspace:*",
+    "@gearquest/shared": "workspace:*",
     "cloudinary": "^2.11.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

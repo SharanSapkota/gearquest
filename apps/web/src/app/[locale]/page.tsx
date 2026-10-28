@@ -7,7 +7,10 @@ import { Pagination } from '@/components/gear/Pagination';
 import { ShieldCheckIcon } from '@/components/ui/icons';
 import { api } from '@/lib/api';
 import { formatDate, helsinkiDayStartUtc } from '@/lib/format';
+import { staticPageMetadata } from '@/lib/seo/staticMetadata';
 import { parseGearSearchParams, type SearchParams } from '@/lib/gearFilters';
+
+export const generateMetadata = staticPageMetadata('home', 'seo.homeTitle', 'homeDescription');
 
 const ymd = (v: string | string[] | undefined) => {
   const s = Array.isArray(v) ? v[0] : v;

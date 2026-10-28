@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { pageTitle } from '@/lib/metadata';
 import { notFound } from 'next/navigation';
 import { buttonClass } from '@/components/ui/Button';
 import { RentalCard } from '@/components/rentals/RentalCard';
@@ -6,6 +7,8 @@ import { Link } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
 import { requireUser } from '@/lib/auth';
 import { getNow } from '@/lib/format';
+
+export const generateMetadata = pageTitle('rentals.detailTitle');
 
 export default async function RentalDetailPage({
   params,

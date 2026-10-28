@@ -1,4 +1,4 @@
-import { toE164, type UpdateProfileInput, type UpgradeRoleInput } from '@gearshare/shared';
+import { toE164, type UpdateProfileInput, type UpgradeRoleInput } from '@gearquest/shared';
 import { AppError, notFound } from '../../lib/errors';
 import { toPublicGear } from '../gear/gear.mapper';
 import type { GearRecord } from '../gear/gear.repository';

@@ -1,4 +1,4 @@
-# GearShare PRD (v1)
+# GearQuest PRD (v1)
 
 ## Goal
 Peer-to-peer rental of adventure gear in Finland (skis, snowboards, tents, kayaks, bikes, etc.). We only connect people. We do not handle payments, insurance, or disputes.
@@ -39,7 +39,7 @@ accepted -> completed | cancelled
 After completed: owner rates renter, renter rates owner. 1-5 stars + optional comment. One per party per rental. Visible on profiles.
 
 ## Legal
-Footer + rental request screen + signup must show: "GearShare is only a platform that connects gear owners and renters. We are not a party to any rental agreement and accept no responsibility for damage, loss, injury, or disputes. All such matters are solely between the renter and the owner."
+Footer + rental request screen + signup must show: "GearQuest is only a platform that connects gear owners and renters. We are not a party to any rental agreement and accept no responsibility for damage, loss, injury, or disputes. All such matters are solely between the renter and the owner."
 (Have a Finnish lawyer review. Provide fi and en text.)
 Also needed: privacy policy, cookie consent, account deletion (GDPR).
 

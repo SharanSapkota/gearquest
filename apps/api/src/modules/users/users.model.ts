@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { LOCALES, USER_ROLES } from '@gearshare/shared';
+import { LOCALES, USER_ROLES } from '@gearquest/shared';
 
 const userSchema = new Schema(
   {

@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { pageTitle } from '@/lib/metadata';
 import { buttonClass } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { CalendarIcon } from '@/components/ui/icons';
@@ -9,7 +10,9 @@ import { Link } from '@/i18n/navigation';
 import { api, type RentalStatus } from '@/lib/api';
 import { requireUser } from '@/lib/auth';
 import { getNow } from '@/lib/format';
-import { RENTAL_STATUSES } from '@gearshare/shared';
+import { RENTAL_STATUSES } from '@gearquest/shared';
+
+export const generateMetadata = pageTitle('rentals.title');
 
 const LIMIT = 20;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);

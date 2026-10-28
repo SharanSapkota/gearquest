@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "GearShare"
+    "name": "GearQuest"
   },
   "nav": {
     "home": "Home",
@@ -17,7 +17,9 @@
     "profile": "Profile",
     "rentalsShort": "Rentals",
     "signUp": "Sign up",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "dashboardShort": "Dashboard",
+    "addGearShort": "Add"
   },
   "home": {
     "title": "Rent the gear. Skip the buying.",
@@ -39,13 +41,13 @@
       },
       "meet": {
         "title": "Meet",
-        "text": "The owner accepts, and you arrange pickup directly."
+        "text": "The owner accepts, and you arrange pickup directly with each other."
       }
     },
     "trust": "Sign-in with Google: every member is verified."
   },
   "legal": {
-    "disclaimer": "GearShare is only a platform that connects gear owners and renters. We are not a party to any rental agreement and accept no responsibility for damage, loss, injury, or disputes. All such matters are solely between the renter and the owner."
+    "disclaimer": "GearQuest is only a platform that connects gear owners and renters. We are not a party to any rental agreement and accept no responsibility for damage, loss, injury, or disputes. All such matters are solely between the renter and the owner."
   },
   "errors": {
     "loadFailed": "Failed to load data.",
@@ -165,11 +167,11 @@
     "loginTitle": "Sign in",
     "loginLead": "Welcome back. Continue with your Google account.",
     "signupTitle": "Create your account",
-    "signupLead": "Rent adventure gear from your neighbours, or earn from gear you rarely use. Choose how you want to use GearShare, then continue with Google.",
+    "signupLead": "Rent adventure gear from your neighbours, or earn from gear you rarely use. Choose how you want to use GearQuest, then continue with Google.",
     "acceptTerms": "I accept the <terms>Terms</terms> and <privacy>Privacy Policy</privacy>",
     "acceptTermsFirst": "Accept the Terms and Privacy Policy to continue.",
     "continueWithGoogle": "Continue with Google",
-    "noAccount": "New to GearShare?",
+    "noAccount": "New to GearQuest?",
     "signUpLink": "Create an account",
     "haveAccount": "Already have an account?",
     "logInLink": "Sign in",
@@ -263,8 +265,8 @@
       "dailyPrice": "Enter a price above 0, for example 20.00.",
       "minHours": "Enter a whole number of hours, 1 or more."
     },
-    "ownerNotReady": "Add your phone number and WhatsApp consent in your profile before listing gear.",
-    "fixInProfile": "Open profile"
+    "ownerNotReady": "Add your phone number and WhatsApp consent before listing gear.",
+    "fixInProfile": "Complete setup"
   },
   "myGear": {
     "title": "My gear",
@@ -309,7 +311,7 @@
     "from": "from"
   },
   "rentalForm": {
-    "title": "Request to rent",
+    "title": "Request a rental",
     "mode": "Rental type",
     "pickStart": "Choose the first day.",
     "pickEnd": "Choose the last day (return day).",
@@ -366,7 +368,10 @@
       "notFound": "Rental not found."
     },
     "gear": {
-      "notFound": "Gear not found."
+      "notFound": "Gear not found.",
+      "invalidImageUrl": "The image could not be accepted. Upload photos through the form.",
+      "tooManyImages": "You can add up to 6 photos.",
+      "forbidden": "You can only edit your own gear."
     },
     "errors": {
       "rateLimited": "Too many requests. Wait a moment and try again.",
@@ -374,11 +379,16 @@
       "validation": "Check the details and try again."
     },
     "users": {
-      "phoneInUse": "You cannot remove your phone number while you have listings or accepted rentals."
+      "phoneInUse": "You cannot remove your phone number while you have listings or accepted rentals.",
+      "invalidPhone": "Enter a valid Finnish or international phone number."
     },
     "PHONE_REQUIRED": "Add your phone number first.",
     "CONSENT_REQUIRED": "Agree to share your WhatsApp number after you accept a request first.",
-    "ROLE_REQUIRED": "Become an owner to do that."
+    "ROLE_REQUIRED": "Become an owner to do that.",
+    "auth": {
+      "signupTokenInvalid": "Your sign-up session has expired. Continue with Google again.",
+      "termsRequired": "Accept the Terms and Privacy Policy to continue."
+    }
   },
   "rentals": {
     "title": "My rentals",
@@ -389,8 +399,8 @@
     "asOwner": "As owner",
     "filterStatus": "Status",
     "allStatuses": "All statuses",
-    "emptyRenter": "You have not requested any rentals.",
-    "emptyOwner": "No one has requested your gear yet.",
+    "emptyRenter": "You have not requested any rentals yet.",
+    "emptyOwner": "Nobody has requested your gear yet.",
     "notFound": "Rental not found.",
     "back": "Back to my rentals",
     "viewDetails": "View details",
@@ -399,7 +409,7 @@
     "renter": "Renter",
     "phone": "Phone",
     "whatsapp": "Chat on WhatsApp",
-    "contactNote": "Arrange pickup, deposit, and any damage terms directly with the other party. GearShare is not a party to the rental.",
+    "contactNote": "Arrange pickup, deposit, and any damage terms directly with the other party. GearQuest is not a party to the rental.",
     "quantityHours": "{count, plural, one {# hour} other {# hours}}",
     "quantityDays": "{count, plural, one {# day} other {# days}}",
     "expiresIn": "Expires in {hours, plural, one {# hour} other {# hours}}",
@@ -417,10 +427,10 @@
     "cancel": "Cancel request",
     "complete": "Mark as completed",
     "ownerPhoneNeeded": "Add your phone number to accept requests.",
-    "addPhone": "Edit profile",
+    "addPhone": "Add phone number",
     "confirm": {
       "acceptTitle": "Confirm acceptance",
-      "acceptText": "Accept this request? Your phone numbers will be shared with the renter.",
+      "acceptText": "Accept this request? Your phone number will be shared with the renter.",
       "acceptYes": "Yes, accept",
       "declineTitle": "Confirm decline",
       "declineText": "Decline this request?",
@@ -475,7 +485,7 @@
   },
   "signup": {
     "progress": "Step {step} of {total}",
-    "roleTitle": "How do you want to use GearShare?",
+    "roleTitle": "How do you want to use GearQuest?",
     "roleRenter": "Renter",
     "roleRenterBody": "I want to rent gear",
     "roleOwner": "Owner",
@@ -483,7 +493,7 @@
     "roleBoth": "I want to do both",
     "roleBothSelected": "Both: you can rent gear and rent out your own.",
     "roleHint": "You can become an owner later if you start as a renter.",
-    "roleRequired": "Choose how you want to use GearShare.",
+    "roleRequired": "Choose how you want to use GearQuest.",
     "continue": "Continue",
     "back": "Back",
     "detailsTitle": "A few details",
@@ -497,7 +507,7 @@
     "googleTitle": "Last step: continue with Google",
     "googleBody": "Your account is created as {role} once Google confirms who you are.",
     "completeTitle": "Create your account",
-    "completeLead": "We did not find a GearShare account for this Google account yet. Choose how you want to use GearShare to create it.",
+    "completeLead": "We did not find a GearQuest account for this Google account yet. Choose how you want to use GearQuest to create it.",
     "googleAccount": "Your Google account",
     "create": "Create account",
     "creating": "Creating…",
@@ -545,5 +555,27 @@
     "becomeOwnerTitle": "Have gear you rarely use?",
     "becomeOwnerBody": "Rent it out to people nearby. We just need your phone number and WhatsApp consent.",
     "becomeOwner": "Become an owner"
+  },
+  "meta": {
+    "siteName": "GearQuest",
+    "description": "Rent adventure gear from your neighbours: skis, tents, kayaks and more. GearQuest connects gear owners and renters across Finland.",
+    "ogLocale": "en_GB",
+    "gearFallback": "Gear",
+    "profileFallback": "Profile",
+    "tagline": "Rent gear. Skip buying."
+  },
+  "seo": {
+    "homeTitle": "Rent adventure gear in Finland",
+    "homeDescription": "Rent skis, snowboards, tents, kayaks and bikes from people near you. GearQuest is the peer-to-peer gear rental marketplace for Finland.",
+    "mapTitle": "Gear rental map",
+    "mapDescription": "Browse rentable adventure gear on the map across Finland: skis, tents, kayaks and bikes near you. Locations are approximate until a rental is accepted.",
+    "termsDescription": "The terms of use for GearQuest, the peer-to-peer gear rental marketplace in Finland: how requests, owner approval and responsibilities work.",
+    "privacyDescription": "How GearQuest handles your personal data: what we collect, why, and how your phone number is only shared after an accepted rental in Finland.",
+    "gearIntro": "Rent {title} in {city}: {category}, {prices}. Send a request, the owner approves it, and you agree on pickup directly.",
+    "gearIntroNoPrice": "Rent {title} in {city}: {category}. Send a request, the owner approves it, and you agree on pickup directly.",
+    "userIntro": "{name} rents out gear on GearQuest, the peer-to-peer gear rental marketplace in Finland. See their listed items and ratings.",
+    "imageAlt": "{title}: {category} for rent in {city}",
+    "imageAltN": "{title}: {category} for rent in {city}, photo {n} of {total}",
+    "ogTagline": "Rent gear. Skip buying."
   }
 }

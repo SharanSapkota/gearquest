@@ -9,7 +9,7 @@ import {
   toE164,
   updateProfileSchema,
   type UpdateProfileInput,
-} from '@gearshare/shared';
+} from '@gearquest/shared';
 import { Button } from '@/components/ui/Button';
 import { Field, Input, Select, Textarea } from '@/components/ui/Field';
 import { LockIcon } from '@/components/ui/icons';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { RENTAL_STATUSES } from '@gearshare/shared';
+import { RENTAL_STATUSES } from '@gearquest/shared';
 import { AppError } from '../../lib/errors';
 import {
   assertTransition,

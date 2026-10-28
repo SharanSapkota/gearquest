@@ -1,5 +1,5 @@
-import type { CreateGearInput, GearFilters, UpdateGearInput } from '@gearshare/shared';
-import { GEAR_IMAGE_FOLDER, MAP_LOCATION_OFFSET_METERS, MAX_GEAR_IMAGES } from '@gearshare/shared';
+import type { CreateGearInput, GearFilters, UpdateGearInput } from '@gearquest/shared';
+import { GEAR_IMAGE_FOLDER, MAP_LOCATION_OFFSET_METERS, MAX_GEAR_IMAGES } from '@gearquest/shared';
 import { AppError, forbidden, notFound } from '../../lib/errors';
 import type { UsersRepository } from '../users/users.repository';
 import { assertOwnerReady } from '../users/users.policy';

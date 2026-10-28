@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import type { UserRole } from '@gearshare/shared';
+import type { UserRole } from '@gearquest/shared';
 import { BackpackIcon, CheckIcon, HandshakeIcon, TentIcon } from '@/components/ui/icons';
 
 // Two large cards (renter / owner) plus a small "both" option. Used by signup and signup/complete.

@@ -1,6 +1,6 @@
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
-import type { Viewport } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import type { Metadata, Viewport } from 'next';
 import { Figtree, Fraunces } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -13,6 +13,9 @@ import { ToastProvider } from '@/components/ui/Toast';
 import { routing } from '@/i18n/routing';
 import { api } from '@/lib/api';
 import { getCurrentUser } from '@/lib/auth';
+import { environmentRobots, OG_LOCALE, ogImageUrl, verificationMetadata } from '@/lib/seo/metadata';
+import type { SeoLocale } from '@/lib/seo/routes';
+import { absoluteUrl } from '@/lib/siteUrl';
 import '../globals.css';
 
 // latin-ext covers å, ä, ö and the rest of the Nordic alphabet.
@@ -29,8 +32,37 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#fbf7f0',
+  themeColor: '#205a28',
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'meta' });
+  const title = t('siteName');
+  // Pages replace openGraph/twitter wholesale (see buildMetadata); these cover pages that set none.
+  const image = ogImageUrl(locale as SeoLocale, 'default');
+  return {
+    metadataBase: new URL(absoluteUrl('')),
+    title: { default: `${title}: ${t('tagline')}`, template: `%s | ${title}` },
+    description: t('description'),
+    applicationName: title,
+    robots: environmentRobots(),
+    verification: verificationMetadata(),
+    openGraph: {
+      type: 'website',
+      siteName: title,
+      title: `${title}: ${t('tagline')}`,
+      description: t('description'),
+      locale: OG_LOCALE[locale as SeoLocale],
+      images: [{ url: image, width: 1200, height: 630 }],
+    },
+    twitter: { card: 'summary_large_image', title, description: t('description'), images: [image] },
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

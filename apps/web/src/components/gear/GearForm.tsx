@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
-import { CATEGORIES, CONDITIONS } from '@gearshare/shared';
+import { CATEGORIES, CONDITIONS } from '@gearquest/shared';
 import { Button } from '@/components/ui/Button';
 import { Field, Input, Select, Switch, Textarea } from '@/components/ui/Field';
 import { Link, useRouter } from '@/i18n/navigation';

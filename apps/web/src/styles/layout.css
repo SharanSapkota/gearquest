@@ -21,20 +21,17 @@
   font-size: 1.3rem;
   letter-spacing: -0.03em;
   text-decoration: none;
-  color: var(--secondary-900);
+  color: var(--green-700);
   flex: none;
 }
 .logo__glyph {
-  color: var(--secondary-800);
+  color: var(--green-600);
 }
 .logo--light {
   color: var(--on-forest);
 }
 .logo--light .logo__glyph {
   color: var(--on-forest);
-}
-.logo--light .logo__glyph path {
-  stroke: var(--forest);
 }
 .header__actions {
   margin-left: auto;
@@ -154,9 +151,9 @@
   height: 46px;
   margin-top: -16px;
   border-radius: 50%;
-  background: var(--primary-600);
+  background: var(--red-600);
   color: #fff;
-  box-shadow: 0 6px 16px rgb(194 71 10 / 0.35);
+  box-shadow: 0 6px 16px rgb(110 25 29 / 0.35);
 }
 .tabbar__item--add[aria-current='page']::before {
   display: none;
@@ -288,7 +285,7 @@
   max-width: 62rem;
   margin: 2.5rem 0 0;
   padding-top: 1.5rem;
-  border-top: 1px solid rgb(246 239 226 / 0.16);
+  border-top: 1px solid rgb(255 255 255 / 0.2);
   font-size: var(--text-sm);
   color: var(--on-forest-muted);
 }
@@ -722,7 +719,7 @@ body:has(.compactbar) .filterrow {
   gap: 0.35rem;
   padding: 0.25rem 0.7rem 0.25rem 0.55rem;
   border-radius: var(--radius-pill);
-  background: rgb(251 247 240 / 0.92);
+  background: rgb(255 255 255 / 0.94);
   backdrop-filter: blur(6px);
   color: var(--secondary-800);
   font-size: var(--text-xs);
@@ -883,4 +880,16 @@ body:has(.compactbar) .filterrow {
   font-size: var(--text-sm);
   font-weight: 600;
   text-align: center;
+}
+
+/* Bottom tab labels never wrap or spill into the next tab. */
+.tabbar__item {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-inline: 2px;
+}
+.tabbar__item:has(.tabbar__plus) {
+  overflow: visible;
 }

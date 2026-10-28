@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { CATEGORIES } from '@gearshare/shared';
+import { CATEGORIES } from '@gearquest/shared';
 import { categoryPinSvg } from './categoryIcons';
 
 // Also carries the intermediary disclaimer: the map page has no footer.

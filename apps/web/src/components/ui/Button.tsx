@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+// accent = red, the single attention colour ("Add gear", "Request"). Everything else is primary.
+export type ButtonVariant = 'primary' | 'accent' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'md' | 'sm';
 
 type StyleProps = { variant?: ButtonVariant; size?: ButtonSize; block?: boolean };

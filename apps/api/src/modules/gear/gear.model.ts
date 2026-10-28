@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { CATEGORIES, CONDITIONS, GEAR_STATUSES } from '@gearshare/shared';
+import { CATEGORIES, CONDITIONS, GEAR_STATUSES } from '@gearquest/shared';
 
 const pointField = {
   type: { type: String, enum: ['Point'], required: true },

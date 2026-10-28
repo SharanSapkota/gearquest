@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { RENTAL_MODES, RENTAL_STATUSES } from '@gearshare/shared';
+import { RENTAL_MODES, RENTAL_STATUSES } from '@gearquest/shared';
 
 const rentalSchema = new Schema(
   {

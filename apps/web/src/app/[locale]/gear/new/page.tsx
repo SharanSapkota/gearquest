@@ -1,7 +1,10 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { pageTitle } from '@/lib/metadata';
 import { OwnerGate } from '@/components/dashboard/OwnerGate';
 import { GearForm } from '@/components/gear/GearForm';
 import { requireOwnerAccess } from '@/lib/auth';
+
+export const generateMetadata = pageTitle('gearForm.createTitle');
 
 export default async function NewGearPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

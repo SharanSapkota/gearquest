@@ -1,28 +1,54 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { buttonClass } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Avatar } from '@/components/ui/Avatar';
 import { ShieldCheckIcon, StarIcon } from '@/components/ui/icons';
 import { GearGrid } from '@/components/gear/GearGrid';
 import { Link } from '@/i18n/navigation';
-import { ApiError, api } from '@/lib/api';
+import { ApiError } from '@/lib/api';
 import { getCurrentUser } from '@/lib/auth';
+import { getUserCached } from '@/lib/metadata';
+import { buildMetadata, fitDescription } from '@/lib/seo/metadata';
+import { idSlug, parseIdSlug, publicPath } from '@/lib/seo/paths';
+import type { SeoLocale } from '@/lib/seo/routes';
 import { isOwnerRole } from '@/lib/roles';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; id: string }> }): Promise<Metadata> {
+  const { locale: rawLocale, id: param } = await params;
+  const locale = rawLocale as SeoLocale;
+  const profile = await getUserCached(parseIdSlug(param).id).catch(() => null);
+  const t = await getTranslations({ locale });
+  if (!profile) return { title: t('meta.profileFallback'), robots: { index: false, follow: false } };
+  return buildMetadata({
+    locale,
+    page: 'user',
+    params: { id: idSlug(profile.id, profile.name) },
+    title: profile.name,
+    description: fitDescription([t('seo.userIntro', { name: profile.name }), profile.bio]),
+    type: 'profile',
+  });
+}
 
 export default async function ProfilePage({
   params,
 }: {
   params: Promise<{ locale: string; id: string }>;
 }) {
-  const { locale, id } = await params;
+  const { locale, id: param } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
+  const { id, hasSlugForm } = parseIdSlug(param);
   // Non-404 errors propagate to error.tsx.
-  const profile = await api.getUser(id).catch((err: unknown) => {
+  const profile = await getUserCached(id).catch((err: unknown) => {
     if (err instanceof ApiError && err.status === 404) notFound();
     throw err;
   });
+  const canonical = idSlug(profile.id, profile.name);
+  if (hasSlugForm && param !== canonical) {
+    permanentRedirect(publicPath('user', locale as SeoLocale, { id: canonical }));
+  }
   const me = await getCurrentUser();
 
   return (

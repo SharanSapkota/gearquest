@@ -1,4 +1,4 @@
-import { MAX_PAGE_SIZE } from '@gearshare/shared';
+import { MAX_PAGE_SIZE } from '@gearquest/shared';
 import type { GearQuery } from './api';
 import type { SearchParams } from './gearFilters';
 

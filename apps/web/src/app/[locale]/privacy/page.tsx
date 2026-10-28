@@ -1,4 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { staticPageMetadata } from '@/lib/seo/staticMetadata';
+
+export const generateMetadata = staticPageMetadata('privacy', 'legalPages.privacyTitle', 'privacyDescription');
 
 // Placeholder until the lawyer-reviewed text is ready.
 export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {

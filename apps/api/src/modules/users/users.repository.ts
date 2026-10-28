@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import type { Locale, UpdateProfileInput, UserRole } from '@gearshare/shared';
+import type { Locale, UpdateProfileInput, UserRole } from '@gearquest/shared';
 import { UserModel } from './users.model';
 
 export type UserRecord = NonNullable<Awaited<ReturnType<typeof findById>>>;

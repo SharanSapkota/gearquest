@@ -1,10 +1,13 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { pageTitle } from '@/lib/metadata';
 import { SignupFlow } from '@/components/auth/SignupFlow';
 import { Card } from '@/components/ui/Card';
 import { redirect } from '@/i18n/navigation';
 import { getCurrentUser } from '@/lib/auth';
 import { afterLoginPath } from '@/lib/roles';
 import { safeRedirect } from '@/lib/safeRedirect';
+
+export const generateMetadata = pageTitle('auth.signupTitle');
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 

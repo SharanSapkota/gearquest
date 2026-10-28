@@ -6,7 +6,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "pnpm -r --parallel --filter @gearshare/api --filter @gearshare/web dev",
+    "dev": "pnpm -r --parallel --filter @gearquest/api --filter @gearquest/web dev",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",

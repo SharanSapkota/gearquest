@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createGearSchema, gearFiltersSchema, updateGearSchema } from '@gearshare/shared';
+import { createGearSchema, gearFiltersSchema, updateGearSchema } from '@gearquest/shared';
 import { requireAuth } from '../../middleware/requireAuth';
 import { requireOwner } from '../../middleware/requireRole';
 import { validateBody, validateQuery } from '../../middleware/validate';

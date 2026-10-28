@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_IMAGE_BYTES } from '@gearshare/shared';
+import { MAX_IMAGE_BYTES } from '@gearquest/shared';
 import { CloudinaryProvider } from './cloudinary.provider';
 import { createUploadsService } from './uploads.service';
 

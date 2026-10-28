@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from 'express';
-import type { UpdateProfileInput, UpgradeRoleInput } from '@gearshare/shared';
+import type { UpdateProfileInput, UpgradeRoleInput } from '@gearquest/shared';
 import { unauthorized } from '../../lib/errors';
 import type { createUsersService } from './users.service';
 

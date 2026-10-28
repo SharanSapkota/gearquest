@@ -7,7 +7,7 @@ import { PHONE_PREFIX } from '@/lib/phone';
 export { PHONE_PREFIX, cleanPhone } from '@/lib/phone';
 
 // Finnish-friendly phone field: phone keypad, autofill, and +358 filled in on focus when empty.
-// Validation and E.164 normalization use toE164 from @gearshare/shared (same as the API).
+// Validation and E.164 normalization use toE164 from @gearquest/shared (same as the API).
 export function PhoneInput({
   value,
   onValueChange,

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { completeSignupSchema, googleLoginSchema } from '@gearshare/shared';
+import { completeSignupSchema, googleLoginSchema } from '@gearquest/shared';
 import { requireAuth } from '../../middleware/requireAuth';
 import { validateBody } from '../../middleware/validate';
 import { gearRepository } from '../gear/gear.repository';

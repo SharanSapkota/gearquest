@@ -12,7 +12,7 @@ import type {
   UpdateProfileInput,
   UpgradeRoleInput,
   UploadSignature,
-} from '@gearshare/shared';
+} from '@gearquest/shared';
 import { filterMockGear } from './mockGear';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
@@ -48,7 +48,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     headers,
   });
   if (!res.ok) {
+
     const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    console.log(body, 'body');
     throw new ApiError(res.status, body?.error);
   }
   return res.status === 204 ? (undefined as T) : (res.json() as Promise<T>);

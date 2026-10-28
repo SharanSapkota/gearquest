@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { CATEGORIES } from '@gearshare/shared';
+import { CATEGORIES } from '@gearquest/shared';
 import { Chip } from '@/components/ui/Chip';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
 import { CompassIcon } from '@/components/ui/icons';

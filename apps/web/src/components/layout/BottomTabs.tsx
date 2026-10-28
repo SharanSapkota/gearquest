@@ -17,6 +17,8 @@ type Tab = {
   active: boolean;
   badge?: number;
   add?: boolean;
+  // Accessible name when the visible label is shortened to fit.
+  fullLabel?: string;
 };
 
 // Phone-only tab bar. Renter: Home, Map, Rentals, Profile. Owner/both: Home, Map, Add gear
@@ -35,8 +37,8 @@ export function BottomTabs({ pendingCount }: { pendingCount: number }) {
   if (user) {
     const owner = isOwnerRole(user.role);
     if (owner) {
-      tabs.push({ key: 'add', href: '/gear/new', label: t('addGear'), icon: <PlusIcon size={24} />, active: pathname.startsWith('/gear/new'), add: true });
-      tabs.push({ key: 'dashboard', href: '/dashboard', label: t('dashboard'), icon: <DashboardIcon size={22} />, active: pathname.startsWith('/dashboard') || pathname.startsWith('/gear/mine') || pathname.startsWith('/rentals'), badge: pendingCount });
+      tabs.push({ key: 'add', href: '/gear/new', fullLabel: t('addGear'), label: t('addGearShort'), icon: <PlusIcon size={24} />, active: pathname.startsWith('/gear/new'), add: true });
+      tabs.push({ key: 'dashboard', href: '/dashboard', label: t('dashboardShort'), icon: <DashboardIcon size={22} />, active: pathname.startsWith('/dashboard') || pathname.startsWith('/gear/mine') || pathname.startsWith('/rentals'), badge: pendingCount });
     } else {
       tabs.push({ key: 'rentals', href: '/rentals', label: t('rentalsShort'), icon: <CalendarIcon size={22} />, active: pathname.startsWith('/rentals') || pathname.startsWith('/dashboard'), badge: pendingCount });
     }
@@ -53,6 +55,7 @@ export function BottomTabs({ pendingCount }: { pendingCount: number }) {
             href={tab.href}
             className={tab.add ? 'tabbar__item tabbar__item--add' : 'tabbar__item'}
             aria-current={tab.active ? 'page' : undefined}
+            aria-label={tab.fullLabel}
           >
             {tab.add ? <span className="tabbar__plus">{tab.icon}</span> : tab.icon}
             {tab.label}

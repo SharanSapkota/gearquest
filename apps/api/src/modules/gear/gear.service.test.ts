@@ -4,7 +4,7 @@ import {
   gearFiltersSchema,
   updateGearSchema,
   type CreateGearInput,
-} from '@gearshare/shared';
+} from '@gearquest/shared';
 import { buildGearQuery } from './gear.repository';
 import { fuzzLocation, createGearService, isOwnImageUrl } from './gear.service';
 

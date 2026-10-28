@@ -1,4 +1,4 @@
-import { OWNER_ROLES, toE164, type SignupData, type UserRole } from '@gearshare/shared';
+import { OWNER_ROLES, toE164, type SignupData, type UserRole } from '@gearquest/shared';
 import type { Me } from './api';
 import { cleanPhone } from './phone';
 import { safeRedirect } from './safeRedirect';

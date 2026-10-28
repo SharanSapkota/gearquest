@@ -1,5 +1,5 @@
 {
-  "name": "@gearshare/web",
+  "name": "@gearquest/web",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@gearshare/shared": "workspace:*",
+    "@gearquest/shared": "workspace:*",
     "@googlemaps/markerclusterer": "^2.6.2",
     "@hookform/resolvers": "^5.9.1",
     "@react-oauth/google": "^0.13.5",

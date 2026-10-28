@@ -1,4 +1,4 @@
-import { DEFAULT_PAGE_SIZE, gearFiltersSchema } from '@gearshare/shared';
+import { DEFAULT_PAGE_SIZE, gearFiltersSchema } from '@gearquest/shared';
 import type { GearQuery } from './api';
 import { helsinkiDayStartUtc } from './format';
 

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
-import { MAX_GEAR_IMAGES } from '@gearshare/shared';
+import { MAX_GEAR_IMAGES } from '@gearquest/shared';
 import { Button, IconButton } from '@/components/ui/Button';
 import { ChevronLeftIcon, ChevronRightIcon, CloseIcon } from '@/components/ui/icons';
 import { api } from '@/lib/api';

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
-import { CONDITIONS, GEAR_SORTS, RENTAL_MODES } from '@gearshare/shared';
+import { CONDITIONS, GEAR_SORTS, RENTAL_MODES } from '@gearquest/shared';
 import { Button } from '@/components/ui/Button';
 import { Field, Select } from '@/components/ui/Field';
 import { StarIcon } from '@/components/ui/icons';

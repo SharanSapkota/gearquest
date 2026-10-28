@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gearFiltersSchema } from '@gearshare/shared';
+import { gearFiltersSchema } from '@gearquest/shared';
 import { buildGearQuery, buildGearSort } from './gear.repository';
 
 type GeoClause = { publicLocation: { $geoWithin: Record<string, unknown> } };

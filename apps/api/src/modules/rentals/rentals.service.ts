@@ -2,8 +2,8 @@ import type {
   AvailabilityQuery,
   CreateRentalInput,
   ListMyRentalsQuery,
-} from '@gearshare/shared';
-import { MAX_OPEN_REQUESTS_PER_RENTER, REQUEST_EXPIRY_HOURS } from '@gearshare/shared';
+} from '@gearquest/shared';
+import { MAX_OPEN_REQUESTS_PER_RENTER, REQUEST_EXPIRY_HOURS } from '@gearquest/shared';
 import { AppError, notFound, unauthorized } from '../../lib/errors';
 import type { GearRepository } from '../gear/gear.repository';
 import type { UsersRepository } from '../users/users.repository';

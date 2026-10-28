@@ -24,6 +24,7 @@ export function StickyBookingBar({ price }: { price: string }) {
     <div className="bookbar">
       <p className="bookbar__price price">{price}</p>
       <Button
+        variant="accent"
         size="md"
         onClick={() => {
           const el = document.getElementById('booking');

@@ -1,7 +1,7 @@
 'use client';
 
 import { Circle } from '@vis.gl/react-google-maps';
-import { MAP_LOCATION_OFFSET_METERS } from '@gearshare/shared';
+import { MAP_LOCATION_OFFSET_METERS } from '@gearquest/shared';
 import { GoogleMapShell } from '@/components/map/GoogleMapShell';
 
 // Static mini map: a circle around the already-fuzzed public location, not a pin.
@@ -25,9 +25,9 @@ export default function ApproxLocationMap({
         center={center}
         radius={MAP_LOCATION_OFFSET_METERS}
         clickable={false}
-        strokeColor="#2f7d4f"
+        strokeColor="#55b962"
         strokeWeight={2}
-        fillColor="#2f7d4f"
+        fillColor="#3a7d45"
         fillOpacity={0.18}
       />
     </GoogleMapShell>

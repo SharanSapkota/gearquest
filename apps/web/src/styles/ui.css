@@ -30,18 +30,28 @@
   background: var(--primary-600);
   color: #fff;
   box-shadow:
-    0 1px 2px rgb(94 35 10 / 0.25),
+    0 1px 2px rgb(12 39 16 / 0.3),
     inset 0 1px 0 rgb(255 255 255 / 0.18);
 }
 .btn--primary:hover:not(:disabled) {
   background: var(--primary-700);
 }
 .btn--secondary {
-  background: var(--secondary-700);
-  color: #fff;
+  background: var(--green-50);
+  color: var(--green-700);
+  border-color: var(--green-200);
 }
 .btn--secondary:hover:not(:disabled) {
-  background: var(--secondary-800);
+  background: var(--green-100);
+}
+/* The one attention colour: "Add gear", "Request". Use sparingly. */
+.btn--accent {
+  background: var(--red-600);
+  color: #fff;
+  box-shadow: 0 1px 2px rgb(110 25 29 / 0.3);
+}
+.btn--accent:hover:not(:disabled) {
+  background: var(--red-700);
 }
 .btn--outline {
   background: var(--surface);
@@ -119,8 +129,23 @@
 }
 .field [role='alert'],
 .form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
   color: var(--danger);
-  font-weight: 500;
+  font-weight: 600;
+}
+/* Error icon (circle-alert) so errors never rely on colour alone. */
+.field [role='alert']::before,
+.form-error::before {
+  content: '';
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+  margin-top: 0.1em;
+  background: currentColor;
+  -webkit-mask: var(--icon-alert) center / contain no-repeat;
+  mask: var(--icon-alert) center / contain no-repeat;
 }
 .field--pair {
   flex-direction: row;
@@ -195,7 +220,7 @@
   outline-offset: 2px;
 }
 .pillgroup__item svg {
-  color: var(--primary-400);
+  color: var(--green-300);
 }
 
 /* Dual-handle price slider */
@@ -259,8 +284,8 @@
   content: none;
 }
 .badge--primary {
-  background: var(--primary-100);
-  color: var(--primary-800);
+  background: var(--green-100);
+  color: var(--green-800);
 }
 .badge--success,
 .badge--active,
@@ -273,13 +298,14 @@
   color: var(--amber-fg);
 }
 .badge--completed {
-  background: var(--secondary-800);
-  color: var(--on-forest);
+  background: var(--green-700);
+  color: #fff;
 }
+/* Declined / cancelled: grey with a red cross and the text label, never colour alone. */
 .badge--declined,
 .badge--cancelled {
-  background: var(--rose-bg);
-  color: var(--rose-fg);
+  background: var(--neutral-bg);
+  color: var(--neutral-fg);
 }
 .badge--expired,
 .badge--paused {
@@ -299,6 +325,17 @@
   border-radius: 50%;
   background: currentColor;
 }
+.badge--declined::before,
+.badge--cancelled::before {
+  content: '\00d7';
+  width: auto;
+  height: auto;
+  background: none;
+  color: var(--red-700);
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 0.8;
+}
 .badge--verified {
   background: var(--secondary-50);
   color: var(--secondary-700);
@@ -312,7 +349,7 @@
   height: 1.25rem;
   padding: 0 0.35rem;
   border-radius: var(--radius-pill);
-  background: var(--primary-600);
+  background: var(--red-600);
   color: #fff;
   font-size: 0.72rem;
   font-weight: 700;
@@ -690,7 +727,7 @@
   background: var(--danger);
 }
 .toast--success {
-  background: var(--secondary-700);
+  background: var(--green-700);
 }
 .toast .btn {
   color: #fff;
@@ -753,5 +790,21 @@
 .price {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--primary-700);
+  color: var(--red-700);
+}
+
+/* Narrow screens: buttons and chips may wrap instead of overflowing (long Finnish labels). */
+@media (max-width: 480px) {
+  .btn {
+    white-space: normal;
+    text-align: center;
+    padding-inline: 1rem;
+  }
+  .chip {
+    max-width: 100%;
+  }
+}
+.tabs .tab,
+.tabbar__item {
+  min-width: 0;
 }

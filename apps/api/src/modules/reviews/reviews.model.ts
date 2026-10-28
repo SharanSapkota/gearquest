@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { REVIEW_ROLES } from '@gearshare/shared';
+import { REVIEW_ROLES } from '@gearquest/shared';
 
 const reviewSchema = new Schema(
   {

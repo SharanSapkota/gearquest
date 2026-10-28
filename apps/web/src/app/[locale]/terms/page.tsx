@@ -1,4 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { staticPageMetadata } from '@/lib/seo/staticMetadata';
+
+export const generateMetadata = staticPageMetadata('terms', 'legalPages.termsTitle', 'termsDescription');
 
 // Placeholder until the lawyer-reviewed text is ready.
 export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {

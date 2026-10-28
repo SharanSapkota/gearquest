@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { pageTitle } from '@/lib/metadata';
 import { CompleteSignupForm } from '@/components/auth/CompleteSignupForm';
 import { buttonClass } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -9,9 +10,11 @@ import { getCurrentUser } from '@/lib/auth';
 import { afterLoginPath } from '@/lib/roles';
 import { safeRedirect } from '@/lib/safeRedirect';
 
+export const generateMetadata = pageTitle('signup.completeTitle');
+
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
-// "Create your account": where "Sign in" sends a Google account that has no GearShare account yet.
+// "Create your account": where "Sign in" sends a Google account that has no GearQuest account yet.
 export default async function CompleteSignupPage({
   params,
   searchParams,

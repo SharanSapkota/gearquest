@@ -18,7 +18,7 @@ import {
 import { RoleCards } from './RoleCards';
 import { SignupDetails } from './SignupDetails';
 
-// /signup/complete: reached after "Sign in" with a Google account that has no GearShare account.
+// /signup/complete: reached after "Sign in" with a Google account that has no GearQuest account.
 // Name and avatar come from the verified Google profile (read-only); the user picks a role,
 // accepts the terms and (owner/both) adds phone + consent. Only then is the account created.
 export function CompleteSignupForm({

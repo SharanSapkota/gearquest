@@ -17,7 +17,7 @@ export function AuthControls({ pendingCount }: { pendingCount: number }) {
     return (
       <>
         {isOwnerRole(user.role) && (
-          <Link href="/gear/new" className={`${buttonClass({ size: 'sm' })} header__add`}>
+          <Link href="/gear/new" className={`${buttonClass({ variant: 'accent', size: 'sm' })} header__add`}>
             <PlusIcon size={18} />
             {t('addGear')}
           </Link>

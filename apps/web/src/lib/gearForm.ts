@@ -3,7 +3,7 @@ import {
   type CATEGORIES,
   type CONDITIONS,
   type CreateGearInput,
-} from '@gearshare/shared';
+} from '@gearquest/shared';
 
 export type GearFormValues = {
   title: string;

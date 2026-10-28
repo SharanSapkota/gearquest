@@ -82,9 +82,9 @@ export default function GearMap({
           center={{ lat: radius.center[0], lng: radius.center[1] }}
           radius={radius.km * 1000}
           clickable={false}
-          strokeColor="#2f7d4f"
+          strokeColor="#205a28"
           strokeWeight={2}
-          fillColor="#2f7d4f"
+          fillColor="#3a7d45"
           fillOpacity={0.1}
         />
       )}

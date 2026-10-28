@@ -1,4 +1,4 @@
-import { MAX_IMAGE_BYTES } from '@gearshare/shared';
+import { MAX_IMAGE_BYTES } from '@gearquest/shared';
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_EDGE = 1600;

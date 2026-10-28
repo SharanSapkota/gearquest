@@ -32,7 +32,7 @@ importers:
       '@date-fns/tz':
         specifier: ^1.5.0
         version: 1.5.0
-      '@gearshare/shared':
+      '@gearquest/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       cloudinary:
@@ -105,7 +105,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@gearshare/shared':
+      '@gearquest/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@googlemaps/markerclusterer':

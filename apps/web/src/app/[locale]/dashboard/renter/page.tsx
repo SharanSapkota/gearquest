@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { pageTitle } from '@/lib/metadata';
 import { RememberView } from '@/components/dashboard/RememberView';
 import { ViewSwitcher } from '@/components/dashboard/ViewSwitcher';
 import { RentalCard } from '@/components/rentals/RentalCard';
@@ -10,6 +11,8 @@ import { api, type Rental } from '@/lib/api';
 import { requireUser } from '@/lib/auth';
 import { getNow } from '@/lib/format';
 import { DASHBOARD_PATHS } from '@/lib/roles';
+
+export const generateMetadata = pageTitle('nav.dashboard');
 
 function Section({
   id,

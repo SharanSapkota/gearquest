@@ -1,4 +1,4 @@
-import type { RENTAL_STATUSES } from '@gearshare/shared';
+import type { RENTAL_STATUSES } from '@gearquest/shared';
 import { AppError, forbidden } from '../../lib/errors';
 
 export type RentalStatus = (typeof RENTAL_STATUSES)[number];

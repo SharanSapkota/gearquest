@@ -8,7 +8,7 @@ export function safeRedirect(next: string | null | undefined, fallback = '/'): s
   if (!next.startsWith('/') || next.startsWith('//')) return fallback;
   // The URL parser is the final judge: the path must stay on our own origin.
   try {
-    const base = 'http://gearshare.invalid';
+    const base = 'http://gearquest.invalid';
     const url = new URL(next, base);
     if (url.origin !== base) return fallback;
     return `${url.pathname}${url.search}${url.hash}`;

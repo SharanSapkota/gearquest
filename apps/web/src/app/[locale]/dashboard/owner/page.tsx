@@ -14,6 +14,9 @@ import { requireOwnerAccess } from '@/lib/auth';
 import { formatMoney } from '@/lib/format';
 import { DASHBOARD_PATHS } from '@/lib/roles';
 
+import { pageTitle } from '@/lib/metadata';
+export const generateMetadata = pageTitle('nav.dashboard');
+
 export default async function OwnerDashboardPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -31,7 +34,7 @@ export default async function OwnerDashboardPage({ params }: { params: Promise<{
         <h1>{t('ownerTitle')}</h1>
         <div className="page__head-actions">
           {access.user.role === 'both' && <ViewSwitcher current="owner" />}
-          <Link href="/gear/new" className={buttonClass({ size: 'md' })}>
+          <Link href="/gear/new" className={buttonClass({ variant: 'accent' })}>
             <PlusIcon size={18} />
             {t('addGear')}
           </Link>

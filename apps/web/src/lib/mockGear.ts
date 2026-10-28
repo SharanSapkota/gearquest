@@ -1,4 +1,4 @@
-import { DEFAULT_PAGE_SIZE } from '@gearshare/shared';
+import { DEFAULT_PAGE_SIZE } from '@gearquest/shared';
 import type { GearListResponse, GearQuery, PublicGear } from './api';
 
 // TODO(mock): temporary dataset used only when the API is unreachable. Remove with the fallback in api.ts.

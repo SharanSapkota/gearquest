@@ -1,5 +1,5 @@
 import type { CookieOptions, Request, RequestHandler, Response } from 'express';
-import { SIGNUP_TOKEN_TTL_SECONDS, type GoogleLoginInput, type SignupData } from '@gearshare/shared';
+import { SIGNUP_TOKEN_TTL_SECONDS, type GoogleLoginInput, type SignupData } from '@gearquest/shared';
 import { env } from '../../config/env';
 import { unauthorized } from '../../lib/errors';
 import type { createUsersService } from '../users/users.service';

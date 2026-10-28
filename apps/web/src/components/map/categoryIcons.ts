@@ -1,4 +1,4 @@
-import type { CATEGORIES } from '@gearshare/shared';
+import type { CATEGORIES } from '@gearquest/shared';
 
 export type Category = (typeof CATEGORIES)[number];
 
@@ -20,17 +20,17 @@ export const CATEGORY_GLYPH: Record<Category, string> = {
     '<path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 10h8"/><path d="M8 18h8"/><path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
 };
 
-// Pin fill per category (SVG marker colours are the one place raw hex is allowed). Muted Nordic
-// tones; the glyph, not the colour, tells categories apart.
+// Pin fill per category (SVG marker colours are the one place raw hex is allowed). Soft green tones
+// (the selected pin turns red in CSS); the glyph, not the colour, tells categories apart.
 export const CATEGORY_STYLE: Record<Category, { color: string }> = {
-  ski: { color: '#2f5d7c' },
-  snowboard: { color: '#5b4b8a' },
-  tent: { color: '#9a5a1a' },
-  kayak: { color: '#1f7a80' },
-  bike: { color: '#a6384f' },
-  climbing: { color: '#4a6a2f' },
-  camping: { color: '#b4470f' },
-  other: { color: '#4b5563' },
+  ski: { color: '#205a28' },
+  snowboard: { color: '#2d6a4a' },
+  tent: { color: '#3a7d45' },
+  kayak: { color: '#1f6b64' },
+  bike: { color: '#4b7a3a' },
+  climbing: { color: '#35604a' },
+  camping: { color: '#5a8a4f' },
+  other: { color: '#4a5a50' },
 };
 
 const PIN_PATH =

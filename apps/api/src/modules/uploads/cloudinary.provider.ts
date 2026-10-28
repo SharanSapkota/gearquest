@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { GEAR_IMAGE_FOLDER, IMAGE_FORMATS, MAX_IMAGE_BYTES, type UploadSignature } from '@gearshare/shared';
+import { GEAR_IMAGE_FOLDER, IMAGE_FORMATS, MAX_IMAGE_BYTES, type UploadSignature } from '@gearquest/shared';
 
 export type CloudinaryConfig = {
   cloudName: string;

@@ -1,4 +1,4 @@
-import { MAX_RENTAL_DAYS, type RENTAL_MODES } from '@gearshare/shared';
+import { MAX_RENTAL_DAYS, type RENTAL_MODES } from '@gearquest/shared';
 import { helsinkiDayStartUtc } from './format';
 
 export type RentalMode = (typeof RENTAL_MODES)[number];

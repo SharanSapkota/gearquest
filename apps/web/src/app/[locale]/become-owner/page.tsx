@@ -1,9 +1,12 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { pageTitle } from '@/lib/metadata';
 import { BecomeOwnerForm } from '@/components/dashboard/BecomeOwnerForm';
 import { redirect } from '@/i18n/navigation';
 import { requireUser } from '@/lib/auth';
 import { DASHBOARD_PATHS, isOwnerReady } from '@/lib/roles';
 import { safeRedirect } from '@/lib/safeRedirect';
+
+export const generateMetadata = pageTitle('becomeOwner.title');
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 

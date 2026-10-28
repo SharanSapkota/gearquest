@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
 import { buttonClass } from '@/components/ui/Button';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
@@ -10,33 +10,71 @@ import { OwnerCard } from '@/components/gear/OwnerCard';
 import { RentalRequestForm } from '@/components/rentals/RentalRequestForm';
 import { StickyBookingBar } from '@/components/rentals/StickyBookingBar';
 import { Link } from '@/i18n/navigation';
-import { ApiError, api } from '@/lib/api';
+import { ApiError, api, type PublicGear } from '@/lib/api';
 import { getCurrentUser } from '@/lib/auth';
 import { formatMoney } from '@/lib/format';
+import { getGearCached } from '@/lib/metadata';
+import { buildMetadata, fitDescription, ogImageUrl } from '@/lib/seo/metadata';
+import { idSlug, parseIdSlug, publicPath } from '@/lib/seo/paths';
+import type { SeoLocale } from '@/lib/seo/routes';
+import type { Metadata } from 'next';
+
+type Props = { params: Promise<{ locale: string; id: string }> };
+
+const priceParts = (gear: PublicGear, locale: string, t: Awaited<ReturnType<typeof getTranslations>>) =>
+  [
+    gear.pricing.hourlyCents !== undefined && t('gear.perHour', { price: formatMoney(gear.pricing.hourlyCents, locale) }),
+    gear.pricing.dailyCents !== undefined && t('gear.perDay', { price: formatMoney(gear.pricing.dailyCents, locale) }),
+  ].filter(Boolean) as string[];
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale: rawLocale, id: param } = await params;
+  const locale = rawLocale as SeoLocale;
+  const gear = await getGearCached(parseIdSlug(param).id).catch(() => null);
+  const t = await getTranslations({ locale });
+  if (!gear) return { title: t('meta.gearFallback'), robots: { index: false, follow: false } };
+  const prices = priceParts(gear, locale, t).join(' · ');
+  const category = t(`categories.${gear.category}`);
+  const intro = prices
+    ? t('seo.gearIntro', { title: gear.title, city: gear.city, category, prices })
+    : t('seo.gearIntroNoPrice', { title: gear.title, city: gear.city, category });
+  return buildMetadata({
+    locale,
+    page: 'gear',
+    params: { id: idSlug(gear.id, gear.title) },
+    title: gear.title,
+    description: fitDescription([intro, gear.description]),
+    image: ogImageUrl(locale, { gearId: gear.id }),
+    imageAlt: t('seo.imageAlt', { title: gear.title, category, city: gear.city }),
+  });
+}
 
 export default async function GearDetailPage({
   params,
 }: {
   params: Promise<{ locale: string; id: string }>;
 }) {
-  const { locale, id } = await params;
+  const { locale, id: param } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
+  const { id, hasSlugForm } = parseIdSlug(param);
   // Non-404 errors propagate to error.tsx.
-  const gear = await api.getGear(id).catch((err: unknown) => {
+  const gear = await getGearCached(id).catch((err: unknown) => {
     if (err instanceof ApiError && err.status === 404) notFound();
     throw err;
   });
+  // Bare id, outdated or missing slug: permanent redirect to the canonical URL.
+  const canonical = idSlug(gear.id, gear.title);
+  if (hasSlugForm && param !== canonical) {
+    permanentRedirect(publicPath('gear', locale as SeoLocale, { id: canonical }));
+  }
   const me = await getCurrentUser();
   const isOwner = me?.id === gear.ownerId;
-  const { hourlyCents, dailyCents, minHours } = gear.pricing;
+  const { hourlyCents, minHours } = gear.pricing;
   // The owner card shows the review count, which only the public profile carries.
   const ownerProfile = gear.owner ? await api.getUser(gear.owner.id).catch(() => null) : null;
 
-  const prices = [
-    hourlyCents !== undefined && t('gear.perHour', { price: formatMoney(hourlyCents, locale) }),
-    dailyCents !== undefined && t('gear.perDay', { price: formatMoney(dailyCents, locale) }),
-  ].filter(Boolean) as string[];
+  const prices = priceParts(gear, locale, t);
 
   return (
     <main className="detail">

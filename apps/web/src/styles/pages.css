@@ -585,7 +585,7 @@
   background: color-mix(in srgb, var(--surface) 96%, transparent);
   backdrop-filter: blur(14px);
   border-top: 1px solid var(--border);
-  box-shadow: 0 -8px 24px rgb(60 40 20 / 0.08);
+  box-shadow: 0 -8px 24px rgb(12 39 16 / 0.08);
   animation: rise var(--dur) var(--ease);
 }
 .bookbar__price {

@@ -5,7 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { nextParam } from '@/lib/safeRedirect';
 import { GoogleAuthButton } from './GoogleAuthButton';
 
-// /login: Google only. A Google account without a GearShare account is not created here.
+// /login: Google only. A Google account without a GearQuest account is not created here.
 export function LoginPanel({ next }: { next?: string }) {
   const t = useTranslations('auth');
   const tLegal = useTranslations('legal');

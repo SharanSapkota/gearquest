@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "GearShare"
+    "name": "GearQuest"
   },
   "nav": {
     "home": "Etusivu",
@@ -12,12 +12,14 @@
     "logout": "Kirjaudu ulos",
     "logoutFailed": "Uloskirjautuminen epäonnistui. Yritä uudelleen.",
     "myGear": "Varusteeni",
-    "pendingRequests": "{count, plural, one {# odottava pyyntö} other {# odottavaa pyyntöä}}",
-    "addGear": "Lisää väline",
+    "pendingRequests": "{count, plural, one {# odottava vuokrapyyntö} other {# odottavaa vuokrapyyntöä}}",
+    "addGear": "Lisää varuste",
     "profile": "Profiili",
     "rentalsShort": "Vuokraukset",
-    "signUp": "Rekisteröidy",
-    "dashboard": "Hallintapaneeli"
+    "signUp": "Luo tili",
+    "dashboard": "Hallintapaneeli",
+    "dashboardShort": "Hallinta",
+    "addGearShort": "Lisää"
   },
   "home": {
     "title": "Vuokraa varusteet. Jätä ostamatta.",
@@ -35,17 +37,17 @@
       },
       "request": {
         "title": "Pyydä",
-        "text": "Lähetä vuokrauspyyntö. Hinta lasketaan palvelimella."
+        "text": "Lähetä vuokrapyyntö. Hinta lasketaan palvelimella."
       },
       "meet": {
         "title": "Tapaa",
-        "text": "Omistaja hyväksyy, ja sovitte noudosta suoraan keskenänne."
+        "text": "Vuokralleantaja hyväksyy, ja sovitte noudosta suoraan keskenänne."
       }
     },
     "trust": "Kirjautuminen Googlella: jokainen jäsen on vahvistettu."
   },
   "legal": {
-    "disclaimer": "GearShare on vain alusta, joka yhdistää varusteiden omistajat ja vuokraajat. Emme ole osapuoli vuokrasopimuksissa emmekä vastaa vahingoista, katoamisesta, loukkaantumisista tai riidoista. Kaikki tällaiset asiat ovat yksin vuokraajan ja omistajan välisiä."
+    "disclaimer": "GearQuest on vain alusta, joka yhdistää varusteiden vuokralleantajat ja vuokraajat. Emme ole osapuoli vuokrasopimuksissa emmekä vastaa vahingoista, katoamisesta, loukkaantumisista tai riidoista. Kaikki tällaiset asiat ovat yksin vuokraajan ja vuokralleantajan välisiä."
   },
   "errors": {
     "loadFailed": "Tietojen lataus epäonnistui.",
@@ -82,7 +84,7 @@
     "resultCount": "{count, plural, =0 {Ei tuloksia} one {# tulos} other {# tulosta}}",
     "unavailable": {
       "title": "Karttaa ei voi näyttää juuri nyt",
-      "missingKey": "Karttaa ei ole vielä otettu käyttöön. Voit silti selata välineitä etusivulta.",
+      "missingKey": "Karttaa ei ole vielä otettu käyttöön. Voit silti selata varusteita etusivulta.",
       "failed": "Karttaa ei voitu ladata. Tarkista yhteytesi ja yritä myöhemmin uudelleen."
     }
   },
@@ -144,7 +146,7 @@
     "useLocation": "Käytä sijaintiani",
     "clearLocation": "Poista sijainti",
     "locationFailed": "Sijaintia ei saatu.",
-    "minRating": "Omistajan vähimmäisarvosana",
+    "minRating": "Vuokralleantajan vähimmäisarvosana",
     "ratingAtLeast": "{rating}★ ja yli",
     "sort": "Järjestys",
     "apply": "Käytä",
@@ -165,11 +167,11 @@
     "loginTitle": "Kirjaudu sisään",
     "loginLead": "Tervetuloa takaisin. Jatka Google-tililläsi.",
     "signupTitle": "Luo tili",
-    "signupLead": "Vuokraa seikkailuvarusteita naapureiltasi tai tienaa varusteilla, joita käytät harvoin. Valitse, miten haluat käyttää GearSharea, ja jatka sitten Googlella.",
+    "signupLead": "Vuokraa seikkailuvarusteita naapureiltasi tai tienaa varusteilla, joita käytät harvoin. Valitse, miten haluat käyttää GearQuesta, ja jatka sitten Googlella.",
     "acceptTerms": "Hyväksyn <terms>käyttöehdot</terms> ja <privacy>tietosuojaselosteen</privacy>",
     "acceptTermsFirst": "Hyväksy käyttöehdot ja tietosuojaseloste jatkaaksesi.",
     "continueWithGoogle": "Jatka Googlella",
-    "noAccount": "Uusi GearSharessa?",
+    "noAccount": "Uusi GearQuestssa?",
     "signUpLink": "Luo tili",
     "haveAccount": "Onko sinulla jo tili?",
     "logInLink": "Kirjaudu sisään",
@@ -194,10 +196,10 @@
     "save": "Tallenna",
     "saving": "Tallennetaan…",
     "saveFailed": "Tallennus epäonnistui. Yritä uudelleen.",
-    "consentRequired": "Omistajan on hyväksyttävä WhatsApp-numeron jakaminen pyynnön hyväksymisen jälkeen.",
-    "phoneRequired": "Omistajilla on oltava puhelinnumero.",
+    "consentRequired": "Vuokralleantajan on hyväksyttävä WhatsApp-numeron jakaminen vuokrapyynnön hyväksymisen jälkeen.",
+    "phoneRequired": "Vuokralleantajalla on oltava puhelinnumero.",
     "phoneInUse": "Et voi poistaa puhelinnumeroasi, kun sinulla on ilmoituksia tai hyväksyttyjä vuokrauksia.",
-    "becomeOwner": "Ryhdy omistajaksi",
+    "becomeOwner": "Ryhdy vuokralleantajaksi",
     "addGear": "Lisää varuste"
   },
   "gearForm": {
@@ -263,8 +265,8 @@
       "dailyPrice": "Anna hinta, joka on yli 0, esimerkiksi 20,00.",
       "minHours": "Anna kokonaisluku tunteja, vähintään 1."
     },
-    "ownerNotReady": "Lisää profiiliisi puhelinnumero ja WhatsApp-suostumus ennen varusteen lisäämistä.",
-    "fixInProfile": "Avaa profiili"
+    "ownerNotReady": "Lisää puhelinnumero ja WhatsApp-suostumus ennen varusteen lisäämistä.",
+    "fixInProfile": "Täydennä tiedot"
   },
   "myGear": {
     "title": "Varusteeni",
@@ -288,7 +290,7 @@
   },
   "gearDetail": {
     "condition": "Kunto",
-    "owner": "Omistaja",
+    "owner": "Vuokralleantaja",
     "location": "Likimääräinen sijainti",
     "locationNote": "Vain likimääräinen alue näytetään. Tarkka sijainti jaetaan vuokrauksen hyväksymisen jälkeen.",
     "mapLabel": "Kartta varusteen likimääräisestä sijainnista",
@@ -303,13 +305,13 @@
     "showAll": "Näytä kaikki kuvat",
     "photoCounter": "{current} / {total}",
     "about": "Tietoja varusteesta",
-    "hostedBy": "Omistaja",
+    "hostedBy": "Vuokralleantaja",
     "verified": "Vahvistettu Googlella",
     "ratingCount": "{count, plural, one {# arvostelu} other {# arvostelua}}",
     "from": "alkaen"
   },
   "rentalForm": {
-    "title": "Pyydä vuokrausta",
+    "title": "Tee vuokrapyyntö",
     "mode": "Vuokraustapa",
     "pickStart": "Valitse ensimmäinen päivä.",
     "pickEnd": "Valitse viimeinen päivä (palautuspäivä).",
@@ -318,12 +320,12 @@
     "endTime": "Päättymisaika",
     "choose": "Valitse…",
     "minHours": "Vähimmäisvuokra: {count, plural, one {# tunti} other {# tuntia}}",
-    "message": "Viesti omistajalle (valinnainen)",
+    "message": "Viesti vuokralleantajalle (valinnainen)",
     "previewHourly": "{unit} × {count, plural, one {# tunti} other {# tuntia}}",
     "previewDaily": "{unit} × {count, plural, one {# päivä} other {# päivää}}",
     "total": "Yhteensä {total}",
     "serverNote": "Lopullinen hinta vahvistetaan palvelimella.",
-    "submit": "Lähetä pyyntö",
+    "submit": "Lähetä vuokrapyyntö",
     "submitting": "Lähetetään…",
     "signInToRequest": "Kirjaudu sisään pyytääksesi",
     "addPhone": "Lisää puhelinnumero profiiliisi",
@@ -349,7 +351,7 @@
       "overlap": "Varuste on jo varattu osaksi tätä aikaa.",
       "ownGear": "Et voi vuokrata omaa varustettasi.",
       "tooManyOpenRequests": "Sinulla on liian monta avointa pyyntöä. Odota vastauksia tai peru joitakin.",
-      "renterPhoneRequired": "Lisää profiiliisi puhelinnumero ennen vuokrauspyyntöä.",
+      "renterPhoneRequired": "Lisää profiiliisi puhelinnumero ennen vuokrapyyntöä.",
       "gearNotActive": "Tämä varuste ei ole juuri nyt vuokrattavissa.",
       "startInPast": "Alkamisajan on oltava tulevaisuudessa.",
       "invalidRange": "Päättymisen on oltava alkamisen jälkeen.",
@@ -366,7 +368,10 @@
       "notFound": "Vuokrausta ei löytynyt."
     },
     "gear": {
-      "notFound": "Varustetta ei löytynyt."
+      "notFound": "Varustetta ei löytynyt.",
+      "invalidImageUrl": "Kuvaa ei voitu hyväksyä. Lataa kuvat lomakkeen kautta.",
+      "tooManyImages": "Kuvia voi olla enintään 6.",
+      "forbidden": "Voit muokata vain omia varusteitasi."
     },
     "errors": {
       "rateLimited": "Liian monta pyyntöä. Odota hetki ja yritä uudelleen.",
@@ -374,11 +379,16 @@
       "validation": "Tarkista tiedot ja yritä uudelleen."
     },
     "users": {
-      "phoneInUse": "Et voi poistaa puhelinnumeroasi, kun sinulla on ilmoituksia tai hyväksyttyjä vuokrauksia."
+      "phoneInUse": "Et voi poistaa puhelinnumeroasi, kun sinulla on ilmoituksia tai hyväksyttyjä vuokrauksia.",
+      "invalidPhone": "Anna kelvollinen suomalainen tai kansainvälinen puhelinnumero."
     },
     "PHONE_REQUIRED": "Lisää ensin puhelinnumerosi.",
     "CONSENT_REQUIRED": "Anna ensin lupa jakaa WhatsApp-numerosi, kun hyväksyt pyynnön.",
-    "ROLE_REQUIRED": "Ryhdy vuokraisännäksi tehdäksesi sen."
+    "ROLE_REQUIRED": "Ryhdy vuokralleantajaksi tehdäksesi sen.",
+    "auth": {
+      "signupTokenInvalid": "Rekisteröitymisistunto on vanhentunut. Jatka Googlella uudelleen.",
+      "termsRequired": "Hyväksy käyttöehdot ja tietosuojaseloste jatkaaksesi."
+    }
   },
   "rentals": {
     "title": "Vuokraukseni",
@@ -386,26 +396,26 @@
     "loading": "Ladataan vuokrauksia…",
     "tabs": "Vuokrausrooli",
     "asRenter": "Vuokraajana",
-    "asOwner": "Omistajana",
+    "asOwner": "Vuokralleantajana",
     "filterStatus": "Tila",
     "allStatuses": "Kaikki tilat",
-    "emptyRenter": "Et ole pyytänyt vuokrauksia.",
-    "emptyOwner": "Kukaan ei ole vielä pyytänyt varusteitasi.",
+    "emptyRenter": "Et ole vielä tehnyt vuokrapyyntöjä.",
+    "emptyOwner": "Kukaan ei ole vielä pyytänyt varusteitasi vuokralle.",
     "notFound": "Vuokrausta ei löytynyt.",
     "back": "Takaisin vuokrauksiini",
     "viewDetails": "Näytä tiedot",
     "unknownUser": "Tuntematon käyttäjä",
-    "owner": "Omistaja",
+    "owner": "Vuokralleantaja",
     "renter": "Vuokraaja",
     "phone": "Puhelin",
     "whatsapp": "Keskustele WhatsAppissa",
-    "contactNote": "Sopikaa noudosta, vakuudesta ja mahdollisista vahinkoehdoista suoraan toisen osapuolen kanssa. GearShare ei ole vuokrauksen osapuoli.",
+    "contactNote": "Sopikaa noudosta, vakuudesta ja mahdollisista vahinkoehdoista suoraan toisen osapuolen kanssa. GearQuest ei ole vuokrauksen osapuoli.",
     "quantityHours": "{count, plural, one {# tunti} other {# tuntia}}",
     "quantityDays": "{count, plural, one {# päivä} other {# päivää}}",
     "expiresIn": "Vanhenee {hours, plural, one {# tunnin} other {# tunnin}} kuluttua",
     "expiresSoon": "Vanhenee alle tunnin kuluttua",
     "status": {
-      "requested": "Pyydetty",
+      "requested": "Odottaa",
       "accepted": "Hyväksytty",
       "declined": "Hylätty",
       "cancelled": "Peruttu",
@@ -414,23 +424,23 @@
     },
     "accept": "Hyväksy",
     "decline": "Hylkää",
-    "cancel": "Peru pyyntö",
+    "cancel": "Peru vuokrapyyntö",
     "complete": "Merkitse valmiiksi",
     "ownerPhoneNeeded": "Lisää puhelinnumerosi hyväksyäksesi pyyntöjä.",
-    "addPhone": "Muokkaa profiilia",
+    "addPhone": "Lisää puhelinnumero",
     "confirm": {
       "acceptTitle": "Vahvista hyväksyntä",
-      "acceptText": "Hyväksytäänkö pyyntö? Puhelinnumerosi jaetaan vuokraajalle.",
+      "acceptText": "Hyväksytäänkö vuokrapyyntö? Puhelinnumerosi jaetaan vuokraajalle.",
       "acceptYes": "Kyllä, hyväksy",
       "declineTitle": "Vahvista hylkäys",
-      "declineText": "Hylätäänkö pyyntö?",
+      "declineText": "Hylätäänkö vuokrapyyntö?",
       "declineYes": "Kyllä, hylkää",
       "back": "Takaisin"
     },
     "browse": "Selaa varusteita",
     "emptyTitle": "Ei vuokrauksia vielä",
-    "emptyOwnerTitle": "Ei pyyntöjä vielä",
-    "listGear": "Lisää väline",
+    "emptyOwnerTitle": "Ei vuokrapyyntöjä vielä",
+    "listGear": "Lisää varuste",
     "totalLabel": "Yhteensä"
   },
   "ui": {
@@ -459,14 +469,14 @@
     "clearDates": "Tyhjennä päivät"
   },
   "ownerGate": {
-    "title": "Ryhdy vuokraisännäksi ilmoittaaksesi varusteita",
-    "body": "Varusteiden lisäämiseen tarvitsemme puhelinnumerosi ja luvan jakaa se vuokraajalle, kun olet hyväksynyt hänen pyyntönsä. Numerosi ei ole koskaan julkinen.",
-    "action": "Ryhdy vuokraisännäksi"
+    "title": "Ryhdy vuokralleantajaksi ilmoittaaksesi varusteita",
+    "body": "Varusteiden lisäämiseen tarvitsemme puhelinnumerosi ja luvan jakaa se vuokraajalle, kun olet hyväksynyt hänen vuokrapyyntönsä. Numerosi ei ole koskaan julkinen.",
+    "action": "Ryhdy vuokralleantajaksi"
   },
   "roles": {
     "renter": "Vuokraaja",
-    "owner": "Omistaja",
-    "both": "Vuokraaja ja omistaja"
+    "owner": "Vuokralleantaja",
+    "both": "Vuokraaja ja vuokralleantaja"
   },
   "legalPages": {
     "termsTitle": "Käyttöehdot",
@@ -475,29 +485,29 @@
   },
   "signup": {
     "progress": "Vaihe {step}/{total}",
-    "roleTitle": "Miten haluat käyttää GearSharea?",
+    "roleTitle": "Miten haluat käyttää GearQuesta?",
     "roleRenter": "Vuokraaja",
     "roleRenterBody": "Haluan vuokrata varusteita",
-    "roleOwner": "Vuokraisäntä",
+    "roleOwner": "Vuokralleantaja",
     "roleOwnerBody": "Haluan vuokrata omia varusteitani",
     "roleBoth": "Haluan tehdä molempia",
-    "roleBothSelected": "Molemmat: voit vuokrata varusteita ja vuokrata omiasi.",
-    "roleHint": "Jos aloitat vuokraajana, voit ryhtyä vuokraisännäksi myöhemmin.",
-    "roleRequired": "Valitse, miten haluat käyttää GearSharea.",
+    "roleBothSelected": "Molemmat: voit vuokrata varusteita ja vuokrata omiasi muille.",
+    "roleHint": "Jos aloitat vuokraajana, voit ryhtyä vuokralleantajaksi myöhemmin.",
+    "roleRequired": "Valitse, miten haluat käyttää GearQuesta.",
     "continue": "Jatka",
     "back": "Takaisin",
     "detailsTitle": "Muutama tieto",
-    "renterPhoneNote": "Puhelinnumeroa ei tarvita vielä. Kysymme sitä, kun lähetät ensimmäisen vuokrauspyyntösi.",
-    "ownerPhoneHint": "Pakollinen vuokraisännille. Suomalaiset numerot, kuten 040 123 4567, kelpaavat.",
+    "renterPhoneNote": "Puhelinnumeroa ei tarvita vielä. Kysymme sitä, kun teet ensimmäisen vuokrapyyntösi.",
+    "ownerPhoneHint": "Pakollinen vuokralleantajille. Suomalaiset numerot, kuten 040 123 4567, kelpaavat.",
     "phoneRequired": "Anna puhelinnumerosi.",
     "privacyTitle": "Numerosi pysyy yksityisenä",
-    "privacyBody": "Numeroasi ei näytetä julkisesti. Se paljastetaan vuokraajalle vasta, kun hyväksyt hänen vuokrauspyyntönsä, jotta voitte sopia luovutuksesta WhatsAppissa.",
-    "consent": "Numeroni jaetaan vuokraajalle vasta, kun olen hyväksynyt hänen pyyntönsä.",
+    "privacyBody": "Numeroasi ei näytetä julkisesti. Se paljastetaan vuokraajalle vasta, kun hyväksyt hänen vuokrapyyntönsä, jotta voitte sopia luovutuksesta WhatsAppissa.",
+    "consent": "Numeroni jaetaan vuokraajalle vasta, kun olen hyväksynyt hänen vuokrapyyntönsä.",
     "consentRequired": "Rastita ruutu jatkaaksesi.",
     "googleTitle": "Viimeinen vaihe: jatka Googlella",
     "googleBody": "Tilisi luodaan roolilla {role}, kun Google on vahvistanut henkilöllisyytesi.",
     "completeTitle": "Luo tilisi",
-    "completeLead": "Tälle Google-tilille ei vielä löytynyt GearShare-tiliä. Valitse, miten haluat käyttää GearSharea, niin luomme sen.",
+    "completeLead": "Tälle Google-tilille ei vielä löytynyt GearQuest-tiliä. Valitse, miten haluat käyttää GearQuesta, niin luomme sen.",
     "googleAccount": "Google-tilisi",
     "create": "Luo tili",
     "creating": "Luodaan…",
@@ -507,43 +517,65 @@
     "backToLogin": "Takaisin kirjautumiseen"
   },
   "becomeOwner": {
-    "title": "Ryhdy vuokraisännäksi",
-    "lead": "Varusteiden ilmoittamiseen tarvitsemme puhelinnumerosi ja luvan jakaa se vuokraajalle, kun hyväksyt hänen pyyntönsä.",
-    "submit": "Ryhdy vuokraisännäksi",
+    "title": "Ryhdy vuokralleantajaksi",
+    "lead": "Varusteiden ilmoittamiseen tarvitsemme puhelinnumerosi ja luvan jakaa se vuokraajalle, kun hyväksyt hänen vuokrapyyntönsä.",
+    "submit": "Ryhdy vuokralleantajaksi",
     "saving": "Tallennetaan…",
     "failed": "Tallennus epäonnistui. Yritä uudelleen."
   },
   "dashboard": {
     "loading": "Ladataan hallintapaneelia…",
-    "renting": "Vuokraus",
-    "hosting": "Vuokraisäntä",
-    "switchLabel": "Vaihda vuokrauksen ja vuokrauksen tarjoamisen välillä",
-    "ownerTitle": "Vuokraisäntänä",
+    "renting": "Vuokraan",
+    "hosting": "Vuokraan ulos",
+    "switchLabel": "Vaihda näkymää: vuokraaja tai vuokralleantaja",
+    "ownerTitle": "Vuokralleantajana",
     "renterTitle": "Vuokraajana",
     "addGear": "Lisää varuste",
     "findGear": "Etsi varusteita",
     "summary": "Yhteenveto",
     "activeListings": "Aktiiviset ilmoitukset",
-    "pendingRequests": "Odottavat pyynnöt",
+    "pendingRequests": "Odottavat vuokrapyynnöt",
     "upcomingRentals": "Tulevat vuokraukset",
     "earnings": "Tulot",
-    "pendingTitle": "Odottavat pyynnöt",
-    "allRequests": "Kaikki pyynnöt",
-    "noPending": "Ei odottavia pyyntöjä juuri nyt.",
+    "pendingTitle": "Odottavat vuokrapyynnöt",
+    "allRequests": "Kaikki vuokrapyynnöt",
+    "noPending": "Ei odottavia vuokrapyyntöjä juuri nyt.",
     "listingsTitle": "Omat ilmoitukset",
     "emptyListingsTitle": "Ilmoita ensimmäinen varusteesi",
     "emptyListings": "Varusteet, joita käytät harvoin, voivat tuottaa rahaa. Lisää kuvia, hinta ja sijainti kartalle.",
     "addFirstGear": "Lisää ensimmäinen varusteesi",
     "upcomingTitle": "Tulevat vuokraukset",
     "noUpcoming": "Ei tulevia vuokrauksia.",
-    "requestsTitle": "Odottavat pyynnöt",
-    "noRequests": "Sinulla ei ole odottavia pyyntöjä.",
+    "requestsTitle": "Odottavat vuokrapyynnöt",
+    "noRequests": "Sinulla ei ole odottavia vuokrapyyntöjä.",
     "pastTitle": "Aiemmat vuokraukset",
     "noPast": "Ei vielä aiempia vuokrauksia.",
     "renterEmptyTitle": "Ei vielä vuokrauksia",
-    "renterEmpty": "Etsi varusteita läheltäsi ja lähetä ensimmäinen pyyntösi.",
+    "renterEmpty": "Etsi varusteita läheltäsi ja tee ensimmäinen vuokrapyyntösi.",
     "becomeOwnerTitle": "Onko sinulla varusteita, joita käytät harvoin?",
-    "becomeOwnerBody": "Vuokraa ne lähistön ihmisille. Tarvitsemme vain puhelinnumerosi ja WhatsApp-suostumuksesi.",
-    "becomeOwner": "Ryhdy vuokraisännäksi"
+    "becomeOwnerBody": "Vuokraa ne lähellä asuville. Tarvitsemme vain puhelinnumerosi ja WhatsApp-suostumuksesi.",
+    "becomeOwner": "Ryhdy vuokralleantajaksi"
+  },
+  "meta": {
+    "siteName": "GearQuest",
+    "description": "Vuokraa seikkailuvarusteita naapureiltasi: sukset, teltat, kajakit ja paljon muuta. GearQuest yhdistää varusteiden vuokralleantajat ja vuokraajat Suomessa.",
+    "ogLocale": "fi_FI",
+    "gearFallback": "Varuste",
+    "profileFallback": "Profiili",
+    "tagline": "Vuokraa varusteet. Jätä ostamatta."
+  },
+  "seo": {
+    "homeTitle": "Vuokraa seikkailuvarusteita Suomessa",
+    "homeDescription": "Vuokraa sukset, lumilaudat, teltat, kajakit ja pyörät lähelläsi asuvilta. GearQuest on Suomen vertaisvuokrauspalvelu seikkailuvarusteille.",
+    "mapTitle": "Vuokrattavat varusteet kartalla",
+    "mapDescription": "Selaa vuokrattavia seikkailuvarusteita kartalla ympäri Suomea: sukset, teltat, kajakit ja pyörät lähelläsi. Sijainti on likimääräinen ennen hyväksyntää.",
+    "termsDescription": "GearQuestin käyttöehdot: Suomen vertaisvuokrauspalvelun pyynnöt, vuokralleantajan hyväksyntä ja osapuolten vastuut selkeästi kuvattuna.",
+    "privacyDescription": "Näin GearQuest käsittelee henkilötietojasi: mitä keräämme ja miksi, ja miten puhelinnumerosi jaetaan vasta hyväksytyn vuokrauksen jälkeen.",
+    "gearIntro": "Vuokraa {title} kaupungissa {city}: {category}, {prices}. Lähetä pyyntö, omistaja hyväksyy sen ja sovitte noudosta suoraan keskenänne.",
+    "gearIntroNoPrice": "Vuokraa {title} kaupungissa {city}: {category}. Lähetä pyyntö, omistaja hyväksyy sen ja sovitte noudosta suoraan keskenänne.",
+    "userIntro": "{name} vuokraa varusteita GearQuestissa, Suomen vertaisvuokrauspalvelussa. Katso hänen vuokrattavat varusteensa ja arvostelunsa.",
+    "imageAlt": "{title}: {category} vuokrattavana, {city}",
+    "imageAltN": "{title}: {category} vuokrattavana, {city}, kuva {n}/{total}",
+    "ogTagline": "Vuokraa varusteet. Jätä ostamatta."
   }
 }

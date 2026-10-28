@@ -4,7 +4,7 @@ import {
   SIGNUP_TOKEN_TTL_SECONDS,
   type AUTH_INTENTS,
   type SignupData,
-} from '@gearshare/shared';
+} from '@gearquest/shared';
 import { AppError, unauthorized } from '../../lib/errors';
 import { toPrivateUser } from '../users/users.mapper';
 import { assertOwnerReady, isOwnerRole } from '../users/users.policy';
@@ -175,7 +175,7 @@ export function createAuthService(
       try {
         ({
           payload: { sub },
-        } = await jwtVerify(token, key, { algorithms: ['HS256'] }));
+        } = await jwtVerify(token, key, { algorithms: ['HS256'], currentDate: clock() }));
       } catch {
         throw unauthorized();
       }

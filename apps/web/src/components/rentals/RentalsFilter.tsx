@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { RENTAL_STATUSES } from '@gearshare/shared';
+import { RENTAL_STATUSES } from '@gearquest/shared';
 import { Chip } from '@/components/ui/Chip';
 import { useRouter } from '@/i18n/navigation';
 

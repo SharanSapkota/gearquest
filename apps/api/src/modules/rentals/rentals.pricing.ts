@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from 'date-fns';
 import { TZDate } from '@date-fns/tz';
-import { MAX_RENTAL_DAYS, RENTAL_TIME_ZONE, type CreateRentalInput } from '@gearshare/shared';
+import { MAX_RENTAL_DAYS, RENTAL_TIME_ZONE, type CreateRentalInput } from '@gearquest/shared';
 import { AppError } from '../../lib/errors';
 
 type Maybe<T> = T | null | undefined; // Mongo/Mongoose may hand back null for unset fields

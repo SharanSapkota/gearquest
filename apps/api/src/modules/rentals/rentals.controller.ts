@@ -3,7 +3,7 @@ import type {
   AvailabilityQuery,
   CreateRentalInput,
   ListMyRentalsQuery,
-} from '@gearshare/shared';
+} from '@gearquest/shared';
 import { unauthorized } from '../../lib/errors';
 import type { createRentalsService } from './rentals.service';
 

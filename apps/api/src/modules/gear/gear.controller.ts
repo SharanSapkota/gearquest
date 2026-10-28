@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from 'express';
-import type { CreateGearInput, GearFilters, UpdateGearInput } from '@gearshare/shared';
+import type { CreateGearInput, GearFilters, UpdateGearInput } from '@gearquest/shared';
 import { unauthorized } from '../../lib/errors';
 import type { createGearService } from './gear.service';
 

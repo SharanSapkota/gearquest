@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import type { CreateGearInput, GearFilters } from '@gearshare/shared';
+import type { CreateGearInput, GearFilters } from '@gearquest/shared';
 import { GearModel } from './gear.model';
 
 export type GearRecord = Awaited<ReturnType<typeof findById>>;

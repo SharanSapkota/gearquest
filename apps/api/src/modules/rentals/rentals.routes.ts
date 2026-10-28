@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { availabilityQuerySchema, createRentalSchema, listMyRentalsSchema } from '@gearshare/shared';
+import { availabilityQuerySchema, createRentalSchema, listMyRentalsSchema } from '@gearquest/shared';
 import { createRentalLimiter } from '../../middleware/rateLimit';
 import { requireAuth } from '../../middleware/requireAuth';
 import { requireOwner } from '../../middleware/requireRole';

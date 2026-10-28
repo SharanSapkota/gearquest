@@ -1,4 +1,4 @@
-# GearShare: peer-to-peer adventure gear rental (Finland)
+# GearQuest: peer-to-peer adventure gear rental (Finland)
 
 Stack: Next.js (frontend), Express (backend), MongoDB. TypeScript.
 Languages: Finnish (default) and English. No hardcoded UI strings.
@@ -37,4 +37,4 @@ Commands (repo root):
 - cp .env.example .env   then fill in values
 - pnpm dev               api :4000 + web :3000
 - pnpm test | typecheck | lint | build   (run all four before saying done)
-- pnpm --filter @gearshare/api test      single package
+- pnpm --filter @gearquest/api test      single package

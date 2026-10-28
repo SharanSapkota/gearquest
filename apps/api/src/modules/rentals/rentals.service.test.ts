@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { MAX_OPEN_REQUESTS_PER_RENTER } from '@gearshare/shared';
+import { MAX_OPEN_REQUESTS_PER_RENTER } from '@gearquest/shared';
 import { createRentalsService } from './rentals.service';
 import type { AcceptResult, RentalRecord } from './rentals.repository';
 

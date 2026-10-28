@@ -1,4 +1,4 @@
-import { OWNER_ROLES } from '@gearshare/shared';
+import { OWNER_ROLES } from '@gearquest/shared';
 import { AppError } from '../../lib/errors';
 
 type OwnerFields = {

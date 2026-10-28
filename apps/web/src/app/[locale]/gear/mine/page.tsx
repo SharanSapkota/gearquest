@@ -1,10 +1,13 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { pageTitle } from '@/lib/metadata';
 import { buttonClass } from '@/components/ui/Button';
 import { MyGearList } from '@/components/gear/MyGearList';
 import { Link } from '@/i18n/navigation';
 import { api } from '@/lib/api';
 import { OwnerGate } from '@/components/dashboard/OwnerGate';
 import { requireOwnerAccess } from '@/lib/auth';
+
+export const generateMetadata = pageTitle('myGear.title');
 
 export default async function MyGearPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

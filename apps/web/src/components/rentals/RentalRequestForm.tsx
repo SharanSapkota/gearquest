@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { MAX_RENTAL_DAYS } from '@gearshare/shared';
+import { MAX_RENTAL_DAYS } from '@gearquest/shared';
 import { Button, buttonClass } from '@/components/ui/Button';
 import { Select, Textarea } from '@/components/ui/Field';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
@@ -303,7 +303,7 @@ export function RentalRequestForm({
 
       <p className="note disclaimer">{tAll('legal.disclaimer')}</p>
       {signedIn ? (
-        <Button type="submit" block disabled={!quote.ok || submitting}>
+        <Button type="submit" variant="accent" block disabled={!quote.ok || submitting}>
           {submitting ? t('submitting') : t('submit')}
         </Button>
       ) : (

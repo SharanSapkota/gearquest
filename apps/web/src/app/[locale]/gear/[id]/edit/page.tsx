@@ -1,9 +1,12 @@
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { pageTitle } from '@/lib/metadata';
 import { GearForm } from '@/components/gear/GearForm';
 import { api } from '@/lib/api';
 import { OwnerGate } from '@/components/dashboard/OwnerGate';
 import { requireOwnerAccess } from '@/lib/auth';
+
+export const generateMetadata = pageTitle('gearForm.editTitle');
 
 export default async function EditGearPage({
   params,

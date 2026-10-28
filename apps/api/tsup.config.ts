@@ -3,5 +3,5 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: ['src/server.ts'],
   format: ['esm'],
-  noExternal: ['@gearshare/shared'],
+  noExternal: ['@gearquest/shared'],
 });

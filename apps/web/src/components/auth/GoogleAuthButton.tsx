@@ -1,9 +1,9 @@
 'use client';
 
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
-import type { SignupData } from '@gearshare/shared';
+import type { SignupData } from '@gearquest/shared';
 import { useRouter } from '@/i18n/navigation';
 import { ApiError, api, type AuthResult } from '@/lib/api';
 import { afterLoginPath, signupErrorFromCode, type SignupError } from '@/lib/roles';
@@ -29,6 +29,7 @@ export function GoogleAuthButton({
   onSignupError?: (error: SignupError) => void;
 }) {
   const t = useTranslations('auth');
+  const locale = useLocale();
   const router = useRouter();
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
 
@@ -76,7 +77,8 @@ export function GoogleAuthButton({
   return (
     <div className="signin">
       <div className="signin__google" aria-busy={state === 'loading'}>
-        <GoogleOAuthProvider clientId={CLIENT_ID} onScriptLoadError={onGoogleError}>
+        {/* Google renders its own button text; follow the app language, not the browser's. */}
+        <GoogleOAuthProvider clientId={CLIENT_ID} locale={locale} onScriptLoadError={onGoogleError}>
           <GoogleLogin
             onSuccess={(res) => void onCredential(res.credential)}
             onError={onGoogleError}
