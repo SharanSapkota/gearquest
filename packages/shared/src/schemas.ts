@@ -15,6 +15,7 @@ import {
   RENTAL_MODES,
   RENTAL_STATUSES,
   REVIEW_ROLES,
+  SITEMAP_GEAR_PER_FILE,
   USER_ROLES,
 } from './constants';
 
@@ -123,6 +124,13 @@ export const gearFiltersSchema = z
       f.minPriceCents <= f.maxPriceCents,
     { message: 'filters.priceRange', path: ['maxPriceCents'] },
   );
+// GET /gear/sitemap: id-only listing of active gear for the web sitemap (1-based pages).
+export const sitemapQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(SITEMAP_GEAR_PER_FILE).default(SITEMAP_GEAR_PER_FILE),
+});
+export type SitemapQuery = z.infer<typeof sitemapQuerySchema>;
+
 export type GearFilters = z.infer<typeof gearFiltersSchema>;
 export type GearFiltersInput = z.input<typeof gearFiltersSchema>;
 

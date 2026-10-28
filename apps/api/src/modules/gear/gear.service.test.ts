@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   createGearSchema,
   gearFiltersSchema,
+  sitemapQuerySchema,
   updateGearSchema,
   type CreateGearInput,
 } from '@gearquest/shared';
@@ -32,6 +33,7 @@ const asRecord = (r: unknown) => r as any;
 function makeRepo(overrides: Record<string, unknown> = {}) {
   return {
     findMany: vi.fn().mockResolvedValue({ items: [asRecord(record)], total: 1 }),
+    findSitemapPage: vi.fn().mockResolvedValue({ items: [asRecord(record)], total: 1 }),
     findById: vi.fn().mockResolvedValue(asRecord(record)),
     findDetail: vi.fn(),
     findAllByOwner: vi.fn().mockResolvedValue([asRecord(record)]),
@@ -328,5 +330,42 @@ describe('create requires an owner role with phone and consent', () => {
     users.findById.mockResolvedValue({ _id: 'u1', role: 'owner', phone: '+358401234567', whatsappShareConsent: true });
     await expect(svc.create('u1', validInput)).resolves.toMatchObject({ title: 'Alpine skis' });
     expect(users.findById).toHaveBeenCalledWith('u1');
+  });
+});
+
+describe('gear service: sitemap', () => {
+  it('returns only id, slug, category, city, images and lastmod', async () => {
+    const repo = makeRepo({
+      findSitemapPage: vi.fn().mockResolvedValue({
+        items: [asRecord({ ...record, _id: 'g1', title: 'Pyörä ja kypärä', images: ['https://x/y.jpg'], updatedAt: new Date('2026-03-01') })],
+        total: 41,
+      }),
+    });
+    const res = await createGearService(repo, readyOwner).sitemap({ page: 2, limit: 20 });
+    expect(res).toMatchObject({ total: 41, page: 2, limit: 20 });
+    expect(res.items[0]).toEqual({
+      id: 'g1',
+      slug: 'pyora-ja-kypara',
+      category: 'ski',
+      city: 'Helsinki',
+      images: ['https://x/y.jpg'],
+      updatedAt: new Date('2026-03-01'),
+    });
+    expect(repo.findSitemapPage).toHaveBeenCalledWith(2, 20);
+  });
+
+  it('falls back to createdAt when updatedAt is missing and never leaks private fields', async () => {
+    const { items } = await createGearService(makeRepo(), readyOwner).sitemap({ page: 1, limit: 10 });
+    expect(items[0]?.updatedAt).toEqual(record.createdAt);
+    const json = JSON.stringify(items);
+    for (const secret of ['Secret street', '24.9', '60.1', 'u1', 'description', 'pricing']) {
+      expect(json).not.toContain(secret);
+    }
+  });
+
+  it('validates paging: defaults to a full page and caps the limit', () => {
+    expect(sitemapQuerySchema.parse({})).toEqual({ page: 1, limit: 2500 });
+    expect(sitemapQuerySchema.safeParse({ limit: '2501' }).success).toBe(false);
+    expect(sitemapQuerySchema.safeParse({ page: '0' }).success).toBe(false);
   });
 });

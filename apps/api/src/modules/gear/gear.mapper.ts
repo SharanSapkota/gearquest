@@ -1,4 +1,5 @@
-import type { GearDetailRecord, GearRecord } from './gear.repository';
+import { slugify } from '@gearquest/shared';
+import type { GearDetailRecord, GearRecord, SitemapRecord } from './gear.repository';
 
 // Public view: whitelist only. Never exposes exact location or address.
 export function toPublicGear(gear: NonNullable<GearRecord>) {
@@ -16,6 +17,19 @@ export function toPublicGear(gear: NonNullable<GearRecord>) {
     ownerRatingAvg: gear.ownerRatingAvg,
     status: gear.status,
     createdAt: gear.createdAt,
+  };
+}
+
+// Sitemap entry: ids, slug, category, city, photos and last-modified only. No owner, description,
+// price or location.
+export function toSitemapEntry(gear: NonNullable<SitemapRecord>) {
+  return {
+    id: String(gear._id),
+    slug: slugify(gear.title),
+    category: gear.category,
+    city: gear.city,
+    images: gear.images,
+    updatedAt: gear.updatedAt ?? gear.createdAt,
   };
 }
 

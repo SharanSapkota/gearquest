@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createGearSchema, gearFiltersSchema, updateGearSchema } from '@gearquest/shared';
+import { createGearSchema, gearFiltersSchema, sitemapQuerySchema, updateGearSchema } from '@gearquest/shared';
 import { requireAuth } from '../../middleware/requireAuth';
 import { requireOwner } from '../../middleware/requireRole';
 import { validateBody, validateQuery } from '../../middleware/validate';
@@ -15,7 +15,8 @@ const controller = createGearController(
 
 export const gearRouter = Router();
 gearRouter.get('/', validateQuery(gearFiltersSchema), controller.list);
-// Before '/:id' so "mine" is not captured as an id.
+// Before '/:id' so "mine" and "sitemap" are not captured as ids.
+gearRouter.get('/sitemap', validateQuery(sitemapQuerySchema), controller.sitemap);
 gearRouter.get('/mine', requireAuth, requireOwner, controller.listMine);
 gearRouter.get('/:id', controller.get);
 gearRouter.post('/', requireAuth, requireOwner, validateBody(createGearSchema), controller.create);

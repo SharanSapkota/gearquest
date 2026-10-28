@@ -168,6 +168,17 @@ export type CreateRentalBody = {
   message?: string;
 };
 
+// GET /gear/sitemap: public ids and slugs of active gear, nothing else.
+export type SitemapGear = {
+  id: string;
+  slug: string;
+  category: (typeof CATEGORIES)[number];
+  city: string;
+  images: string[];
+  updatedAt: string;
+};
+export type SitemapGearResponse = { items: SitemapGear[]; total: number; page: number; limit: number };
+
 export type GearListResponse = {
   items: PublicGear[];
   total: number;
@@ -303,6 +314,10 @@ export const api = {
       };
       xhr.send(form);
     });
+  },
+  // No mock fallback: an unreachable API must fail the sitemap, never publish fake URLs.
+  getSitemapGear(page: number) {
+    return request<SitemapGearResponse>(`/gear/sitemap?page=${page}`);
   },
   getGear(id: string) {
     return request<GearDetail>(`/gear/${encodeURIComponent(id)}`);

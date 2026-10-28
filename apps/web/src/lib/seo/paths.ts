@@ -1,3 +1,4 @@
+import { slugify } from '@gearquest/shared';
 import { absoluteUrl } from '../siteUrl';
 import { LOCALE_LIST, PUBLIC_PATHS, type PageKey, type SeoLocale } from './routes';
 
@@ -5,17 +6,7 @@ export const DEFAULT_SEO_LOCALE: SeoLocale = 'fi';
 
 const OBJECT_ID = /^[0-9a-f]{24}/i;
 
-// Lowercase ASCII slug; ä/ö/å and other diacritics are folded ("Pyörä" -> "pyora").
-export function slugify(text: string, max = 60): string {
-  return text
-    .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, max)
-    .replace(/-+$/, '');
-}
+export { slugify };
 
 export const idSlug = (id: string, title: string) => {
   const slug = slugify(title);

@@ -35,6 +35,8 @@ export const OWNER_GEAR_STATUSES = ['active', 'paused'] as const;
 
 export const REQUEST_EXPIRY_HOURS = 48;
 export const MAP_LOCATION_OFFSET_METERS = 300;
+// Gear per sitemap file: each gear is listed once per locale, so a file stays at 5,000 URLs.
+export const SITEMAP_GEAR_PER_FILE = 2500;
 export const DEFAULT_PAGE_SIZE = 20;
 export const MAX_PAGE_SIZE = 50;
 

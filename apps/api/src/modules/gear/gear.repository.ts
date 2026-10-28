@@ -3,6 +3,7 @@ import type { CreateGearInput, GearFilters } from '@gearquest/shared';
 import { GearModel } from './gear.model';
 
 export type GearRecord = Awaited<ReturnType<typeof findById>>;
+export type SitemapRecord = Awaited<ReturnType<typeof findSitemapPage>>['items'][number];
 export type GearDetailRecord = Awaited<ReturnType<typeof findDetail>>;
 
 export type Point = { type: 'Point'; coordinates: [number, number] };
@@ -105,6 +106,20 @@ async function findDetail(id: string) {
 
 type OwnerRecord = { _id: Types.ObjectId; name: string; avatarUrl?: string; ratingAvg: number };
 
+// Sitemap listing: active gear only, minimal projection, stable order for paging.
+async function findSitemapPage(page: number, limit: number) {
+  const [items, total] = await Promise.all([
+    GearModel.find({ status: 'active' })
+      .select('title category city images createdAt updatedAt')
+      .sort({ _id: 1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean(),
+    GearModel.countDocuments({ status: 'active' }),
+  ]);
+  return { items, total };
+}
+
 async function findByOwner(ownerId: string) {
   if (!Types.ObjectId.isValid(ownerId)) return [];
   return GearModel.find({ ownerId, status: 'active' }).sort({ createdAt: -1, _id: -1 }).lean();
@@ -145,6 +160,7 @@ async function softDelete(id: string) {
 
 export const gearRepository = {
   findMany,
+  findSitemapPage,
   findById,
   findDetail,
   findByOwner,

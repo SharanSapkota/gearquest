@@ -27,7 +27,7 @@ const gearSchema = new Schema(
     acceptSeq: { type: Number, default: 0 }, // bumped on accept to serialize overlap checks
     status: { type: String, enum: GEAR_STATUSES, default: 'active' },
   },
-  { timestamps: { createdAt: true, updatedAt: false } },
+  { timestamps: true },
 );
 
 gearSchema.index({ publicLocation: '2dsphere' });

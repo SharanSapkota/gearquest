@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from 'express';
-import type { CreateGearInput, GearFilters, UpdateGearInput } from '@gearquest/shared';
+import type { CreateGearInput, GearFilters, SitemapQuery, UpdateGearInput } from '@gearquest/shared';
 import { unauthorized } from '../../lib/errors';
 import type { createGearService } from './gear.service';
 
@@ -14,6 +14,11 @@ const userId = (req: Request) => {
 export function createGearController(service: GearService) {
   const list: RequestHandler = async (_req, res) => {
     res.json(await service.list(res.locals.query as GearFilters));
+  };
+  // Cheap for CDNs and the web sitemap; the list changes slowly.
+  const sitemap: RequestHandler = async (_req, res) => {
+    res.set('Cache-Control', 'public, max-age=300');
+    res.json(await service.sitemap(res.locals.query as SitemapQuery));
   };
   const listMine: RequestHandler = async (req, res) => {
     res.json(await service.listMine(userId(req)));
@@ -31,5 +36,5 @@ export function createGearController(service: GearService) {
     await service.remove(userId(req), String(req.params.id));
     res.status(204).end();
   };
-  return { list, listMine, get, create, update, remove };
+  return { list, sitemap, listMine, get, create, update, remove };
 }

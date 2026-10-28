@@ -1,14 +1,14 @@
-import type { CreateGearInput, GearFilters, UpdateGearInput } from '@gearquest/shared';
+import type { CreateGearInput, GearFilters, SitemapQuery, UpdateGearInput } from '@gearquest/shared';
 import { GEAR_IMAGE_FOLDER, MAP_LOCATION_OFFSET_METERS, MAX_GEAR_IMAGES } from '@gearquest/shared';
 import { AppError, forbidden, notFound } from '../../lib/errors';
 import type { UsersRepository } from '../users/users.repository';
 import { assertOwnerReady } from '../users/users.policy';
-import { toOwnerGear, toPublicGear, toPublicGearDetail } from './gear.mapper';
+import { toOwnerGear, toPublicGear, toPublicGearDetail, toSitemapEntry } from './gear.mapper';
 import type { GearRepository, Point } from './gear.repository';
 
 type Repo = Pick<
   GearRepository,
-  'findMany' | 'findById' | 'findDetail' | 'findAllByOwner' | 'create' | 'update' | 'softDelete'
+  'findMany' | 'findSitemapPage' | 'findById' | 'findDetail' | 'findAllByOwner' | 'create' | 'update' | 'softDelete'
 >;
 
 const METERS_PER_DEGREE_LAT = 111_320;
@@ -69,6 +69,10 @@ export function createGearService(
     async list(filters: GearFilters) {
       const { items, total } = await repo.findMany(filters);
       return { items: items.map(toPublicGear), total, page: filters.page, limit: filters.limit };
+    },
+    async sitemap({ page, limit }: SitemapQuery) {
+      const { items, total } = await repo.findSitemapPage(page, limit);
+      return { items: items.map(toSitemapEntry), total, page, limit };
     },
     async listMine(userId: string) {
       const items = await repo.findAllByOwner(userId);
