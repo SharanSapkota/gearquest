@@ -11,7 +11,7 @@ const BENTO_MAX = 5;
 
 // Desktop: bento grid (1 large + up to 4 small). Phones: full-bleed swipe carousel (CSS scroll-snap).
 // Photos beyond the bento open in a sheet.
-export function GearGallery({ images, title }: { images: string[]; title: string }) {
+export function GearGallery({ images, altBase }: { images: string[]; altBase: string }) {
   const t = useTranslations('gearDetail');
   const [index, setIndex] = useState(0);
   const [all, setAll] = useState(false);
@@ -25,7 +25,8 @@ export function GearGallery({ images, title }: { images: string[]; title: string
     );
   }
 
-  const alt = (i: number) => `${title} (${i + 1}/${images.length})`;
+  // Descriptive, localized alt text: the title, category and city, plus the photo number.
+  const alt = (i: number) => `${altBase} (${i + 1}/${images.length})`;
   const shown = images.slice(0, BENTO_MAX);
 
   return (

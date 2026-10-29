@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { cityKey } from './slug';
 import {
   AUTH_INTENTS,
   CATEGORIES,
@@ -107,6 +108,14 @@ export const gearFiltersSchema = z
     bbox: bboxSchema.optional(),
     q: z.string().trim().max(100).optional(),
     minOwnerRating: z.coerce.number().min(1).max(5).optional(),
+    // Free text normalized to cityKey; matches Gear.cityKey exactly. Empty after normalizing = ignored.
+    city: z
+      .string()
+      .trim()
+      .max(100)
+      .transform(cityKey)
+      .transform((k) => k || undefined)
+      .optional(),
     sort: z.enum(GEAR_SORTS).default('newest'),
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),

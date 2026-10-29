@@ -15,6 +15,7 @@ const gearSchema = new Schema(
     condition: { type: String, enum: CONDITIONS, required: true },
     images: [String],
     city: { type: String, required: true },
+    cityKey: { type: String }, // normalized city (shared cityKey()), the only thing city filters match
     address: String, // private
     location: pointField, // exact, private
     publicLocation: { ...pointField }, // offset ~300 m, the only one exposed
@@ -31,6 +32,7 @@ const gearSchema = new Schema(
 );
 
 gearSchema.index({ publicLocation: '2dsphere' });
+gearSchema.index({ status: 1, cityKey: 1, category: 1 });
 gearSchema.index({ status: 1, category: 1, 'pricing.dailyCents': 1 });
 gearSchema.index({ status: 1, category: 1, 'pricing.hourlyCents': 1 });
 // 'none': Mongo has no Finnish stemmer; English stemming would mangle Finnish words.

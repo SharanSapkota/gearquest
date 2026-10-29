@@ -893,3 +893,55 @@ body:has(.compactbar) .filterrow {
 .tabbar__item:has(.tabbar__plus) {
   overflow: visible;
 }
+
+/* Header "Browse" disclosure: category and city links. Desktop only. */
+.navmenu {
+  display: none;
+  position: relative;
+}
+.navmenu summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding-inline: 0.9rem;
+  font-weight: 600;
+  font-size: 0.925rem;
+  cursor: pointer;
+  list-style: none;
+}
+.navmenu summary::-webkit-details-marker {
+  display: none;
+}
+.navmenu__panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(10rem, 1fr));
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+.navmenu__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+.navmenu__panel a {
+  display: block;
+  padding-block: 0.35rem;
+  color: var(--fg);
+  text-decoration: none;
+}
+.navmenu__panel a:hover {
+  text-decoration: underline;
+}
+@media (min-width: 768px) {
+  .navmenu {
+    display: block;
+  }
+}

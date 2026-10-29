@@ -31,16 +31,24 @@ export function publicPath(page: PageKey, locale: SeoLocale, params: Record<stri
   return `/${locale}${path}`;
 }
 
+// Same as publicPath without the locale prefix, for next-intl's <Link>, which adds it.
+export const localPath = (page: PageKey, locale: SeoLocale, params: Record<string, string> = {}) =>
+  publicPath(page, locale, params).slice(locale.length + 1);
+
 // canonical + hreflang (fi, en, x-default) for the same page in every locale.
 // `query` (e.g. "?page=2") is appended to every URL: a paginated page is its own canonical.
+// `params` may be a function when a slug differs per locale (category and guide slugs).
+export type PathParams = Record<string, string> | ((locale: SeoLocale) => Record<string, string>);
+const paramsFor = (params: PathParams, locale: SeoLocale) => (typeof params === 'function' ? params(locale) : params);
+
 export function pageAlternates(
   page: PageKey,
   locale: SeoLocale,
-  params: Record<string, string> = {},
+  params: PathParams = {},
   query = '',
 ) {
   const languages: Record<string, string> = {};
-  for (const l of LOCALE_LIST) languages[l] = absoluteUrl(publicPath(page, l, params) + query);
-  languages['x-default'] = absoluteUrl(publicPath(page, DEFAULT_SEO_LOCALE, params) + query);
-  return { canonical: absoluteUrl(publicPath(page, locale, params) + query), languages };
+  for (const l of LOCALE_LIST) languages[l] = absoluteUrl(publicPath(page, l, paramsFor(params, l)) + query);
+  languages['x-default'] = absoluteUrl(publicPath(page, DEFAULT_SEO_LOCALE, paramsFor(params, DEFAULT_SEO_LOCALE)) + query);
+  return { canonical: absoluteUrl(publicPath(page, locale, paramsFor(params, locale)) + query), languages };
 }

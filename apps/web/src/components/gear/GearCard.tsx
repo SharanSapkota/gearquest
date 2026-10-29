@@ -1,4 +1,6 @@
 import { useLocale, useTranslations } from 'next-intl';
+import { idSlug, localPath } from '@/lib/seo/paths';
+import type { SeoLocale } from '@/lib/seo/routes';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
 import { GearImage } from '@/components/ui/GearImage';
 import { PinIcon, StarIcon } from '@/components/ui/icons';
@@ -12,12 +14,12 @@ export function GearCard({ gear, priority = false }: { gear: PublicGear; priorit
   const { hourlyCents, dailyCents } = gear.pricing;
 
   return (
-    <Link href={`/gear/${gear.id}`} className="card">
+    <Link href={localPath('gear', locale as SeoLocale, { id: idSlug(gear.id, gear.title) })} className="card">
       <div className="card__media-wrap">
         <GearImage
           src={gear.images[0]}
           hoverSrc={gear.images[1]}
-          alt={gear.title}
+          alt={t('seo.imageAlt', { title: gear.title, category: t(`categories.${gear.category}`), city: gear.city })}
           sizes="(min-width: 1536px) 18vw, (min-width: 1024px) 24vw, (min-width: 640px) 33vw, 50vw"
           className="card__media"
           priority={priority}

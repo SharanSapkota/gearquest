@@ -205,6 +205,8 @@ export type GearListResponse = {
 export type GearQuery = {
   q?: string;
   category?: (typeof CATEGORIES)[number];
+  // Matched on the API against the normalized cityKey (case and diacritics insensitive).
+  city?: string;
   condition?: (typeof CONDITIONS)[number];
   mode?: (typeof RENTAL_MODES)[number];
   minPriceCents?: number;

@@ -9,3 +9,7 @@ export function slugify(text: string, max = 60): string {
     .slice(0, max)
     .replace(/-+$/, '');
 }
+
+// Normalized city for matching and URLs: lowercase, diacritics folded ("Jyväskylä" -> "jyvaskyla").
+// Stored as Gear.cityKey; queries compare it exactly, never as a regex built from user input.
+export const cityKey = (city: string): string => slugify(city, 100);

@@ -19,7 +19,8 @@
     "signUp": "Sign up",
     "dashboard": "Dashboard",
     "dashboardShort": "Dashboard",
-    "addGearShort": "Add"
+    "addGearShort": "Add",
+    "browse": "Browse"
   },
   "home": {
     "title": "Rent the gear. Skip the buying.",
@@ -310,7 +311,11 @@
     "ratingCount": "{count, plural, one {# review} other {# reviews}}",
     "from": "from",
     "pausedBadge": "Paused",
-    "pausedBanner": "This listing is paused and hidden from the public. Only you can see this page until you activate it."
+    "pausedBanner": "This listing is paused and hidden from the public. Only you can see this page until you activate it.",
+    "moreFromOwner": "More from this owner",
+    "similar": "More gear in {city}",
+    "availability": "Availability",
+    "availabilityText": "Available to request. A date is blocked only after the owner accepts a rental."
   },
   "rentalForm": {
     "title": "Request a rental",
@@ -452,7 +457,13 @@
   "footer": {
     "tagline": "Adventure gear in circulation, neighbour to neighbour.",
     "explore": "Explore",
-    "account": "Your account"
+    "account": "Your account",
+    "categories": "Categories",
+    "cities": "Popular cities",
+    "about": "About GearQuest",
+    "guides": "Guides",
+    "terms": "Terms",
+    "privacy": "Privacy"
   },
   "search": {
     "title": "Search gear",
@@ -579,11 +590,40 @@
     "imageAlt": "{title}: {category} for rent in {city}",
     "imageAltN": "{title}: {category} for rent in {city}, photo {n} of {total}",
     "ogTagline": "Rent gear. Skip buying.",
-    "pageN": "Page {page}"
+    "pageN": "Page {page}",
+    "guidesDescription": "Practical guides to choosing and renting adventure gear in Finland: what to rent for a Lapland winter trip, kayaking gear, first-time ski rental."
   },
   "gone": {
     "title": "This listing has been removed",
     "body": "The owner has taken this listing down for good. Browse other gear available to rent in Finland.",
     "browse": "Browse gear"
+  },
+  "breadcrumb": {
+    "label": "Breadcrumb"
+  },
+  "landing": {
+    "count": "{count, plural, one {# listing} other {# listings}} right now",
+    "from": "Prices start from {price} per day.",
+    "updated": "Updated: {date}",
+    "list": "Gear available to rent",
+    "pageN": "Page {page}",
+    "emptyTitle": "No listings here yet",
+    "emptyBody": "Nobody has listed gear here yet. Own something that sits unused? List it and be the first owner here.",
+    "listYourGear": "List your gear here",
+    "browseAll": "Browse all gear",
+    "faqTitle": "Frequently asked questions",
+    "cities": "Cities with this gear",
+    "otherCategories": "Other categories",
+    "inThisCity": "Gear available in {city}",
+    "otherCities": "Other cities",
+    "otherInCity": "More gear in {city}",
+    "categoryElsewhere": "{category} elsewhere in Finland"
+  },
+  "guides": {
+    "title": "Guides",
+    "intro": "Practical guides for choosing, renting and using adventure gear in Finland, written for real trips.",
+    "byline": "By the GearQuest team",
+    "author": "GearQuest team",
+    "browseRelated": "Browse {category} available to rent"
   }
 }

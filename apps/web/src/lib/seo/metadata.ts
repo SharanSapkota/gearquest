@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { absoluteUrl, isIndexable } from '../siteUrl';
-import { pageAlternates } from './paths';
+import { pageAlternates, type PathParams } from './paths';
 import type { PageKey, SeoLocale } from './routes';
 
 export const SITE_NAME = 'GearQuest';
@@ -39,7 +39,7 @@ export const ogImageUrl = (locale: SeoLocale, kind: 'default' | { gearId: string
 type Input = {
   locale: SeoLocale;
   page: PageKey;
-  params?: Record<string, string>;
+  params?: PathParams;
   title: string;
   description: string;
   imageAlt?: string;

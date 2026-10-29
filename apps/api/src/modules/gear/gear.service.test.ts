@@ -415,3 +415,45 @@ describe('gear service: visibility', () => {
     await expect(createGearService(makeRepo({ findState: vi.fn().mockResolvedValue(null) }), readyOwner).state('x')).rejects.toMatchObject({ status: 404 });
   });
 });
+
+describe('city filter', () => {
+  it('normalizes the city to a cityKey: lowercase, diacritics folded, whitespace trimmed', () => {
+    expect(gearFiltersSchema.parse({ city: '  Jyväskylä ' }).city).toBe('jyvaskyla');
+    expect(gearFiltersSchema.parse({ city: 'ROVANIEMI' }).city).toBe('rovaniemi');
+    expect(gearFiltersSchema.parse({ city: 'Pori' }).city).toBe('pori');
+  });
+
+  it('ignores a city that normalizes to nothing', () => {
+    expect(gearFiltersSchema.parse({ city: '!!!' }).city).toBeUndefined();
+    expect(gearFiltersSchema.parse({}).city).toBeUndefined();
+  });
+
+  it('rejects overlong input', () => {
+    expect(gearFiltersSchema.safeParse({ city: 'a'.repeat(101) }).success).toBe(false);
+  });
+
+  it('matches cityKey exactly: regex metacharacters in user input never reach the query as a pattern', () => {
+    const q = buildGearQuery(gearFiltersSchema.parse({ city: '.*' }));
+    expect(q).not.toHaveProperty('cityKey'); // ".*" normalizes to nothing: no filter at all
+    const q2 = buildGearQuery(gearFiltersSchema.parse({ city: 'hel(sinki)+' }));
+    expect(q2.cityKey).toBe('hel-sinki');
+    expect(q2.cityKey).not.toBeInstanceOf(RegExp);
+    expect(JSON.stringify(q2)).not.toContain('$regex');
+  });
+
+  it('combines with category and stays restricted to active gear', () => {
+    const q = buildGearQuery(gearFiltersSchema.parse({ city: 'Oulu', category: 'ski' }));
+    expect(q).toMatchObject({ status: 'active', category: 'ski', cityKey: 'oulu' });
+  });
+
+  it('stores cityKey on create and keeps it in sync on update', async () => {
+    const repo = makeRepo();
+    const svc = createGearService(repo, readyOwner, () => 0.5, 'demo');
+    await svc.create('u1', { ...validInput, city: 'Jyväskylä' });
+    expect(repo.create).toHaveBeenCalledWith('u1', expect.objectContaining({ cityKey: 'jyvaskyla' }));
+    await svc.update('u1', 'g1', { city: 'Tampere' });
+    expect(repo.update).toHaveBeenCalledWith('g1', expect.objectContaining({ cityKey: 'tampere' }));
+    await svc.update('u1', 'g1', { title: 'New title' });
+    expect(repo.update).toHaveBeenLastCalledWith('g1', expect.not.objectContaining({ cityKey: expect.anything() }));
+  });
+});

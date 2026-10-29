@@ -19,7 +19,8 @@
     "signUp": "Luo tili",
     "dashboard": "Hallintapaneeli",
     "dashboardShort": "Hallinta",
-    "addGearShort": "Lisää"
+    "addGearShort": "Lisää",
+    "browse": "Selaa"
   },
   "home": {
     "title": "Vuokraa varusteet. Jätä ostamatta.",
@@ -310,7 +311,11 @@
     "ratingCount": "{count, plural, one {# arvostelu} other {# arvostelua}}",
     "from": "alkaen",
     "pausedBadge": "Tauolla",
-    "pausedBanner": "Tämä ilmoitus on tauolla eikä näy muille. Vain sinä näet tämän sivun, kunnes aktivoit sen."
+    "pausedBanner": "Tämä ilmoitus on tauolla eikä näy muille. Vain sinä näet tämän sivun, kunnes aktivoit sen.",
+    "moreFromOwner": "Lisää tältä omistajalta",
+    "similar": "Lisää varusteita: {city}",
+    "availability": "Saatavuus",
+    "availabilityText": "Voit pyytää varausta. Päivä estyy vasta, kun omistaja hyväksyy vuokrauksen."
   },
   "rentalForm": {
     "title": "Tee vuokrapyyntö",
@@ -452,7 +457,13 @@
   "footer": {
     "tagline": "Seikkailuvarusteet kiertoon, naapurilta naapurille.",
     "explore": "Tutustu",
-    "account": "Oma tili"
+    "account": "Oma tili",
+    "categories": "Luokat",
+    "cities": "Suositut kaupungit",
+    "about": "Tietoa GearQuestista",
+    "guides": "Oppaat",
+    "terms": "Käyttöehdot",
+    "privacy": "Tietosuoja"
   },
   "search": {
     "title": "Hae varusteita",
@@ -579,11 +590,40 @@
     "imageAlt": "{title}: {category} vuokrattavana, {city}",
     "imageAltN": "{title}: {category} vuokrattavana, {city}, kuva {n}/{total}",
     "ogTagline": "Vuokraa varusteet. Jätä ostamatta.",
-    "pageN": "Sivu {page}"
+    "pageN": "Sivu {page}",
+    "guidesDescription": "Käytännön oppaat seikkailuvarusteiden valintaan ja vuokraamiseen Suomessa: Lapin talvimatka, melontavarusteet ja suksien vuokraus ensimmäistä kertaa."
   },
   "gone": {
     "title": "Tämä ilmoitus on poistettu",
     "body": "Omistaja on poistanut ilmoituksen pysyvästi. Selaa muita Suomessa vuokrattavia varusteita.",
     "browse": "Selaa varusteita"
+  },
+  "breadcrumb": {
+    "label": "Murupolku"
+  },
+  "landing": {
+    "count": "{count, plural, one {# ilmoitus} other {# ilmoitusta}} juuri nyt",
+    "from": "Hinnat alkavat {price} / pv.",
+    "updated": "Päivitetty: {date}",
+    "list": "Vuokrattavat varusteet",
+    "pageN": "Sivu {page}",
+    "emptyTitle": "Ei vielä ilmoituksia",
+    "emptyBody": "Täällä ei ole vielä varusteita. Onko sinulla varuste, joka seisoo käyttämättä? Ilmoita se ja ole ensimmäinen vuokralleantaja täällä.",
+    "listYourGear": "Ilmoita varusteesi tähän",
+    "browseAll": "Selaa kaikkia varusteita",
+    "faqTitle": "Usein kysytyt kysymykset",
+    "cities": "Kaupungit, joissa tätä on",
+    "otherCategories": "Muut luokat",
+    "inThisCity": "Varusteet kaupungissa {city}",
+    "otherCities": "Muut kaupungit",
+    "otherInCity": "Lisää varusteita: {city}",
+    "categoryElsewhere": "{category} muualla Suomessa"
+  },
+  "guides": {
+    "title": "Oppaat",
+    "intro": "Käytännön oppaita seikkailuvarusteiden valintaan, vuokraamiseen ja käyttöön Suomessa, kirjoitettu oikeita retkiä varten.",
+    "byline": "GearQuest-tiimi",
+    "author": "GearQuest-tiimi",
+    "browseRelated": "Selaa vuokrattavia: {category}"
   }
 }

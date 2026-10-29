@@ -14,6 +14,7 @@ export type GearData = {
   condition?: CreateGearInput['condition'];
   images?: string[];
   city?: string;
+  cityKey?: string;
   location?: Point;
   publicLocation?: Point;
   pricing?: { hourlyCents?: number; dailyCents?: number; minHours?: number };
@@ -29,6 +30,8 @@ const priceField = (mode?: GearFilters['mode']) =>
 export function buildGearQuery(filters: GearFilters) {
   const query: Record<string, unknown> = { status: 'active' };
   if (filters.category) query.category = filters.category;
+  // Exact match on the normalized key (a string from validated input, never a regex).
+  if (filters.city) query.cityKey = filters.city;
   if (filters.condition) query.condition = filters.condition;
   if (filters.minOwnerRating) query.ownerRatingAvg = { $gte: filters.minOwnerRating };
   if (filters.q) query.$text = { $search: filters.q };

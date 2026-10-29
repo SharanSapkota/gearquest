@@ -3,7 +3,7 @@
 // Everything it creates is marked (googleId "seed:*", email *@seed.invalid) and is replaced on re-run.
 // Run: pnpm --filter @gearquest/api seed:dev
 import mongoose from 'mongoose';
-import type { CATEGORIES } from '@gearquest/shared';
+import { cityKey, type CATEGORIES } from '@gearquest/shared';
 import { fuzzLocation } from '../src/modules/gear/gear.service';
 import { GearModel } from '../src/modules/gear/gear.model';
 import { UserModel } from '../src/modules/users/users.model';
@@ -86,6 +86,7 @@ async function main() {
       condition,
       images: [photo(title, COLORS[n % COLORS.length] as string), photo(category, '205A28')],
       city,
+      cityKey: cityKey(city),
       location: { type: 'Point', coordinates: [exact.lng, exact.lat] },
       publicLocation: pub,
       pricing: { dailyCents, ...(hourlyCents && { hourlyCents, minHours: 2 }) },

@@ -1,5 +1,5 @@
 import type { CreateGearInput, GearFilters, SitemapQuery, UpdateGearInput } from '@gearquest/shared';
-import { GEAR_IMAGE_FOLDER, MAP_LOCATION_OFFSET_METERS, MAX_GEAR_IMAGES } from '@gearquest/shared';
+import { cityKey, GEAR_IMAGE_FOLDER, MAP_LOCATION_OFFSET_METERS, MAX_GEAR_IMAGES } from '@gearquest/shared';
 import { AppError, forbidden, notFound } from '../../lib/errors';
 import type { UsersRepository } from '../users/users.repository';
 import { assertOwnerReady } from '../users/users.policy';
@@ -104,6 +104,7 @@ export function createGearService(
       assertImages(input.images);
       const gear = await repo.create(userId, {
         ...input,
+        cityKey: cityKey(input.city),
         location: toPoint(input.location),
         publicLocation: fuzzLocation(input.location, rng),
       });
@@ -115,6 +116,7 @@ export function createGearService(
       const { location, ...rest } = patch;
       const gear = await repo.update(id, {
         ...rest,
+        ...(rest.city !== undefined && { cityKey: cityKey(rest.city) }),
         ...(location && { location: toPoint(location), publicLocation: fuzzLocation(location, rng) }),
       });
       if (!gear) throw notFound('gear.notFound');

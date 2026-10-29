@@ -1,4 +1,6 @@
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { idSlug, localPath } from '@/lib/seo/paths';
+import type { SeoLocale } from '@/lib/seo/routes';
 import { Avatar } from '@/components/ui/Avatar';
 import { ShieldCheckIcon, StarIcon } from '@/components/ui/icons';
 import { Link } from '@/i18n/navigation';
@@ -13,12 +15,13 @@ export function OwnerCard({
   ratingCount?: number;
 }) {
   const t = useTranslations();
+  const locale = useLocale() as SeoLocale;
   return (
     <section className="owner-card" aria-label={t('gearDetail.owner')}>
       <Avatar name={owner.name} url={owner.avatarUrl} size={56} />
       <div className="owner-card__body">
         <p className="owner-card__label">{t('gearDetail.hostedBy')}</p>
-        <Link href={`/users/${owner.id}`} className="owner-card__name">
+        <Link href={localPath('user', locale, { id: idSlug(owner.id, owner.name) })} className="owner-card__name">
           {owner.name}
         </Link>
         <p className="owner-card__meta">

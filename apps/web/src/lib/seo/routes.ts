@@ -7,7 +7,24 @@ export type SeoLocale = (typeof LOCALE_LIST)[number];
 // The [locale] segment also matches stray paths such as /service-worker.js; metadata must tolerate them.
 export const isSeoLocale = (value: string): value is SeoLocale => (LOCALE_LIST as readonly string[]).includes(value);
 
-export type PageKey = 'home' | 'map' | 'terms' | 'privacy' | 'gear' | 'user';
+export type PageKey =
+  | 'home'
+  | 'map'
+  | 'terms'
+  | 'privacy'
+  | 'gear'
+  | 'user'
+  | 'category'
+  | 'categoryCity'
+  | 'city'
+  | 'howItWorks'
+  | 'forOwners'
+  | 'forRenters'
+  | 'safety'
+  | 'faq'
+  | 'about'
+  | 'guides'
+  | 'guide';
 
 export const PUBLIC_PATHS: Record<PageKey, Record<SeoLocale, string>> = {
   home: { fi: '', en: '' },
@@ -16,6 +33,17 @@ export const PUBLIC_PATHS: Record<PageKey, Record<SeoLocale, string>> = {
   privacy: { fi: '/tietosuoja', en: '/privacy' },
   gear: { fi: '/varuste/:id', en: '/gear/:id' },
   user: { fi: '/kayttajat/:id', en: '/users/:id' },
+  category: { fi: '/varusteet/:category', en: '/gear/category/:category' },
+  categoryCity: { fi: '/varusteet/:category/:city', en: '/gear/category/:category/:city' },
+  city: { fi: '/kaupungit/:city', en: '/cities/:city' },
+  howItWorks: { fi: '/miten-se-toimii', en: '/how-it-works' },
+  forOwners: { fi: '/vuokraa-varusteesi', en: '/for-owners' },
+  forRenters: { fi: '/vuokraajalle', en: '/for-renters' },
+  safety: { fi: '/turvallisuus', en: '/safety' },
+  faq: { fi: '/ukk', en: '/faq' },
+  about: { fi: '/tietoa', en: '/about' },
+  guides: { fi: '/oppaat', en: '/guides' },
+  guide: { fi: '/oppaat/:slug', en: '/guides/:slug' },
 };
 
 // Only 24-hex ids carry a slug; /gear/new and /gear/mine must not be treated as gear pages.

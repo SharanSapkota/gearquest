@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { AuthControls } from '@/components/auth/AuthControls';
+import { BrowseMenu } from './BrowseMenu';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { Logo } from './Logo';
 import { NavTabs } from './NavTabs';
@@ -11,6 +12,7 @@ export function Header({ pendingCount }: { pendingCount: number }) {
       <Suspense fallback={null}>
         <NavTabs />
       </Suspense>
+      <BrowseMenu />
       <div className="header__actions">
         <div className="header__lang">
           <LanguageSwitcher />

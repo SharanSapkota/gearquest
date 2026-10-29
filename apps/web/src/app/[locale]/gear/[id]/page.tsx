@@ -6,7 +6,11 @@ import { CategoryIcon } from '@/components/ui/CategoryIcon';
 import { ChevronLeftIcon, PinIcon } from '@/components/ui/icons';
 import { GearGallery } from '@/components/gear/GearGallery';
 import { GearLocationMap } from '@/components/gear/GearLocationMap';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { GearGrid } from '@/components/gear/GearGrid';
+import { CATEGORY_CONTENT, CITIES, LANDING_CATEGORIES } from '@/content/landing';
+import { cityKey } from '@gearquest/shared';
 import { OwnerCard } from '@/components/gear/OwnerCard';
 import { RentalRequestForm } from '@/components/rentals/RentalRequestForm';
 import { StickyBookingBar } from '@/components/rentals/StickyBookingBar';
@@ -15,7 +19,7 @@ import { ApiError, api, type PublicGear } from '@/lib/api';
 import { getCurrentUser } from '@/lib/auth';
 import { formatMoney } from '@/lib/format';
 import { getGearCached } from '@/lib/metadata';
-import { breadcrumbJsonLd, productJsonLd } from '@/lib/seo/jsonLd';
+import { productJsonLd } from '@/lib/seo/jsonLd';
 import { buildMetadata, fitDescription, ogImageUrl } from '@/lib/seo/metadata';
 import { idSlug, parseIdSlug, publicPath } from '@/lib/seo/paths';
 import { isSeoLocale, type SeoLocale } from '@/lib/seo/routes';
@@ -93,11 +97,25 @@ export default async function GearDetailPage({
       // The owner's rating from completed rentals; omitted unless real reviews exist.
       rating: ownerProfile && ownerProfile.ratingCount > 0 ? { average: ownerProfile.ratingAvg, count: ownerProfile.ratingCount } : undefined,
     }),
-    breadcrumbJsonLd([
-      { name: t('nav.home'), path: publicPath('home', locale as SeoLocale) },
-      { name: gear.title, path: pagePath },
-    ]),
   ];
+  // Category and city crumbs link to landing pages when they exist (7 categories, curated cities).
+  const lang = locale as SeoLocale;
+  const landingCategory = LANDING_CATEGORIES.find((c) => c === gear.category);
+  const landingCity = CITIES.find((c) => c.key === cityKey(gear.city));
+  const categorySlug = landingCategory ? CATEGORY_CONTENT[landingCategory].slug[lang] : undefined;
+  const crumbs = [
+    { name: t('nav.home'), path: publicPath('home', lang) },
+    ...(categorySlug ? [{ name: t(`categories.${gear.category}`), path: publicPath('category', lang, { category: categorySlug }) }] : []),
+    ...(categorySlug && landingCity ? [{ name: landingCity.name, path: publicPath('categoryCity', lang, { category: categorySlug, city: landingCity.key }) }] : []),
+    { name: gear.title, path: pagePath },
+  ];
+  const moreFromOwner = (ownerProfile?.gear ?? []).filter((g) => g.id !== gear.id).slice(0, 4);
+  const similar = (
+    await api.listGear({ category: gear.category, city: cityKey(gear.city), limit: 5 }).catch(() => ({ items: [] as PublicGear[] }))
+  ).items
+    .filter((g) => g.id !== gear.id && !moreFromOwner.some((m) => m.id === g.id))
+    .slice(0, 4);
+  const altBase = t('seo.imageAlt', { title: gear.title, category: t(`categories.${gear.category}`), city: gear.city });
 
   return (
     <main className="detail">
@@ -107,13 +125,14 @@ export default async function GearDetailPage({
           <ChevronLeftIcon size={18} />
           {t('gear.back')}
         </Link>
+        <Breadcrumbs items={crumbs} />
       </div>
       {gear.status === 'paused' && (
         <p className="note" role="status">
           <Badge>{t('gearDetail.pausedBadge')}</Badge> {t('gearDetail.pausedBanner')}
         </p>
       )}
-      <GearGallery images={gear.images} title={gear.title} />
+      <GearGallery images={gear.images} altBase={altBase} />
       <div className="detail__cols">
         <div className="detail__main">
           <header className="detail__head">
@@ -164,9 +183,24 @@ export default async function GearDetailPage({
             ) : (
               <RentalRequestForm gear={gear} signedIn={!!me} />
             )}
+            <p className="note">
+              {t('gearDetail.availability')}: {t('gearDetail.availabilityText')}
+            </p>
           </div>
         </aside>
       </div>
+      {moreFromOwner.length > 0 && (
+        <section className="detail__section" aria-labelledby="more-owner">
+          <h2 id="more-owner">{t('gearDetail.moreFromOwner')}</h2>
+          <GearGrid items={moreFromOwner} />
+        </section>
+      )}
+      {similar.length > 0 && (
+        <section className="detail__section" aria-labelledby="similar">
+          <h2 id="similar">{t('gearDetail.similar', { city: gear.city })}</h2>
+          <GearGrid items={similar} />
+        </section>
+      )}
       {!isOwner && <StickyBookingBar price={prices.join(' · ')} />}
     </main>
   );

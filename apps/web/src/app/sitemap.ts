@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { api } from '@/lib/api';
-import { gearEntries, gearFileCount, staticEntries } from '@/lib/seo/sitemapEntries';
+import { gearEntries, gearFileCount, landingEntries, staticEntries } from '@/lib/seo/sitemapEntries';
 
 // Built per request from live data; never prerendered at build time (the API may be down).
 export const dynamic = 'force-dynamic';
@@ -13,7 +13,14 @@ export async function generateSitemaps() {
 
 export default async function sitemap(props: { id: Promise<string> }): Promise<MetadataRoute.Sitemap> {
   const id = Number(await props.id);
-  if (id === 0) return staticEntries();
+  if (id === 0) {
+    // Landing pages are listed only for categories and cities that have active gear.
+    const first = await api.getSitemapGear(1);
+    const rest = await Promise.all(
+      Array.from({ length: Math.max(0, gearFileCount(first.total) - 1) }, (_, i) => api.getSitemapGear(i + 2)),
+    );
+    return [...staticEntries(), ...landingEntries([first, ...rest].flatMap((r) => r.items))];
+  }
   const { items } = await api.getSitemapGear(id);
   return gearEntries(items);
 }
