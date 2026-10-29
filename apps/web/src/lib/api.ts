@@ -56,6 +56,22 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return res.status === 204 ? (undefined as T) : (res.json() as Promise<T>);
 }
 
+// HTTP status of GET /gear/:id/state for the proxy (it can only act on the status, not the body).
+// Null when the API is unreachable: the page then renders normally. The cookie is forwarded so
+// the owner keeps access to a paused listing.
+export async function fetchGearStatus(id: string, cookie: string | null): Promise<number | null> {
+  try {
+    const res = await fetch(`${API_URL}/gear/${encodeURIComponent(id)}/state`, {
+      cache: 'no-store',
+      headers: cookie ? { Cookie: cookie } : undefined,
+      signal: AbortSignal.timeout(1500),
+    });
+    return res.status;
+  } catch {
+    return null;
+  }
+}
+
 export type PublicProfile = {
   id: string;
   name: string;

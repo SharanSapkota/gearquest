@@ -36,6 +36,7 @@ function makeRepo(overrides: Record<string, unknown> = {}) {
     findSitemapPage: vi.fn().mockResolvedValue({ items: [asRecord(record)], total: 1 }),
     findById: vi.fn().mockResolvedValue(asRecord(record)),
     findDetail: vi.fn(),
+    findState: vi.fn().mockResolvedValue({ ownerId: 'u1', status: 'active' }),
     findAllByOwner: vi.fn().mockResolvedValue([asRecord(record)]),
     create: vi.fn().mockImplementation(async (_o: string, data: object) =>
       asRecord({ ...record, ...data }),
@@ -367,5 +368,50 @@ describe('gear service: sitemap', () => {
     expect(sitemapQuerySchema.parse({})).toEqual({ page: 1, limit: 2500 });
     expect(sitemapQuerySchema.safeParse({ limit: '2501' }).success).toBe(false);
     expect(sitemapQuerySchema.safeParse({ page: '0' }).success).toBe(false);
+  });
+});
+
+describe('gear service: visibility', () => {
+  const detail = (status: string) => ({
+    ...record,
+    status,
+    ownerId: { _id: 'u1', name: 'Anna', ratingAvg: 0 },
+  });
+  const svc = (status: string) =>
+    createGearService(makeRepo({ findDetail: vi.fn().mockResolvedValue(asRecord(detail(status))) }), readyOwner);
+
+  it('deleted gear is 410 for anonymous and other users, with no gear data in the error', async () => {
+    for (const viewer of [undefined, 'u2']) {
+      const err = await svc('deleted').get('g1', viewer).catch((e: unknown) => e);
+      expect(err).toMatchObject({ status: 410, code: 'gear.gone' });
+      expect(JSON.stringify(err)).not.toMatch(/Skis|Anna|u1/);
+    }
+  });
+
+  it('deleted gear is a plain 404 for the owner', async () => {
+    await expect(svc('deleted').get('g1', 'u1')).rejects.toMatchObject({ status: 404, code: 'gear.notFound' });
+  });
+
+  it('paused gear is 404 (same as missing) for anonymous and others, visible to the owner', async () => {
+    await expect(svc('paused').get('g1')).rejects.toMatchObject({ status: 404, code: 'gear.notFound' });
+    await expect(svc('paused').get('g1', 'u2')).rejects.toMatchObject({ status: 404, code: 'gear.notFound' });
+    expect(await svc('paused').get('g1', 'u1')).toMatchObject({ status: 'paused' });
+  });
+
+  it('active gear is public', async () => {
+    expect(await svc('active').get('g1')).toMatchObject({ id: 'g1', status: 'active' });
+  });
+
+  it('state() applies the same rules without a payload', async () => {
+    const state = (status: string, viewer?: string) =>
+      createGearService(
+        makeRepo({ findState: vi.fn().mockResolvedValue({ ownerId: 'u1', status }) }),
+        readyOwner,
+      ).state('g1', viewer);
+    expect(await state('active')).toEqual({ status: 'ok' });
+    await expect(state('deleted')).rejects.toMatchObject({ status: 410 });
+    await expect(state('paused')).rejects.toMatchObject({ status: 404 });
+    expect(await state('paused', 'u1')).toEqual({ status: 'ok' });
+    await expect(createGearService(makeRepo({ findState: vi.fn().mockResolvedValue(null) }), readyOwner).state('x')).rejects.toMatchObject({ status: 404 });
   });
 });

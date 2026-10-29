@@ -97,9 +97,10 @@ async function findById(id: string) {
   return GearModel.findOne({ _id: id, status: { $ne: 'deleted' } }).lean();
 }
 
+// Includes deleted gear: the service turns that into 410 (gone) for everyone but nobody sees data.
 async function findDetail(id: string) {
   if (!Types.ObjectId.isValid(id)) return null;
-  return GearModel.findOne({ _id: id, status: { $ne: 'deleted' } })
+  return GearModel.findOne({ _id: id })
     .populate<{ ownerId: OwnerRecord | null }>({ path: 'ownerId', select: OWNER_FIELDS })
     .lean();
 }
@@ -118,6 +119,11 @@ async function findSitemapPage(page: number, limit: number) {
     GearModel.countDocuments({ status: 'active' }),
   ]);
   return { items, total };
+}
+
+async function findState(id: string) {
+  if (!Types.ObjectId.isValid(id)) return null;
+  return GearModel.findOne({ _id: id }).select('ownerId status').lean();
 }
 
 async function findByOwner(ownerId: string) {
@@ -163,6 +169,7 @@ export const gearRepository = {
   findSitemapPage,
   findById,
   findDetail,
+  findState,
   findByOwner,
   findAllByOwner,
   countByOwner,

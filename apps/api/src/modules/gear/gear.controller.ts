@@ -24,7 +24,11 @@ export function createGearController(service: GearService) {
     res.json(await service.listMine(userId(req)));
   };
   const get: RequestHandler = async (req, res) => {
-    res.json(await service.get(String(req.params.id)));
+    res.json(await service.get(String(req.params.id), req.user?.id));
+  };
+  const state: RequestHandler = async (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.json(await service.state(String(req.params.id), req.user?.id));
   };
   const create: RequestHandler = async (req, res) => {
     res.status(201).json(await service.create(userId(req), req.body as CreateGearInput));
@@ -36,5 +40,5 @@ export function createGearController(service: GearService) {
     await service.remove(userId(req), String(req.params.id));
     res.status(204).end();
   };
-  return { list, sitemap, listMine, get, create, update, remove };
+  return { list, sitemap, listMine, get, state, create, update, remove };
 }

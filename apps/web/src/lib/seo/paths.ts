@@ -32,9 +32,15 @@ export function publicPath(page: PageKey, locale: SeoLocale, params: Record<stri
 }
 
 // canonical + hreflang (fi, en, x-default) for the same page in every locale.
-export function pageAlternates(page: PageKey, locale: SeoLocale, params: Record<string, string> = {}) {
+// `query` (e.g. "?page=2") is appended to every URL: a paginated page is its own canonical.
+export function pageAlternates(
+  page: PageKey,
+  locale: SeoLocale,
+  params: Record<string, string> = {},
+  query = '',
+) {
   const languages: Record<string, string> = {};
-  for (const l of LOCALE_LIST) languages[l] = absoluteUrl(publicPath(page, l, params));
-  languages['x-default'] = absoluteUrl(publicPath(page, DEFAULT_SEO_LOCALE, params));
-  return { canonical: absoluteUrl(publicPath(page, locale, params)), languages };
+  for (const l of LOCALE_LIST) languages[l] = absoluteUrl(publicPath(page, l, params) + query);
+  languages['x-default'] = absoluteUrl(publicPath(page, DEFAULT_SEO_LOCALE, params) + query);
+  return { canonical: absoluteUrl(publicPath(page, locale, params) + query), languages };
 }

@@ -5,14 +5,15 @@ import { api } from './api';
 
 type Props = { params: Promise<{ locale: string }> };
 
-// Page <title> from a message key ("namespace.key"); the layout's template appends the site name.
+// Title for PRIVATE pages (login, signup, dashboards, rentals, own gear, edit forms) from a
+// message key ("namespace.key"). Always noindex,nofollow; public pages use buildMetadata.
 export const pageTitle =
   (path: string) =>
   async ({ params }: Props): Promise<Metadata> => {
     const { locale } = await params;
     const [namespace, ...rest] = path.split('.');
     const t = await getTranslations({ locale, namespace });
-    return { title: t(rest.join('.')) };
+    return { title: t(rest.join('.')), robots: { index: false, follow: false } };
   };
 
 // Shared by generateMetadata and the page itself, so each request fetches once.

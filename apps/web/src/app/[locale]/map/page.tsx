@@ -4,7 +4,7 @@ import { MapExperience } from '@/components/map/MapExperience';
 import { parseGearSearchParams, type SearchParams } from '@/lib/gearFilters';
 import { initialView, parseMapView } from '@/lib/mapView';
 
-export const generateMetadata = staticPageMetadata('map', 'seo.mapTitle', 'mapDescription');
+export const generateMetadata = staticPageMetadata('map', 'seo.mapTitle', 'mapDescription', true);
 
 export default async function MapPage({
   params,

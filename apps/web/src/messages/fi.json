@@ -308,7 +308,9 @@
     "hostedBy": "Vuokralleantaja",
     "verified": "Vahvistettu Googlella",
     "ratingCount": "{count, plural, one {# arvostelu} other {# arvostelua}}",
-    "from": "alkaen"
+    "from": "alkaen",
+    "pausedBadge": "Tauolla",
+    "pausedBanner": "Tämä ilmoitus on tauolla eikä näy muille. Vain sinä näet tämän sivun, kunnes aktivoit sen."
   },
   "rentalForm": {
     "title": "Tee vuokrapyyntö",
@@ -576,6 +578,12 @@
     "userIntro": "{name} vuokraa varusteita GearQuestissa, Suomen vertaisvuokrauspalvelussa. Katso hänen vuokrattavat varusteensa ja arvostelunsa.",
     "imageAlt": "{title}: {category} vuokrattavana, {city}",
     "imageAltN": "{title}: {category} vuokrattavana, {city}, kuva {n}/{total}",
-    "ogTagline": "Vuokraa varusteet. Jätä ostamatta."
+    "ogTagline": "Vuokraa varusteet. Jätä ostamatta.",
+    "pageN": "Sivu {page}"
+  },
+  "gone": {
+    "title": "Tämä ilmoitus on poistettu",
+    "body": "Omistaja on poistanut ilmoituksen pysyvästi. Selaa muita Suomessa vuokrattavia varusteita.",
+    "browse": "Selaa varusteita"
   }
 }

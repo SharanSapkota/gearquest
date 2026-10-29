@@ -47,6 +47,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: fitDescription([intro, gear.description]),
     image: ogImageUrl(locale, { gearId: gear.id }),
     imageAlt: t('seo.imageAlt', { title: gear.title, category, city: gear.city }),
+    // Only the owner can load a paused listing; it must never be indexed.
+    noindex: gear.status !== 'active',
   });
 }
 
@@ -61,7 +63,7 @@ export default async function GearDetailPage({
   const { id, hasSlugForm } = parseIdSlug(param);
   // Non-404 errors propagate to error.tsx.
   const gear = await getGearCached(id).catch((err: unknown) => {
-    if (err instanceof ApiError && err.status === 404) notFound();
+    if (err instanceof ApiError && (err.status === 404 || err.status === 410)) notFound();
     throw err;
   });
   // Bare id, outdated or missing slug: permanent redirect to the canonical URL.
@@ -85,6 +87,11 @@ export default async function GearDetailPage({
           {t('gear.back')}
         </Link>
       </div>
+      {gear.status === 'paused' && (
+        <p className="note" role="status">
+          <Badge>{t('gearDetail.pausedBadge')}</Badge> {t('gearDetail.pausedBanner')}
+        </p>
+      )}
       <GearGallery images={gear.images} title={gear.title} />
       <div className="detail__cols">
         <div className="detail__main">

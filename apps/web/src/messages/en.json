@@ -308,7 +308,9 @@
     "hostedBy": "Owner",
     "verified": "Verified via Google",
     "ratingCount": "{count, plural, one {# review} other {# reviews}}",
-    "from": "from"
+    "from": "from",
+    "pausedBadge": "Paused",
+    "pausedBanner": "This listing is paused and hidden from the public. Only you can see this page until you activate it."
   },
   "rentalForm": {
     "title": "Request a rental",
@@ -576,6 +578,12 @@
     "userIntro": "{name} rents out gear on GearQuest, the peer-to-peer gear rental marketplace in Finland. See their listed items and ratings.",
     "imageAlt": "{title}: {category} for rent in {city}",
     "imageAltN": "{title}: {category} for rent in {city}, photo {n} of {total}",
-    "ogTagline": "Rent gear. Skip buying."
+    "ogTagline": "Rent gear. Skip buying.",
+    "pageN": "Page {page}"
+  },
+  "gone": {
+    "title": "This listing has been removed",
+    "body": "The owner has taken this listing down for good. Browse other gear available to rent in Finland.",
+    "browse": "Browse gear"
   }
 }

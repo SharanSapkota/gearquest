@@ -46,6 +46,7 @@ type Input = {
   image?: string;
   type?: 'website' | 'article' | 'profile';
   noindex?: boolean;
+  query?: string;
 };
 
 // Metadata every public page shares: canonical (always the clean locale URL, never query
@@ -53,7 +54,7 @@ type Input = {
 export function buildMetadata(input: Input): Metadata {
   const { locale, page, params, title, description, type = 'website' } = input;
   const other: SeoLocale = locale === 'fi' ? 'en' : 'fi';
-  const alternates = pageAlternates(page, locale, params);
+  const alternates = pageAlternates(page, locale, params, input.query);
   const image = input.image ?? ogImageUrl(locale, 'default');
   const fullTitle = `${title} | ${SITE_NAME}`;
   return {

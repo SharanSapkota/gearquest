@@ -40,3 +40,12 @@ export const finnishLegacyRedirects = () =>
       destination: `/fi${PUBLIC_PATHS[key].fi}`,
       permanent: true,
     }));
+
+// Private/transactional URLs: served with X-Robots-Tag noindex,nofollow (next.config.ts headers).
+export const PRIVATE_HEADER_SOURCES = [
+  '/:locale(fi|en)/:section(dashboard|rentals|profile|login|signup|become-owner)/:path*',
+  '/:locale(fi|en)/:section(dashboard|rentals|profile|login|signup|become-owner)',
+  '/:locale(fi|en)/gear/new',
+  '/:locale(fi|en)/gear/mine',
+  '/:locale(fi|en)/gear/:id/edit',
+];
