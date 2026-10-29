@@ -71,19 +71,25 @@ export const guideEntries = (): Entry[] =>
 
 type LandingRow = { category: string; city: string };
 
-// Landing pages enter the sitemap only when they have at least one active listing (empty ones
-// are noindex). Cities outside the curated list have no landing page.
-export function landingEntries(rows: LandingRow[]): Entry[] {
+// Which landing pages exist with gear (empty ones are noindex and not listed). Cities outside the
+// curated list have no landing page.
+export function landingSets(rows: LandingRow[]) {
   const cityKeyOf = (name: string) => CITIES.find((c) => c.key === cityKey(name))?.key;
+  const isLanding = (c: string) => LANDING_CATEGORIES.includes(c as (typeof LANDING_CATEGORIES)[number]);
   const categories = new Set<string>();
   const cities = new Set<string>();
   const pairs = new Set<string>();
   for (const r of rows) {
     const city = cityKeyOf(r.city);
-    if (LANDING_CATEGORIES.includes(r.category as (typeof LANDING_CATEGORIES)[number])) categories.add(r.category);
+    if (isLanding(r.category)) categories.add(r.category);
     if (city) cities.add(city);
-    if (city && LANDING_CATEGORIES.includes(r.category as (typeof LANDING_CATEGORIES)[number])) pairs.add(`${r.category}|${city}`);
+    if (city && isLanding(r.category)) pairs.add(`${r.category}|${city}`);
   }
+  return { categories, cities, pairs };
+}
+
+export function landingEntries(rows: LandingRow[]): Entry[] {
+  const { categories, cities, pairs } = landingSets(rows);
   const slug = (c: string, l: SeoLocale) => CATEGORY_CONTENT[c as (typeof LANDING_CATEGORIES)[number]].slug[l];
   return [
     ...[...categories].flatMap((c) => localizedEntries('category', (l) => ({ category: slug(c, l) }))),
