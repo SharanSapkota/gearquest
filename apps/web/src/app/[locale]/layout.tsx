@@ -14,7 +14,7 @@ import { routing } from '@/i18n/routing';
 import { api } from '@/lib/api';
 import { getCurrentUser } from '@/lib/auth';
 import { environmentRobots, OG_LOCALE, ogImageUrl, verificationMetadata } from '@/lib/seo/metadata';
-import type { SeoLocale } from '@/lib/seo/routes';
+import { isSeoLocale, type SeoLocale } from '@/lib/seo/routes';
 import { absoluteUrl } from '@/lib/siteUrl';
 import '../globals.css';
 
@@ -41,6 +41,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  if (!isSeoLocale(locale)) return {};
   const t = await getTranslations({ locale, namespace: 'meta' });
   const title = t('siteName');
   // Pages replace openGraph/twitter wholesale (see buildMetadata); these cover pages that set none.

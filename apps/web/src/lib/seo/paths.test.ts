@@ -64,3 +64,11 @@ describe('next.config route tables', () => {
     expect(re.test(`/fi/gear/${ID}/edit`)).toBe(false);
   });
 });
+
+describe('unknown locale segment', () => {
+  it('is rejected by the guard used in generateMetadata', async () => {
+    const { isSeoLocale } = await import('./routes');
+    expect(isSeoLocale('service-worker.js')).toBe(false);
+    expect(isSeoLocale('fi')).toBe(true);
+  });
+});

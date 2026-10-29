@@ -4,6 +4,9 @@
 export const LOCALE_LIST = ['fi', 'en'] as const;
 export type SeoLocale = (typeof LOCALE_LIST)[number];
 
+// The [locale] segment also matches stray paths such as /service-worker.js; metadata must tolerate them.
+export const isSeoLocale = (value: string): value is SeoLocale => (LOCALE_LIST as readonly string[]).includes(value);
+
 export type PageKey = 'home' | 'map' | 'terms' | 'privacy' | 'gear' | 'user';
 
 export const PUBLIC_PATHS: Record<PageKey, Record<SeoLocale, string>> = {

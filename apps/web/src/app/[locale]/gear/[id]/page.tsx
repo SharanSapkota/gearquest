@@ -16,7 +16,7 @@ import { formatMoney } from '@/lib/format';
 import { getGearCached } from '@/lib/metadata';
 import { buildMetadata, fitDescription, ogImageUrl } from '@/lib/seo/metadata';
 import { idSlug, parseIdSlug, publicPath } from '@/lib/seo/paths';
-import type { SeoLocale } from '@/lib/seo/routes';
+import { isSeoLocale, type SeoLocale } from '@/lib/seo/routes';
 import type { Metadata } from 'next';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
@@ -29,7 +29,8 @@ const priceParts = (gear: PublicGear, locale: string, t: Awaited<ReturnType<type
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale: rawLocale, id: param } = await params;
-  const locale = rawLocale as SeoLocale;
+  if (!isSeoLocale(rawLocale)) return {};
+  const locale = rawLocale;
   const gear = await getGearCached(parseIdSlug(param).id).catch(() => null);
   const t = await getTranslations({ locale });
   if (!gear) return { title: t('meta.gearFallback'), robots: { index: false, follow: false } };

@@ -11,13 +11,14 @@ import { getCurrentUser } from '@/lib/auth';
 import { getUserCached } from '@/lib/metadata';
 import { buildMetadata, fitDescription } from '@/lib/seo/metadata';
 import { idSlug, parseIdSlug, publicPath } from '@/lib/seo/paths';
-import type { SeoLocale } from '@/lib/seo/routes';
+import { isSeoLocale, type SeoLocale } from '@/lib/seo/routes';
 import { isOwnerRole } from '@/lib/roles';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; id: string }> }): Promise<Metadata> {
   const { locale: rawLocale, id: param } = await params;
-  const locale = rawLocale as SeoLocale;
+  if (!isSeoLocale(rawLocale)) return {};
+  const locale = rawLocale;
   const profile = await getUserCached(parseIdSlug(param).id).catch(() => null);
   const t = await getTranslations({ locale });
   if (!profile) return { title: t('meta.profileFallback'), robots: { index: false, follow: false } };
