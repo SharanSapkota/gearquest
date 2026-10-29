@@ -6,6 +6,7 @@ import { CategoryIcon } from '@/components/ui/CategoryIcon';
 import { ChevronLeftIcon, PinIcon } from '@/components/ui/icons';
 import { GearGallery } from '@/components/gear/GearGallery';
 import { GearLocationMap } from '@/components/gear/GearLocationMap';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { OwnerCard } from '@/components/gear/OwnerCard';
 import { RentalRequestForm } from '@/components/rentals/RentalRequestForm';
 import { StickyBookingBar } from '@/components/rentals/StickyBookingBar';
@@ -14,6 +15,7 @@ import { ApiError, api, type PublicGear } from '@/lib/api';
 import { getCurrentUser } from '@/lib/auth';
 import { formatMoney } from '@/lib/format';
 import { getGearCached } from '@/lib/metadata';
+import { breadcrumbJsonLd, productJsonLd } from '@/lib/seo/jsonLd';
 import { buildMetadata, fitDescription, ogImageUrl } from '@/lib/seo/metadata';
 import { idSlug, parseIdSlug, publicPath } from '@/lib/seo/paths';
 import { isSeoLocale, type SeoLocale } from '@/lib/seo/routes';
@@ -78,9 +80,28 @@ export default async function GearDetailPage({
   const ownerProfile = gear.owner ? await api.getUser(gear.owner.id).catch(() => null) : null;
 
   const prices = priceParts(gear, locale, t);
+  const pagePath = publicPath('gear', locale as SeoLocale, { id: canonical });
+  const structuredData = [
+    productJsonLd({
+      name: gear.title,
+      description: gear.description || t('seo.gearIntroNoPrice', { title: gear.title, city: gear.city, category: t(`categories.${gear.category}`) }),
+      images: gear.images,
+      category: t(`categories.${gear.category}`),
+      path: pagePath,
+      pricing: gear.pricing,
+      sellerName: gear.owner?.name,
+      // The owner's rating from completed rentals; omitted unless real reviews exist.
+      rating: ownerProfile && ownerProfile.ratingCount > 0 ? { average: ownerProfile.ratingAvg, count: ownerProfile.ratingCount } : undefined,
+    }),
+    breadcrumbJsonLd([
+      { name: t('nav.home'), path: publicPath('home', locale as SeoLocale) },
+      { name: gear.title, path: pagePath },
+    ]),
+  ];
 
   return (
     <main className="detail">
+      {gear.status === 'active' && <JsonLd data={structuredData} />}
       <div className="detail__top">
         <Link href="/" className="page__back">
           <ChevronLeftIcon size={18} />

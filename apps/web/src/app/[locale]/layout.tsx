@@ -9,10 +9,12 @@ import { AuthProvider } from '@/components/auth/AuthProvider';
 import { BottomTabs } from '@/components/layout/BottomTabs';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { ToastProvider } from '@/components/ui/Toast';
 import { routing } from '@/i18n/routing';
 import { api } from '@/lib/api';
 import { getCurrentUser } from '@/lib/auth';
+import { organizationJsonLd, websiteJsonLd } from '@/lib/seo/jsonLd';
 import { environmentRobots, OG_LOCALE, ogImageUrl, verificationMetadata } from '@/lib/seo/metadata';
 import { isSeoLocale, type SeoLocale } from '@/lib/seo/routes';
 import { absoluteUrl } from '@/lib/siteUrl';
@@ -85,6 +87,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={`${figtree.variable} ${fraunces.variable}`}>
       <body>
+        <JsonLd data={[organizationJsonLd(), websiteJsonLd(locale as SeoLocale)]} />
         <NextIntlClientProvider>
           <AuthProvider user={user}>
             <ToastProvider>
